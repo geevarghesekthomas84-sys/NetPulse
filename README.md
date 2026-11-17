@@ -42,13 +42,16 @@ Whether you are studying for **CompTIA Network+**, **CCNA**, computer science un
 
 ### 2. 🔬 Wireshark-Grade Packet Dissector & Hex Inspector
 - **Full Bitfield Breakdown**: Dissects raw packet structures down to individual flag bits (SYN/ACK/FIN, DF/MF, DSCP/ECN, TTL, Type/Code).
+- **Interactive Encapsulation Visualizer**: Watch packets get wrapped and unwrapped layer-by-layer (L2 Ethernet → L3 IPv4 → L4 TCP/UDP → L7 Payload) with RFC header explanations.
+- **Interactive Glossary & RFC Tooltips**: Hover or click any acronym (TTL, SYN, MTU, MSS, ACK) in captions to view popover definitions, OSI layer badges, and standard RFC references.
 - **RFC 1071 Checksum Verification**: Live checksum recomputation for IPv4 headers, TCP pseudokeys, UDP payloads, and ICMP checksums.
 - **Interactive Hex Dump**: Color-coded hexadecimal and ASCII dump synced directly to highlighted fields in the protocol header.
-- **Display Filters**: Wireshark-compatible display filter engine supporting expressions like `tcp.port == 80`, `ip.src == 192.168.1.10`, `icmp.type == 8`, and `dns.flags.response == 1`.
-- **PCAP File Export**: Export recorded captures directly to standard `.pcap` files compatible with Wireshark and `tcpdump`.
+- **Unified Display Filter Bar**: Wireshark-compatible display filter engine supporting expressions like `tcp.port == 80`, `ip.src == 192.168.1.10`, `icmp.type == 8`, and `dns.flags.response == 1`.
+- **PCAP Import & Export**: Import external `.pcap` trace captures to replay on the sequence diagram, or export recorded captures directly to standard `.pcap` / `.csv` files.
 
 ### 3. 🖥️ Interactive Discrete-Event Network Simulator
 - **Visual Topology Drag-and-Drop Canvas**: Build custom networks with over 20+ isometric hardware devices.
+- **Cisco Packet Tracer PDU Simulation**: Queue Simple PDUs between devices to test end-to-end ping connectivity and inspect In/Out OSI layer models.
 - **Physical Cabling Bay**: Connect interfaces using **Copper Ethernet** (100 Mbps), **Fiber Optic** (1 Gbps), **Serial WAN** (10 Mbps), or **Wireless RF** (300 Mbps).
 - **Accurate Routing & Forwarding**:
   - Longest Prefix Match (LPM) routing table lookups.
@@ -62,8 +65,9 @@ Whether you are studying for **CompTIA Network+**, **CCNA**, computer science un
 - **Firewall ACL Engine**: Create stateless and stateful firewall rules to allow or deny traffic by port, IP, and protocol.
 - **SYN Flood & SYN Cookies**: Simulate Denial-of-Service attacks and observe how cryptographic SYN cookies protect server backlogs from resource exhaustion.
 
-### 5. 🛠️ Interactive Educational Tools & Labs
-- **Pre-Configured Labs**: Step-by-step challenges covering DHCP address leasing, VLAN trunking, multi-hop OSPF routing, NAT gateways, and DDoS mitigation.
+### 5. 🛠️ Interactive Educational Tools & Guided Labs
+- **Guided First Path ("Start Here")**: Beginner-friendly track through HTTP, DNS, TCP, and TLS with completion progress tracking.
+- **Searchable Guided Labs & Break-It Challenges**: 23 hands-on network troubleshooting challenges covering DHCP address leasing, VLAN trunking, multi-hop OSPF routing, NAT gateways, and broken network diagnostics.
 - **Subnet Calculator**: Visual IPv4 CIDR calculator with network address, broadcast address, usable IP range, and binary wildcard masks.
 - **Bandwidth-Delay Product (BDP) Calculator**: Compute pipe capacities and optimal TCP window sizes.
 - **Interactive Quizzes & Minigames**: Test protocol knowledge with interactive challenges and terminal games.
@@ -212,20 +216,24 @@ npm run test
 ```
 
 ```text
- ✓ src/tests/unit/svgViewport.test.ts (4 tests)
- ✓ src/tests/unit/simPlayback.test.ts (12 tests)
- ✓ src/tests/unit/engine-core.test.ts (8 tests)
  ✓ src/tests/unit/simAnalytics.test.ts (4 tests)
- ✓ src/tests/unit/utils.test.ts (8 tests)
+ ✓ src/tests/unit/engine-core.test.ts (8 tests)
  ✓ src/tests/integration/simulator-labs.integration.test.ts (4 tests)
+ ✓ src/tests/unit/simPlayback.test.ts (12 tests)
+ ✓ src/tests/unit/cisco-packet-tracer.test.ts (3 tests)
+ ✓ src/tests/unit/pcapReader.test.ts (3 tests)
+ ✓ src/tests/unit/protocolRecaps.test.ts (2 tests)
+ ✓ src/tests/unit/svgViewport.test.ts (4 tests)
+ ✓ src/tests/unit/glossary.test.ts (2 tests)
+ ✓ src/tests/unit/utils.test.ts (8 tests)
  ✓ src/tests/unit/i18n.test.ts (7 tests)
  ✓ src/tests/integration/protocols.integration.test.ts (2 tests)
  ✓ src/tests/unit/exportTopologyPng.test.ts (3 tests)
  ✓ src/tests/unit/store.test.ts (3 tests)
- ✓ src/tests/integration/ui-components.integration.test.tsx (9 tests)
+ ✓ src/tests/integration/ui-components.integration.test.tsx (10 tests)
 
- Test Files  11 passed (11)
-      Tests  64 passed (64)
+ Test Files  15 passed (15)
+      Tests  75 passed (75)
 ```
 
 ---
