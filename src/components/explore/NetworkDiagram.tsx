@@ -198,7 +198,7 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-[var(--bg-canvas)] blueprint-grid">
       {/* Top Floating Caption + Zoom/Export Strip */}
-      <div className="shrink-0 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)]/92 px-3.5 py-1.5 backdrop-blur-sm">
+      <div className="shrink-0 relative z-20 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 py-1.5 shadow-2xs">
         <div className="min-w-0 flex items-center gap-2 text-xs">
           <span className="font-mono font-bold text-[var(--accent-primary)] uppercase shrink-0">
             {t('playback.step')} {currentStepIndex + 1}
@@ -299,7 +299,7 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
       </div>
 
       {/* Responsive SVG Canvas */}
-      <div className="relative flex-1 min-h-[240px] w-full flex items-center justify-center overflow-hidden">
+      <div className="relative z-0 flex-1 min-h-[240px] w-full flex items-center justify-center overflow-hidden">
         <svg
           ref={svgRef}
           viewBox={`${pan.x} ${pan.y} ${vbW} ${vbH}`}
@@ -549,7 +549,7 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
         {hoveredNode && (
           <div
             role="status"
-            className="pointer-events-none absolute top-3 start-3 z-10 max-w-xs rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)]/95 p-3 text-xs shadow-xl backdrop-blur-md"
+            className="pointer-events-none absolute top-3 start-3 z-10 max-w-xs rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)] p-3 text-xs shadow-xl backdrop-blur-md"
           >
             <div className="font-semibold text-[var(--text-primary)]">{hoveredNode.label}</div>
             <div className="mt-1 space-y-0.5 font-mono text-[11px] text-[var(--text-secondary)]">

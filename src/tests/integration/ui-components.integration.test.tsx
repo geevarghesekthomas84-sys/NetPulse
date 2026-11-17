@@ -3,6 +3,7 @@ import React from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Header } from '../../components/common/Header';
+import { AnnotatedCaption } from '../../components/common/AnnotatedCaption';
 import { ExploreWorkspace } from '../../components/explore/ExploreWorkspace';
 import { SimCanvas } from '../../components/simulator/SimCanvas';
 import { SimulatorWorkspace } from '../../components/simulator/SimulatorWorkspace';
@@ -501,6 +502,27 @@ describe('UI Components Integration (SimCanvas, SimulatorWorkspace, TerminalEmul
     fireEvent.click(screen.getByLabelText('Undo'));
     expect(screen.getByText('4 nodes · 3 links')).toBeTruthy();
     expect(screen.getByText('Wi-Fi Router')).toBeTruthy();
+  });
+
+  it('renders interactive AnnotatedCaption and portaled glossary tooltips without canvas collision', () => {
+    render(<AnnotatedCaption text="Stub resolver queries 8.8.8.8, which walks the DNS hierarchy" />);
+
+    // Term button should exist
+    const dnsButton = screen.getByRole('button', { name: /DNS/i });
+    expect(dnsButton).toBeDefined();
+
+    // Clicking opens tooltip portal in document.body
+    fireEvent.click(dnsButton);
+
+    const tooltip = screen.getByRole('tooltip');
+    expect(tooltip).toBeDefined();
+    expect(tooltip.textContent).toContain('Domain Name System');
+    expect(tooltip.textContent).toContain('RFC 1035');
+
+    // Close button dismisses it
+    const closeBtn = screen.getByLabelText('Close tooltip');
+    fireEvent.click(closeBtn);
+    expect(screen.queryByRole('tooltip')).toBeNull();
   });
 });
 
