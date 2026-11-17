@@ -235,10 +235,10 @@ export const ExploreWorkspace: React.FC = () => {
 
   const dockHeightClass =
     dockSize === 'collapsed'
-      ? 'h-10'
+      ? 'h-9'
       : dockSize === 'expanded'
-      ? 'h-[450px]'
-      : 'h-[310px]';
+      ? 'h-[500px]'
+      : 'h-[350px]';
 
   return (
     <div className="flex flex-1 min-h-0 flex-col overflow-hidden bg-[var(--bg-canvas)]">

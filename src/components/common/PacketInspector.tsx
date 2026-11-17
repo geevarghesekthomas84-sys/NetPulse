@@ -63,48 +63,88 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-[var(--bg-canvas)]/40">
-      {/* Unified Header + Stepped Encapsulation Bar */}
-      <div className="shrink-0 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-4 py-2.5">
-        <div className="min-w-0 flex flex-wrap items-center gap-3">
-          {/* Frame Index + Protocol Headline */}
-          <div className="flex items-center gap-2.5 min-w-0">
-            <span className="inline-flex h-7 items-center rounded-lg bg-[var(--accent-primary)] px-2.5 font-mono text-xs font-bold text-white tabular-nums shrink-0 shadow-xs">
-              #{packet.no}
-            </span>
-            <h3 className="font-display text-[15px] font-bold text-[var(--text-primary)] whitespace-nowrap">
-              {packet.protocol}
-            </h3>
-            <span className="font-mono text-xs font-semibold text-[var(--text-secondary)] tabular-nums">
-              {packet.sizeBytes} bytes
-            </span>
-          </div>
+      {/* Unified Sleek Inspector Header + Stack Breadcrumbs */}
+      <div className="shrink-0 flex items-center justify-between gap-3 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 py-1.5 min-h-[38px]">
+        {/* Left: Frame Badge + Protocol + Flow Tuple + Stack Breadcrumbs */}
+        <div className="flex items-center gap-2 min-w-0 overflow-x-auto no-scrollbar py-0.5">
+          <span className="inline-flex h-6 items-center rounded-md bg-[var(--accent-primary)] px-2 font-mono text-[11px] font-bold text-white tabular-nums shrink-0 shadow-2xs">
+            #{packet.no}
+          </span>
+          <span className="font-display text-[13px] font-bold text-[var(--text-primary)] whitespace-nowrap">
+            {packet.protocol}
+          </span>
+          <span className="font-mono text-[11px] font-semibold text-[var(--text-secondary)] tabular-nums shrink-0 bg-[var(--bg-inset)] px-1.5 py-0.5 rounded border border-[var(--border-hairline)]">
+            {packet.sizeBytes} B
+          </span>
 
-          <span className="hidden md:inline-block h-4 w-px bg-[var(--border-hairline)]" aria-hidden="true" />
+          <span className="h-3.5 w-px bg-[var(--border-hairline)] shrink-0" aria-hidden="true" />
 
           {/* Flow Tuple */}
-          <div className="hidden sm:flex items-center gap-2 font-mono text-[13px] font-medium text-[var(--text-secondary)] tabular-nums truncate">
+          <div className="hidden sm:flex items-center gap-1.5 font-mono text-xs font-medium text-[var(--text-secondary)] tabular-nums shrink-0">
             <span className="text-[var(--text-primary)]">{packet.srcIp}</span>
             <span className="text-[var(--accent-primary)] font-bold">→</span>
             <span className="text-[var(--text-primary)]">{packet.dstIp}</span>
             <span className="text-[var(--text-muted)]">·</span>
-            <span className="text-xs text-[var(--text-muted)]">{(packet.timestampMs / 1000).toFixed(4)}s</span>
+            <span className="text-[11px] text-[var(--text-muted)]">{(packet.timestampMs / 1000).toFixed(4)}s</span>
           </div>
+
+          <span className="hidden md:inline-block h-3.5 w-px bg-[var(--border-hairline)] shrink-0" aria-hidden="true" />
+
+          {/* Inline Layer Stack Navigation */}
+          <nav aria-label="Protocol encapsulation stack" className="hidden lg:flex items-center gap-1 font-mono text-[11px] tabular-nums shrink-0">
+            <button
+              type="button"
+              onClick={() => focusLayer('ethernet')}
+              className="inline-flex items-center gap-1 rounded border border-[var(--accent-teal)]/30 bg-[var(--accent-teal)]/10 px-1.5 py-0.5 font-semibold text-[var(--accent-teal)] hover:bg-[var(--accent-teal)]/20 transition-colors"
+            >
+              <span>L2 Eth</span>
+            </button>
+            <span className="text-[var(--text-muted)] text-[10px]">›</span>
+            <button
+              type="button"
+              onClick={() => focusLayer('l3')}
+              className="inline-flex items-center gap-1 rounded border border-[var(--tone-info)]/30 bg-[var(--tone-info)]/10 px-1.5 py-0.5 font-semibold text-[var(--tone-info)] hover:bg-[var(--tone-info)]/20 transition-colors"
+            >
+              <span>{packet.layers.arp ? 'ARP' : packet.layers.ipv6 ? 'L3 IPv6' : 'L3 IPv4'}</span>
+            </button>
+            {(packet.layers.tcp || packet.layers.udp || packet.layers.icmp) && (
+              <>
+                <span className="text-[var(--text-muted)] text-[10px]">›</span>
+                <button
+                  type="button"
+                  onClick={() => focusLayer('l4')}
+                  className="inline-flex items-center gap-1 rounded border border-[var(--tone-success)]/30 bg-[var(--tone-success)]/10 px-1.5 py-0.5 font-semibold text-[var(--tone-success)] hover:bg-[var(--tone-success)]/20 transition-colors"
+                >
+                  <span>{packet.layers.tcp ? 'L4 TCP' : packet.layers.udp ? 'L4 UDP' : 'ICMP'}</span>
+                </button>
+              </>
+            )}
+            <span className="text-[var(--text-muted)] text-[10px]">›</span>
+            <button
+              type="button"
+              onClick={() => focusLayer('l7')}
+              className="inline-flex items-center gap-1 rounded border border-[var(--tone-warning)]/30 bg-[var(--tone-warning)]/10 px-1.5 py-0.5 font-semibold text-[var(--tone-warning)] hover:bg-[var(--tone-warning)]/20 transition-colors"
+            >
+              <span>{packet.protocol}</span>
+            </button>
+          </nav>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Right Actions */}
+        <div className="flex items-center gap-1.5 shrink-0">
           <button
             type="button"
             onClick={() => setShowEncapsulation(true)}
             title="Open Layer-by-Layer Encapsulation View"
-            className="flex h-8 items-center gap-1.5 rounded-lg border border-emerald-500/35 bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 transition-colors shadow-xs"
+            className="flex h-7 items-center gap-1 rounded-md border border-emerald-500/35 bg-emerald-500/10 px-2 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 transition-colors shadow-2xs"
           >
             <PackageCheck className="w-3.5 h-3.5" />
-            <span>Encapsulation</span>
+            <span className="hidden sm:inline">Encapsulation</span>
           </button>
           <button
             type="button"
             onClick={() => setShowHex((s) => !s)}
-            className={`flex h-8 items-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-colors ${
+            className={`flex h-7 items-center gap-1 rounded-md border px-2 text-[11px] font-semibold transition-colors ${
               showHex
                 ? 'border-[var(--accent-primary)]/40 bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
                 : 'border-[var(--border-hairline)] bg-[var(--bg-inset)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -119,10 +159,10 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
               onClick={onPopOut}
               title="Open Full Packet Inspector Drawer"
               aria-label="Open Full Packet Inspector Drawer"
-              className="flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-canvas)] px-3 text-xs font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors"
+              className="flex h-7 items-center gap-1 rounded-md border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-2 text-[11px] font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors"
             >
               <Maximize2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Pop Out</span>
+              <span className="hidden md:inline">Pop Out</span>
             </button>
           )}
           {onClose && (
@@ -130,76 +170,27 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
               type="button"
               onClick={onClose}
               aria-label="Close Packet Inspector"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-canvas)] text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors"
+              className="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--border-hairline)] bg-[var(--bg-inset)] text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Stepped Encapsulation Breadcrumb Strip */}
-      <div className="shrink-0 flex flex-wrap items-center gap-2 border-b border-[var(--border-hairline)] bg-[var(--bg-inset)]/75 px-4 py-2 text-xs">
-        <span className="inline-flex items-center gap-1.5 font-display text-xs font-bold text-[var(--text-secondary)] me-1">
-          <Layers className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
-          <span>Stack</span>
-        </span>
-
-        <nav aria-label="Protocol encapsulation stack" className="flex flex-wrap items-center gap-1.5 font-mono text-xs tabular-nums">
-          <button
-            type="button"
-            onClick={() => focusLayer('ethernet')}
-            className="inline-flex items-center gap-1.5 rounded-md border border-[var(--accent-teal)]/40 bg-[var(--bg-surface)] px-2.5 py-1 font-semibold text-[var(--accent-teal)] hover:border-[var(--accent-teal)] transition-colors"
-          >
-            <span className="h-2.5 w-1 rounded-xs bg-[var(--accent-teal)]" aria-hidden="true" />
-            <span>L2 Eth ({packet.sizeBytes}B)</span>
-          </button>
-
-          <ChevronRight className="w-3.5 h-3.5 text-[var(--text-muted)]" aria-hidden="true" />
-
-          <button
-            type="button"
-            onClick={() => focusLayer('l3')}
-            className="inline-flex items-center gap-1.5 rounded-md border border-[var(--tone-info)]/40 bg-[var(--bg-surface)] px-2.5 py-1 font-semibold text-[var(--tone-info)] hover:border-[var(--tone-info)] transition-colors"
-          >
-            <span className="h-2.5 w-1 rounded-xs bg-[var(--tone-info)]" aria-hidden="true" />
-            <span>{packet.layers.arp ? 'ARP' : packet.layers.ipv6 ? 'L3 IPv6' : 'L3 IPv4'}</span>
-          </button>
-
-          {(packet.layers.tcp || packet.layers.udp || packet.layers.icmp) && (
-            <>
-              <ChevronRight className="w-3.5 h-3.5 text-[var(--text-muted)]" aria-hidden="true" />
-              <button
-                type="button"
-                onClick={() => focusLayer('l4')}
-                className="inline-flex items-center gap-1.5 rounded-md border border-[var(--tone-success)]/40 bg-[var(--bg-surface)] px-2.5 py-1 font-semibold text-[var(--tone-success)] hover:border-[var(--tone-success)] transition-colors"
-              >
-                <span className="h-2.5 w-1 rounded-xs bg-[var(--tone-success)]" aria-hidden="true" />
-                <span>{packet.layers.tcp ? 'L4 TCP' : packet.layers.udp ? 'L4 UDP' : 'ICMP'}</span>
-              </button>
-            </>
-          )}
-
-          <ChevronRight className="w-3.5 h-3.5 text-[var(--text-muted)]" aria-hidden="true" />
-
-          <button
-            type="button"
-            onClick={() => focusLayer('l7')}
-            className="inline-flex items-center gap-1.5 rounded-md border border-[var(--tone-warning)]/40 bg-[var(--bg-surface)] px-2.5 py-1 font-semibold text-[var(--tone-warning)] hover:border-[var(--tone-warning)] transition-colors"
-          >
-            <span className="h-2.5 w-1 rounded-xs bg-[var(--tone-warning)]" aria-hidden="true" />
-            <span>{packet.protocol}</span>
-          </button>
-        </nav>
-
-        {activeRange && (
-          <div className="ms-auto flex items-center gap-2 rounded-md border border-[var(--accent-primary)]/35 bg-[var(--bg-surface)] px-2.5 py-1 font-mono text-xs text-[var(--accent-primary)] truncate max-w-full">
+      {/* Active Range Highlight Banner (only shown when inspecting a specific field) */}
+      {activeRange && (
+        <div className="shrink-0 flex items-center justify-between gap-2 border-b border-[var(--border-hairline)] bg-[var(--accent-primary-soft)]/70 px-3.5 py-1 text-xs font-mono text-[var(--accent-primary)]">
+          <div className="flex items-center gap-2 truncate">
             <span className="font-bold">{activeRange.label}:</span>
             <span className="font-semibold text-[var(--text-primary)]">{activeRange.value}</span>
-            <span className="hidden lg:inline text-[var(--text-secondary)] truncate">— {activeRange.description}</span>
+            <span className="hidden md:inline text-[var(--text-secondary)] truncate">— {activeRange.description}</span>
           </div>
-        )}
-      </div>
+          <span className="text-[11px] text-[var(--text-muted)] shrink-0">
+            bytes {activeRange.startByte}..{activeRange.endByte}
+          </span>
+        </div>
+      )}
 
       {/* Split Content */}
       <div
@@ -209,7 +200,7 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
       >
         {/* Layered Wireshark Tree */}
         <div
-          className={`space-y-2 p-3.5 text-[13px] overflow-y-auto ${
+          className={`space-y-1.5 p-2.5 text-xs overflow-y-auto ${
             embedded
               ? showHex
                 ? 'lg:col-span-7 border-b lg:border-b-0 lg:border-e border-[var(--border-hairline)]'
@@ -218,18 +209,18 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
           }`}
         >
           {/* Frame Layer */}
-          <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] overflow-hidden shadow-2xs">
+          <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-surface)] overflow-hidden shadow-2xs">
             <button
               type="button"
               onClick={() => toggle('frame')}
-              className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-start font-display text-[13.5px] font-bold text-[var(--text-primary)] hover:bg-[var(--bg-inset)]/50 transition-colors"
+              className="flex w-full items-center gap-2 px-3 py-1.5 text-start font-display text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-inset)]/50 transition-colors"
             >
-              {expanded.frame ? <ChevronDown className="w-4 h-4 text-[var(--text-secondary)] shrink-0" /> : <ChevronRight className="w-4 h-4 text-[var(--text-secondary)] shrink-0" />}
-              <span className="h-3.5 w-1 rounded-xs bg-[var(--text-muted)] shrink-0" aria-hidden="true" />
+              {expanded.frame ? <ChevronDown className="w-3.5 h-3.5 text-[var(--text-secondary)] shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 text-[var(--text-secondary)] shrink-0" />}
+              <span className="h-3 w-1 rounded-xs bg-[var(--text-muted)] shrink-0" aria-hidden="true" />
               <span>Frame {packet.no}: {packet.sizeBytes} bytes on wire ({packet.sizeBytes * 8} bits)</span>
             </button>
             {expanded.frame && (
-              <div className="border-t border-[var(--border-hairline)] bg-[var(--bg-canvas)]/55 px-4 py-2.5 grid gap-1.5 sm:grid-cols-2 font-mono text-xs text-[var(--text-secondary)] tabular-nums">
+              <div className="border-t border-[var(--border-hairline)] bg-[var(--bg-inset)]/30 px-3 py-1.5 grid gap-1 sm:grid-cols-2 font-mono text-[11.5px] text-[var(--text-secondary)] tabular-nums">
                 <div>
                   <span className="text-[var(--text-muted)]">Arrival:</span>{' '}
                   <strong className="text-[var(--text-primary)]">{(packet.arrivalMs / 1000).toFixed(4)}s</strong>
@@ -249,20 +240,20 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
           </div>
 
           {/* Ethernet II Layer */}
-          <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] overflow-hidden shadow-2xs">
+          <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-surface)] overflow-hidden shadow-2xs">
             <button
               type="button"
               onClick={() => toggle('ethernet')}
-              className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-start font-display text-[13.5px] font-bold text-[var(--text-primary)] hover:bg-[var(--bg-inset)]/50 transition-colors"
+              className="flex w-full items-center gap-2 px-3 py-1.5 text-start font-display text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-inset)]/50 transition-colors"
             >
-              {expanded.ethernet ? <ChevronDown className="w-4 h-4 text-[var(--accent-teal)] shrink-0" /> : <ChevronRight className="w-4 h-4 text-[var(--accent-teal)] shrink-0" />}
-              <span className="h-3.5 w-1 rounded-xs bg-[var(--accent-teal)] shrink-0" aria-hidden="true" />
+              {expanded.ethernet ? <ChevronDown className="w-3.5 h-3.5 text-[var(--accent-teal)] shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 text-[var(--accent-teal)] shrink-0" />}
+              <span className="h-3 w-1 rounded-xs bg-[var(--accent-teal)] shrink-0" aria-hidden="true" />
               <span className="truncate">
-                Ethernet II, Src: <span className="font-mono text-[13px] font-semibold">{packet.layers.ethernet.srcMac}</span>, Dst: <span className="font-mono text-[13px] font-semibold">{packet.layers.ethernet.dstMac}</span>
+                Ethernet II, Src: <span className="font-mono text-xs font-semibold">{packet.layers.ethernet.srcMac}</span>, Dst: <span className="font-mono text-xs font-semibold">{packet.layers.ethernet.dstMac}</span>
               </span>
             </button>
             {expanded.ethernet && (
-              <div className="border-t border-[var(--border-hairline)] bg-[var(--bg-canvas)]/55 px-3 py-2 space-y-1">
+              <div className="border-t border-[var(--border-hairline)] bg-[var(--bg-inset)]/30 px-2 py-1 space-y-0.5">
                 {rangesForLayer('ethernet').map((r) => (
                   <button
                     key={`${r.label}-${r.startByte}`}
@@ -270,7 +261,7 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
                     onMouseEnter={() => setActiveRange(r)}
                     onClick={() => setActiveRange(r)}
                     title={r.description}
-                    className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-start font-mono text-xs transition-colors ${
+                    className={`flex w-full items-center justify-between gap-2 rounded px-2 py-1 text-start font-mono text-[11.5px] transition-colors ${
                       activeRange === r
                         ? 'bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] font-semibold'
                         : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]'
@@ -279,7 +270,7 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
                     <span>
                       {r.label}: <strong className="text-[var(--text-primary)]">{r.value}</strong>
                     </span>
-                    <span className="text-[11px] text-[var(--text-muted)] tabular-nums shrink-0">
+                    <span className="text-[10.5px] text-[var(--text-muted)] tabular-nums shrink-0">
                       bytes {r.startByte}..{r.endByte}
                     </span>
                   </button>
@@ -290,14 +281,14 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
 
           {/* L3: ARP / IPv4 / IPv6 */}
           {(packet.layers.arp || packet.layers.ipv4 || packet.layers.ipv6) && (
-            <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] overflow-hidden shadow-2xs">
+            <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-surface)] overflow-hidden shadow-2xs">
               <button
                 type="button"
                 onClick={() => toggle('l3')}
-                className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-start font-display text-[13.5px] font-bold text-[var(--text-primary)] hover:bg-[var(--bg-inset)]/50 transition-colors"
+                className="flex w-full items-center gap-2 px-3 py-1.5 text-start font-display text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-inset)]/50 transition-colors"
               >
-                {expanded.l3 ? <ChevronDown className="w-4 h-4 text-[var(--tone-info)] shrink-0" /> : <ChevronRight className="w-4 h-4 text-[var(--tone-info)] shrink-0" />}
-                <span className="h-3.5 w-1 rounded-xs bg-[var(--tone-info)] shrink-0" aria-hidden="true" />
+                {expanded.l3 ? <ChevronDown className="w-3.5 h-3.5 text-[var(--tone-info)] shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 text-[var(--tone-info)] shrink-0" />}
+                <span className="h-3 w-1 rounded-xs bg-[var(--tone-info)] shrink-0" aria-hidden="true" />
                 <span className="truncate">
                   {packet.layers.arp
                     ? `Address Resolution Protocol (${packet.layers.arp.opcode === 1 ? 'request' : 'reply'})`
@@ -307,7 +298,7 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
                 </span>
               </button>
               {expanded.l3 && (
-                <div className="border-t border-[var(--border-hairline)] bg-[var(--bg-canvas)]/55 px-3 py-2 space-y-1">
+                <div className="border-t border-[var(--border-hairline)] bg-[var(--bg-inset)]/30 px-2 py-1 space-y-0.5">
                   {rangesForLayer(packet.layers.arp ? 'arp' : packet.layers.ipv6 ? 'ipv6' : 'ipv4').map((r) => (
                     <button
                       key={`${r.label}-${r.startByte}`}
@@ -315,7 +306,7 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
                       onMouseEnter={() => setActiveRange(r)}
                       onClick={() => setActiveRange(r)}
                       title={r.description}
-                      className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-start font-mono text-xs transition-colors ${
+                      className={`flex w-full items-center justify-between gap-2 rounded px-2 py-1 text-start font-mono text-[11.5px] transition-colors ${
                         activeRange === r
                           ? 'bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] font-semibold'
                           : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]'
@@ -324,7 +315,7 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
                       <span>
                         {r.label}: <strong className="text-[var(--text-primary)]">{r.value}</strong>
                       </span>
-                      <span className="text-[11px] text-[var(--text-muted)] tabular-nums shrink-0">
+                      <span className="text-[10.5px] text-[var(--text-muted)] tabular-nums shrink-0">
                         bytes {r.startByte}..{r.endByte}
                       </span>
                     </button>
@@ -336,14 +327,14 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
 
           {/* L4: TCP / UDP / ICMP */}
           {(packet.layers.tcp || packet.layers.udp || packet.layers.icmp) && (
-            <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] overflow-hidden shadow-2xs">
+            <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-surface)] overflow-hidden shadow-2xs">
               <button
                 type="button"
                 onClick={() => toggle('l4')}
-                className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-start font-display text-[13.5px] font-bold text-[var(--text-primary)] hover:bg-[var(--bg-inset)]/50 transition-colors"
+                className="flex w-full items-center gap-2 px-3 py-1.5 text-start font-display text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-inset)]/50 transition-colors"
               >
-                {expanded.l4 ? <ChevronDown className="w-4 h-4 text-[var(--tone-success)] shrink-0" /> : <ChevronRight className="w-4 h-4 text-[var(--tone-success)] shrink-0" />}
-                <span className="h-3.5 w-1 rounded-xs bg-[var(--tone-success)] shrink-0" aria-hidden="true" />
+                {expanded.l4 ? <ChevronDown className="w-3.5 h-3.5 text-[var(--tone-success)] shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 text-[var(--tone-success)] shrink-0" />}
+                <span className="h-3 w-1 rounded-xs bg-[var(--tone-success)] shrink-0" aria-hidden="true" />
                 <span className="truncate">
                   {packet.layers.tcp
                     ? `TCP, Src Port: ${packet.layers.tcp.srcPort}, Dst Port: ${packet.layers.tcp.dstPort}, Seq: ${packet.layers.tcp.seq}, Ack: ${packet.layers.tcp.ack}`
@@ -353,7 +344,7 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
                 </span>
               </button>
               {expanded.l4 && (
-                <div className="border-t border-[var(--border-hairline)] bg-[var(--bg-canvas)]/55 px-3 py-2 space-y-1">
+                <div className="border-t border-[var(--border-hairline)] bg-[var(--bg-inset)]/30 px-2 py-1 space-y-0.5">
                   {rangesForLayer(packet.layers.tcp ? 'tcp' : packet.layers.udp ? 'udp' : 'icmp').map((r) => (
                     <button
                       key={`${r.label}-${r.startByte}`}
@@ -361,7 +352,7 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
                       onMouseEnter={() => setActiveRange(r)}
                       onClick={() => setActiveRange(r)}
                       title={r.description}
-                      className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-start font-mono text-xs transition-colors ${
+                      className={`flex w-full items-center justify-between gap-2 rounded px-2 py-1 text-start font-mono text-[11.5px] transition-colors ${
                         activeRange === r
                           ? 'bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] font-semibold'
                           : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]'
@@ -370,24 +361,24 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
                       <span>
                         {r.label}: <strong className="text-[var(--text-primary)]">{r.value}</strong>
                       </span>
-                      <span className="text-[11px] text-[var(--text-muted)] tabular-nums shrink-0">
+                      <span className="text-[10.5px] text-[var(--text-muted)] tabular-nums shrink-0">
                         bytes {r.startByte}..{r.endByte}
                       </span>
                     </button>
                   ))}
 
                   {tcpFlags && (
-                    <div className="mt-2 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-2.5">
-                      <div className="mb-1.5 font-sans text-xs font-semibold text-[var(--text-secondary)]">
+                    <div className="mt-1.5 rounded border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-2">
+                      <div className="mb-1 font-sans text-[11px] font-semibold text-[var(--text-secondary)]">
                         TCP Control Flags (6 active bits)
                       </div>
-                      <div className="grid grid-cols-6 gap-1.5 font-mono text-xs tabular-nums">
+                      <div className="grid grid-cols-6 gap-1 font-mono text-[11px] tabular-nums">
                         {(['urg', 'ack', 'psh', 'rst', 'syn', 'fin'] as const).map((flag) => {
                           const lit = tcpFlags[flag];
                           return (
                             <div
                               key={flag}
-                              className={`rounded-md border px-1.5 py-1 text-center font-bold ${
+                              className={`rounded border px-1 py-0.5 text-center font-bold ${
                                 lit
                                   ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
                                   : 'border-[var(--border-hairline)] bg-[var(--bg-inset)]/50 text-[var(--text-muted)]'
@@ -407,20 +398,20 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
 
           {/* L6/L7: TLS / DNS / HTTP / App */}
           {(packet.layers.tls || packet.layers.dns || packet.layers.app) && (
-            <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] overflow-hidden shadow-2xs">
+            <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-surface)] overflow-hidden shadow-2xs">
               <button
                 type="button"
                 onClick={() => toggle('l7')}
-                className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-start font-display text-[13.5px] font-bold text-[var(--text-primary)] hover:bg-[var(--bg-inset)]/50 transition-colors"
+                className="flex w-full items-center gap-2 px-3 py-1.5 text-start font-display text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-inset)]/50 transition-colors"
               >
-                {expanded.l7 ? <ChevronDown className="w-4 h-4 text-[var(--tone-warning)] shrink-0" /> : <ChevronRight className="w-4 h-4 text-[var(--tone-warning)] shrink-0" />}
-                <span className="h-3.5 w-1 rounded-xs bg-[var(--tone-warning)] shrink-0" aria-hidden="true" />
+                {expanded.l7 ? <ChevronDown className="w-3.5 h-3.5 text-[var(--tone-warning)] shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 text-[var(--tone-warning)] shrink-0" />}
+                <span className="h-3 w-1 rounded-xs bg-[var(--tone-warning)] shrink-0" aria-hidden="true" />
                 <span>{packet.protocol} Payload</span>
               </button>
               {expanded.l7 && (
-                <div className="border-t border-[var(--border-hairline)] bg-[var(--bg-canvas)]/55 px-4 py-2.5 space-y-1.5 font-mono text-xs">
+                <div className="border-t border-[var(--border-hairline)] bg-[var(--bg-inset)]/30 px-3 py-1.5 space-y-1 font-mono text-[11.5px]">
                   {packet.layers.tls && (
-                    <div className="space-y-1 text-[var(--tone-success)]">
+                    <div className="space-y-0.5 text-[var(--tone-success)]">
                       <div>Version: {packet.layers.tls.version} · Record: {packet.layers.tls.recordType}</div>
                       {packet.layers.tls.handshakeType && <div>Handshake: {packet.layers.tls.handshakeType}</div>}
                       {packet.layers.tls.cipherSuite && <div>Cipher: {packet.layers.tls.cipherSuite}</div>}
@@ -428,7 +419,7 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
                     </div>
                   )}
                   {packet.layers.dns && (
-                    <div className="space-y-1 text-[var(--tone-info)]">
+                    <div className="space-y-0.5 text-[var(--tone-info)]">
                       <div>Transaction ID: 0x{packet.layers.dns.transactionId.toString(16)} · Flags: {packet.layers.dns.flags.join(', ')}</div>
                       {packet.layers.dns.questions.map((q, idx) => (
                         <div key={idx}>Query: {q.name} ({q.type})</div>
@@ -444,7 +435,7 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
                     </div>
                   ))}
                   {packet.layers.app?.rawText && (
-                    <pre className="mt-2 overflow-x-auto rounded-lg border border-[var(--terminal-border)] bg-[var(--terminal-bg)] p-3 text-xs leading-relaxed text-[var(--terminal-text)]">
+                    <pre className="mt-1.5 overflow-x-auto rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] p-2.5 text-[11.5px] leading-relaxed text-[var(--terminal-text)]">
                       {packet.layers.app.rawText.split('\r\n').map((line, i) => (
                         <div
                           key={i}
@@ -467,39 +458,42 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
           )}
 
           {!embedded && activeRange && (
-            <div className="rounded-xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary-soft)] p-3 text-[13px]">
+            <div className="rounded-lg border border-[var(--accent-primary)]/40 bg-[var(--accent-primary-soft)] p-2.5 text-xs">
               <div className="font-display font-bold text-[var(--accent-primary)]">
                 {activeRange.label}: {activeRange.value}
               </div>
-              <div className="mt-1 text-[var(--text-secondary)]">{activeRange.description}</div>
+              <div className="mt-0.5 text-[var(--text-secondary)]">{activeRange.description}</div>
             </div>
           )}
         </div>
 
         {/* Hex + ASCII Dump */}
         {showHex && (
-          <div className={`bg-[var(--bg-inset)]/60 p-3.5 overflow-y-auto flex flex-col ${embedded ? 'lg:col-span-5' : ''}`}>
-            <div className="mb-2 flex items-center justify-between">
-              <span className="font-display text-[13px] font-bold text-[var(--text-primary)]">
-                Wire Hex + ASCII Dump
+          <div className={`flex flex-col overflow-hidden bg-[var(--bg-surface)] ${embedded ? 'lg:col-span-5 border-t lg:border-t-0 lg:border-s border-[var(--border-hairline)]' : ''}`}>
+            {/* Hex Dump Toolbar */}
+            <div className="shrink-0 flex items-center justify-between border-b border-[var(--border-hairline)] bg-[var(--bg-inset)] px-3 py-1.5">
+              <span className="font-display text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+                <Code2 className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
+                <span>Wire Hex + ASCII Dump</span>
               </span>
-              <span className="rounded-md border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-2 py-0.5 font-mono text-xs font-semibold text-[var(--text-secondary)] tabular-nums">
+              <span className="rounded border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-2 py-0.5 font-mono text-[11px] font-bold text-[var(--text-secondary)] tabular-nums">
                 {packet.rawBytes.length} B
               </span>
             </div>
-            <div className="flex-1 overflow-x-auto rounded-xl border border-[var(--terminal-border)] bg-[var(--terminal-bg)] p-3 font-mono text-[12.5px] leading-6 text-[var(--terminal-text)] shadow-2xs tabular-nums">
+            {/* Hex Dump Terminal Canvas */}
+            <div className="flex-1 overflow-auto bg-[var(--terminal-bg)] p-2.5 font-mono text-[12px] leading-5 text-[var(--terminal-text)] tabular-nums selection:bg-[var(--accent-primary)]">
               {hexLines.map((line) => (
-                <div key={line.offset} className="flex gap-3 whitespace-pre">
-                  <span className="text-[var(--terminal-muted)] select-none font-semibold">{line.offsetHex}</span>
-                  <span className="flex gap-1">
+                <div key={line.offset} className="flex gap-2.5 whitespace-pre hover:bg-white/5 px-1 rounded-xs">
+                  <span className="text-[var(--terminal-muted)] select-none font-semibold w-12 shrink-0">{line.offsetHex}</span>
+                  <span className="flex gap-1 shrink-0">
                     {line.bytes.map((b, idx) => {
                       const absIdx = line.offset + idx;
                       const hi = isByteHighlighted(absIdx);
                       return (
                         <span
                           key={absIdx}
-                          className={`px-0.5 rounded transition-colors ${
-                            hi ? 'bg-[var(--accent-cta)] text-white font-bold' : ''
+                          className={`px-0.5 rounded-xs transition-colors ${
+                            hi ? 'bg-[var(--accent-cta)] text-white font-bold ring-1 ring-[var(--accent-cta)]' : ''
                           }`}
                         >
                           {b.toString(16).padStart(2, '0')}
@@ -507,7 +501,7 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
                       );
                     })}
                   </span>
-                  <span className="text-[var(--terminal-cmd)] ms-auto ps-2 font-medium">{line.ascii}</span>
+                  <span className="text-[var(--terminal-cmd)] ms-auto ps-3 font-medium select-text">{line.ascii}</span>
                 </div>
               ))}
             </div>

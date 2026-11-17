@@ -93,7 +93,7 @@ export default function App() {
   );
 
   return (
-    <div className="flex h-dvh min-h-screen w-full flex-col overflow-hidden bg-[var(--bg-canvas)] text-[var(--text-primary)]">
+    <div className="flex h-screen max-h-screen h-dvh w-full flex-col overflow-hidden bg-[var(--bg-canvas)] text-[var(--text-primary)]">
       <Header />
       <OfflineIndicator />
 
@@ -108,37 +108,41 @@ export default function App() {
         </main>
       </div>
 
-      <footer className="hidden lg:block shrink-0 border-t border-[var(--border-hairline)] bg-[var(--bg-surface)] px-4 py-1.5 text-xs font-medium text-[var(--text-secondary)]">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <span>
-            {t('brand')} · {t('credit')} · {t('nav.footerTagline')}
-          </span>
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => {
-                reopenWelcome();
-                setMode('explore');
-              }}
-              className="hover:text-[var(--accent-primary)] underline-offset-4 hover:underline"
-            >
-              {t('nav.quickGuide')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setTourOpen(true)}
-              className="hover:text-[var(--accent-primary)] underline-offset-4 hover:underline"
-            >
-              {t('nav.guidedTour')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setAboutOpen(true)}
-              className="hover:text-[var(--accent-primary)] underline-offset-4 hover:underline"
-            >
-              {t('nav.aboutPrivacy')}
-            </button>
-          </div>
+      <footer className="hidden lg:flex h-7 shrink-0 items-center justify-between border-t border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 text-[11px] font-medium text-[var(--text-secondary)] select-none">
+        <div className="flex items-center gap-2 truncate">
+          <span className="font-semibold text-[var(--text-primary)]">{t('brand')}</span>
+          <span className="text-[var(--text-muted)]">·</span>
+          <span>{t('credit')}</span>
+          <span className="text-[var(--text-muted)]">·</span>
+          <span className="truncate">{t('nav.footerTagline')}</span>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              reopenWelcome();
+              setMode('explore');
+            }}
+            className="hover:text-[var(--accent-primary)] transition-colors"
+          >
+            {t('nav.quickGuide')}
+          </button>
+          <span className="text-[var(--text-muted)]">·</span>
+          <button
+            type="button"
+            onClick={() => setTourOpen(true)}
+            className="hover:text-[var(--accent-primary)] transition-colors"
+          >
+            {t('nav.guidedTour')}
+          </button>
+          <span className="text-[var(--text-muted)]">·</span>
+          <button
+            type="button"
+            onClick={() => setAboutOpen(true)}
+            className="hover:text-[var(--accent-primary)] transition-colors"
+          >
+            {t('nav.aboutPrivacy')}
+          </button>
         </div>
       </footer>
 
