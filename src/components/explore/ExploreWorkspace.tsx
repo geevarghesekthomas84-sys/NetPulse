@@ -198,9 +198,8 @@ export const ExploreWorkspace: React.FC = () => {
         timeMs: pkt.timestampMs,
         deviceId: from,
         level: pkt.dropped ? 'error' : pkt.retransmitted ? 'warn' : 'info',
-        message: `${stepTitle}#${pkt.no} ${pkt.protocol} (${pkt.sizeBytes}B) → ${to}: ${pkt.info}${
-          pkt.dropped && pkt.dropReason ? ` — DROPPED: ${pkt.dropReason}` : ''
-        }`,
+        message: `${stepTitle}#${pkt.no} ${pkt.protocol} (${pkt.sizeBytes}B) → ${to}: ${pkt.info}${pkt.dropped && pkt.dropReason ? ` — DROPPED: ${pkt.dropReason}` : ''
+          }`,
       };
     });
   }, [scenarioResult]);
@@ -257,8 +256,6 @@ export const ExploreWorkspace: React.FC = () => {
             <button
               type="button"
               onClick={dismissWelcome}
-              aria-label="Close guide modal"
-              title="Close guide modal"
               className="flex items-center gap-1.5 rounded-lg bg-[var(--accent-cta)] text-white hover:bg-[var(--accent-cta-hover)] px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs"
             >
               <X className="w-4 h-4" />
@@ -297,11 +294,10 @@ export const ExploreWorkspace: React.FC = () => {
             onClick={() => setLeftRailOpen((o) => !o)}
             aria-pressed={leftRailOpen}
             title={t('explore.stepsAndOsi')}
-            className={`flex h-9 items-center gap-1.5 rounded-lg border px-2.5 text-[13px] font-semibold transition-colors whitespace-nowrap shrink-0 ${
-              leftRailOpen
-                ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
-                : 'border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-            }`}
+            className={`flex h-9 items-center gap-1.5 rounded-lg border px-2.5 text-[13px] font-semibold transition-colors whitespace-nowrap shrink-0 ${leftRailOpen
+              ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
+              : 'border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+              }`}
           >
             <PanelLeft className="w-4 h-4" />
             <span className="hidden sm:inline">{t('explore.stepsAndOsi')}</span>
@@ -338,11 +334,10 @@ export const ExploreWorkspace: React.FC = () => {
             <button
               type="button"
               onClick={() => setExploreView('network')}
-              className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 ${
-                exploreView === 'network'
-                  ? 'bg-[var(--accent-cta)] text-white'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-              }`}
+              className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 ${exploreView === 'network'
+                ? 'bg-[var(--accent-cta)] text-white'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                }`}
             >
               <Network className="w-3.5 h-3.5" />
               <span>{t('explore.networkView')}</span>
@@ -350,11 +345,10 @@ export const ExploreWorkspace: React.FC = () => {
             <button
               type="button"
               onClick={() => setExploreView('sequence')}
-              className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 ${
-                exploreView === 'sequence'
-                  ? 'bg-[var(--accent-cta)] text-white'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-              }`}
+              className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 ${exploreView === 'sequence'
+                ? 'bg-[var(--accent-cta)] text-white'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                }`}
             >
               <ListOrdered className="w-3.5 h-3.5" />
               <span>{t('explore.sequenceView')}</span>
@@ -366,11 +360,10 @@ export const ExploreWorkspace: React.FC = () => {
               type="button"
               onClick={() => setCompareMode(!compareMode)}
               aria-pressed={compareMode}
-              className={`flex h-8 items-center gap-1 rounded-lg border px-2.5 text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
-                compareMode
-                  ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
-                  : 'border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-              }`}
+              className={`flex h-8 items-center gap-1 rounded-lg border px-2.5 text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${compareMode
+                ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
+                : 'border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                }`}
             >
               <GitCompare className="w-3.5 h-3.5" />
               <span className="hidden md:inline">{t('explore.compare')}</span>
@@ -381,11 +374,10 @@ export const ExploreWorkspace: React.FC = () => {
             type="button"
             onClick={() => toggleFavorite(protocol.id)}
             aria-label={isFav ? t('explore.removeFavorite') : t('explore.addFavorite')}
-            className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors shrink-0 ${
-              isFav
-                ? 'border-amber-500/60 bg-amber-500/12 text-[var(--tone-warning)]'
-                : 'border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-            }`}
+            className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors shrink-0 ${isFav
+              ? 'border-amber-500/60 bg-amber-500/12 text-[var(--tone-warning)]'
+              : 'border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+              }`}
           >
             <Star className={`w-3.5 h-3.5 ${isFav ? 'fill-amber-400 text-amber-500' : ''}`} />
           </button>
@@ -480,11 +472,10 @@ export const ExploreWorkspace: React.FC = () => {
                     key={idx}
                     type="button"
                     onClick={() => selectProtocol(protocol.id, idx)}
-                    className={`w-full rounded-lg border px-3 py-2 text-start transition-colors ${
-                      active
-                        ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--text-primary)]'
-                        : 'border-transparent hover:border-[var(--border-hairline)] bg-[var(--bg-inset)]/50 text-[var(--text-secondary)]'
-                    }`}
+                    className={`w-full rounded-lg border px-3 py-2 text-start transition-colors ${active
+                      ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--text-primary)]'
+                      : 'border-transparent hover:border-[var(--border-hairline)] bg-[var(--bg-inset)]/50 text-[var(--text-secondary)]'
+                      }`}
                   >
                     <div className="flex items-center justify-between font-mono text-[11px]">
                       <span className={active ? 'font-bold text-[var(--accent-primary)]' : 'text-[var(--text-secondary)]'}>
@@ -616,15 +607,15 @@ export const ExploreWorkspace: React.FC = () => {
             {(
               isSimple
                 ? ([
-                    { id: 'overview', label: t('explore.overview'), icon: BookOpen },
-                    { id: 'inspector', label: `${t('explore.packetInspector')}${activePacket ? ` (#${activePacket.no})` : ''}`, icon: Layers },
-                  ] as const)
+                  { id: 'overview', label: t('explore.overview'), icon: BookOpen },
+                  { id: 'inspector', label: `${t('explore.packetInspector')}${activePacket ? ` (#${activePacket.no})` : ''}`, icon: Layers },
+                ] as const)
                 : ([
-                    { id: 'inspector', label: `${t('explore.packetInspector')}${activePacket ? ` (#${activePacket.no})` : ''}`, icon: Layers },
-                    { id: 'logs', label: `${t('explore.eventLogs')} (${exploreEventLogs.length})`, icon: ScrollText },
-                    { id: 'packets', label: `${t('explore.packetFlow')} (${scenarioResult.packets.length})`, icon: Network },
-                    { id: 'overview', label: t('explore.overview'), icon: BookOpen },
-                  ] as const)
+                  { id: 'inspector', label: `${t('explore.packetInspector')}${activePacket ? ` (#${activePacket.no})` : ''}`, icon: Layers },
+                  { id: 'logs', label: `${t('explore.eventLogs')} (${exploreEventLogs.length})`, icon: ScrollText },
+                  { id: 'packets', label: `${t('explore.packetFlow')} (${scenarioResult.packets.length})`, icon: Network },
+                  { id: 'overview', label: t('explore.overview'), icon: BookOpen },
+                ] as const)
             ).map((tab) => {
               const Icon = tab.icon;
               const active = dockTab === tab.id;
@@ -636,11 +627,10 @@ export const ExploreWorkspace: React.FC = () => {
                     setDockTab(tab.id);
                     if (dockSize === 'collapsed') setDockSize('compact');
                   }}
-                  className={`relative flex h-9 items-center gap-1.5 rounded-t-lg border-t border-x px-3.5 text-[13px] font-semibold transition-colors whitespace-nowrap shrink-0 ${
-                    active
-                      ? 'border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--accent-primary)] shadow-2xs -mb-px pb-px'
-                      : 'border-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]/60 hover:text-[var(--text-primary)]'
-                  }`}
+                  className={`relative flex h-9 items-center gap-1.5 rounded-t-lg border-t border-x px-3.5 text-[13px] font-semibold transition-colors whitespace-nowrap shrink-0 ${active
+                    ? 'border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--accent-primary)] shadow-2xs -mb-px pb-px'
+                    : 'border-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]/60 hover:text-[var(--text-primary)]'
+                    }`}
                 >
                   {active && (
                     <span

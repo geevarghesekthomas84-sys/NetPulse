@@ -133,16 +133,16 @@ export const SimControls: React.FC<SimControlsProps> = ({
             aria-expanded={labsOpen}
             className={`flex h-9 items-center gap-2 rounded-lg border px-3 text-[13px] font-semibold transition-colors whitespace-nowrap shrink-0 ${
               labsOpen
-                ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
+                ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] shadow-2xs'
                 : 'border-[var(--border-hairline)] bg-[var(--bg-inset)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]'
             }`}
           >
             <BookOpen className="w-4 h-4 text-[var(--accent-primary)] shrink-0" />
-            <span className="max-w-[220px] truncate">
-              {t('simulator.labs')} · {activeLab.number}: {activeLab.title}
+            <span>
+              {t('simulator.labs')} #{activeLab.number}
             </span>
-            <span className="font-mono text-xs text-[var(--text-secondary)] tabular-nums">
-              {completedLabs.length}/20
+            <span className="font-mono text-[11px] font-bold text-[var(--accent-primary)] bg-[var(--accent-primary-soft)] px-1.5 py-0.5 rounded border border-[var(--accent-primary)]/30 tabular-nums">
+              {completedLabs.length}/23
             </span>
             <ChevronDown className={`w-3.5 h-3.5 transition-transform ${labsOpen ? 'rotate-180' : ''}`} />
           </button>
