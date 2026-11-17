@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="public/logo.png" width="128" height="128" alt="NetPulse Logo" style="border-radius: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" />
+
 # 🌐 NetPulse
 
 ### Interactive Network Protocol Visualizer & Discrete-Event Simulator
