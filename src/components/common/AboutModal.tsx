@@ -44,14 +44,25 @@ export const AboutModal: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center justify-between gap-4 pt-2 text-xs">
-            <a
-              href="https://github.com/geevarghese/gg/issues"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1 text-[var(--accent-primary)] hover:underline"
-            >
-              Report an issue <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+            <div className="flex items-center gap-3">
+              <a
+                href="https://github.com/geevarghesekthomas84-sys/NetPulse"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 text-[var(--accent-primary)] hover:underline"
+              >
+                GitHub <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+              <span className="text-[var(--text-muted)]">·</span>
+              <a
+                href="https://github.com/geevarghesekthomas84-sys/NetPulse/issues"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 text-[var(--accent-primary)] hover:underline"
+              >
+                Report an issue <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
             <button
               type="button"
               onClick={() => setAboutOpen(false)}

@@ -4,6 +4,7 @@ import {
   BookOpen,
   Command,
   Compass,
+  Github,
   Globe,
   HelpCircle,
   Menu,
@@ -320,6 +321,17 @@ export const Header: React.FC = () => {
               <Moon className="w-4 h-4 text-[var(--accent-primary)]" />
             )}
           </button>
+
+          <a
+            href="https://github.com/geevarghesekthomas84-sys/NetPulse"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="GitHub Repository"
+            title="GitHub Repository"
+            className="hidden sm:flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)] transition-colors shrink-0 focus-visible:outline-2 focus-visible:outline-[var(--accent-primary)]"
+          >
+            <Github className="w-4 h-4" />
+          </a>
 
           <button
             type="button"

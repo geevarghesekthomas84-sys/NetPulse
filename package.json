@@ -1,7 +1,16 @@
 {
   "name": "netpulse",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.4.0",
+  "description": "Interactive network protocol visualizer and discrete-event network simulator",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/geevarghesekthomas84-sys/NetPulse.git"
+  },
+  "bugs": {
+    "url": "https://github.com/geevarghesekthomas84-sys/NetPulse/issues"
+  },
+  "homepage": "https://netpulse.itgg.space",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
