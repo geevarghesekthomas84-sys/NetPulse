@@ -1,32 +1,93 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <defs>
-    <linearGradient id="ggPlugBody" x1="12" y1="8" x2="52" y2="56" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#1e3a5f"/>
-      <stop offset="100%" stop-color="#0b172a"/>
+    <!-- Background border gradient -->
+    <linearGradient id="npBorderGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#1e3a5f" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.2"/>
     </linearGradient>
-    <linearGradient id="ggGoldPins" x1="20" y1="14" x2="44" y2="26" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#fde047"/>
-      <stop offset="100%" stop-color="#d97706"/>
+
+    <!-- Ambient backdrop glow -->
+    <radialGradient id="npBackdropGlow" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#0284c7" stop-opacity="0.3"/>
+      <stop offset="60%" stop-color="#0ea5e9" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Main pulse trajectory gradient -->
+    <linearGradient id="npPulseStream" x1="14" y1="48" x2="50" y2="16" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="25%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#22c55e"/>
+      <stop offset="75%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#818cf8"/>
     </linearGradient>
+
+    <!-- Glow blur filter for high-tech luminous effect -->
+    <filter id="npNeonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
   </defs>
-  <rect width="64" height="64" rx="14" fill="#070d1a"/>
-  <rect x="2" y="2" width="60" height="60" rx="12" stroke="#1e3a5f" stroke-width="1.5"/>
-  <!-- RJ45 retention clip -->
-  <path d="M23 11H41V16H23V11Z" fill="#0284c7" stroke="#7dd3fc" stroke-width="1.5" stroke-linejoin="round"/>
-  <!-- RJ45 stepped plug housing -->
-  <path d="M16 16H48V38L42 44H22L16 38V16Z" fill="url(#ggPlugBody)" stroke="#38bdf8" stroke-width="2" stroke-linejoin="round"/>
-  <!-- Gold contact pins (8P8C) -->
-  <rect x="20" y="19" width="2" height="9" rx="0.8" fill="url(#ggGoldPins)"/>
-  <rect x="23.5" y="19" width="2" height="9" rx="0.8" fill="url(#ggGoldPins)"/>
-  <rect x="27" y="19" width="2" height="9" rx="0.8" fill="url(#ggGoldPins)"/>
-  <rect x="30.5" y="19" width="2" height="9" rx="0.8" fill="url(#ggGoldPins)"/>
-  <rect x="34" y="19" width="2" height="9" rx="0.8" fill="url(#ggGoldPins)"/>
-  <rect x="37.5" y="19" width="2" height="9" rx="0.8" fill="url(#ggGoldPins)"/>
-  <rect x="41" y="19" width="2" height="9" rx="0.8" fill="url(#ggGoldPins)"/>
-  <!-- Link LEDs on plug collar -->
-  <circle cx="23" cy="36" r="2.2" fill="#22c55e"/>
-  <circle cx="41" cy="36" r="2.2" fill="#38bdf8"/>
-  <!-- Strain relief boot & Cat6 cable -->
-  <path d="M25 44H39L37 52H27L25 44Z" fill="#0f2544" stroke="#38bdf8" stroke-width="1.5" stroke-linejoin="round"/>
-  <path d="M32 52V59" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Squircle Base Tile -->
+  <rect width="64" height="64" rx="14" fill="#070e1e"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" fill="url(#npBackdropGlow)"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" stroke="url(#npBorderGrad)" stroke-width="1.5"/>
+
+  <!-- Subtle background circuit grid accent lines -->
+  <path d="M16 32H48" stroke="#1e293b" stroke-width="1" stroke-dasharray="2 3" opacity="0.6"/>
+  <path d="M32 16V48" stroke="#1e293b" stroke-width="1" stroke-dasharray="2 3" opacity="0.6"/>
+
+  <!-- Neon Glow Under-layer -->
+  <path
+    d="M 16 48 L 16 18 L 26 33 L 32 17 L 38 43 L 48 23 L 48 48"
+    stroke="url(#npPulseStream)"
+    stroke-width="5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    opacity="0.35"
+    filter="url(#npNeonGlow)"
+  />
+
+  <!-- Primary Crisp Vector Pulse 'N' Track -->
+  <path
+    d="M 16 48 L 16 18 L 26 33 L 32 17 L 38 43 L 48 23 L 48 48"
+    stroke="url(#npPulseStream)"
+    stroke-width="3.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Inner core highlight for 3D luminous wire effect -->
+  <path
+    d="M 16 48 L 16 18 L 26 33 L 32 17 L 38 43 L 48 23 L 48 48"
+    stroke="#ffffff"
+    stroke-width="1.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    opacity="0.85"
+  />
+
+  <!-- Network Gateway & Terminal Nodes -->
+  <!-- Node 1: Left Bottom (Client/Host) -->
+  <circle cx="16" cy="48" r="3" fill="#0284c7" stroke="#ffffff" stroke-width="1"/>
+
+  <!-- Node 2: Left Top (Switch / Gateway) -->
+  <circle cx="16" cy="18" r="3.2" fill="#38bdf8" stroke="#ffffff" stroke-width="1"/>
+
+  <!-- Node 3: Center Pulse Vertex (Signal Apex) -->
+  <circle cx="32" cy="17" r="3.5" fill="#22c55e" stroke="#ffffff" stroke-width="1.2" filter="url(#npNeonGlow)"/>
+
+  <!-- Node 4: Right Transit Node -->
+  <circle cx="48" cy="23" r="3.2" fill="#38bdf8" stroke="#ffffff" stroke-width="1"/>
+
+  <!-- Node 5: Right Bottom (Server / Cloud Destination) -->
+  <circle cx="48" cy="48" r="3" fill="#818cf8" stroke="#ffffff" stroke-width="1"/>
+
+  <!-- Packet in flight (Dynamic Signal Spark) -->
+  <circle cx="36" cy="34" r="1.8" fill="#fde047" filter="url(#npNeonGlow)"/>
 </svg>

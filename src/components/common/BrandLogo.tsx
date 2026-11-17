@@ -6,9 +6,9 @@ interface BrandLogoProps {
 }
 
 /**
- * Real-world RJ-45 8P8C Ethernet patch plug hardware mark for NetPulse.
+ * World-Class High-Tech Network Pulse "N" Mark for NetPulse.
  */
-export const BrandLogo: React.FC<BrandLogoProps> = ({ size = 30, showWordmark = true }) => {
+export const BrandLogo: React.FC<BrandLogoProps> = ({ size = 32, showWordmark = true }) => {
   return (
     <span className="inline-flex items-center gap-2.5 select-none">
       <svg
@@ -20,72 +20,88 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({ size = 30, showWordmark = 
         className="shrink-0"
       >
         <defs>
-          <linearGradient id="brandPlugHousing" x1="14" y1="12" x2="50" y2="48" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="var(--hw-slate-light, #1e3a5f)" />
-            <stop offset="100%" stopColor="var(--hw-slate-dark, #091326)" />
+          <linearGradient id="blBorderGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.8" />
+            <stop offset="50%" stopColor="#1e3a5f" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#0284c7" stopOpacity="0.2" />
           </linearGradient>
-          <linearGradient id="brandGoldPins" x1="20" y1="18" x2="44" y2="28" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#fde047" />
-            <stop offset="100%" stopColor="#d97706" />
+
+          <radialGradient id="blBackdropGlow" cx="50%" cy="40%" r="55%">
+            <stop offset="0%" stopColor="#0284c7" stopOpacity="0.3" />
+            <stop offset="60%" stopColor="#0ea5e9" stopOpacity="0.08" />
+            <stop offset="100%" stopColor="#0284c7" stopOpacity="0" />
+          </radialGradient>
+
+          <linearGradient id="blPulseStream" x1="14" y1="48" x2="50" y2="16" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#0284c7" />
+            <stop offset="25%" stopColor="#38bdf8" />
+            <stop offset="50%" stopColor="#22c55e" />
+            <stop offset="75%" stopColor="#38bdf8" />
+            <stop offset="100%" stopColor="#818cf8" />
           </linearGradient>
+
+          <filter id="blNeonGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="1.6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
 
-        {/* Outer patch-port socket recess */}
-        <rect
-          x="6"
-          y="6"
-          width="52"
-          height="52"
-          rx="11"
-          fill="var(--bg-inset)"
-          stroke="var(--border-strong)"
-          strokeWidth="2"
+        {/* Base Tile */}
+        <rect width="64" height="64" rx="14" fill="#070e1e" />
+        <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" fill="url(#blBackdropGlow)" />
+        <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" stroke="url(#blBorderGrad)" strokeWidth="1.5" />
+
+        {/* Circuit Accent Grid */}
+        <path d="M16 32H48" stroke="#1e293b" strokeWidth="1" strokeDasharray="2 3" opacity="0.6" />
+        <path d="M32 16V48" stroke="#1e293b" strokeWidth="1" strokeDasharray="2 3" opacity="0.6" />
+
+        {/* Neon Glow Under-layer */}
+        <path
+          d="M 16 48 L 16 18 L 26 33 L 32 17 L 38 43 L 48 23 L 48 48"
+          stroke="url(#blPulseStream)"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity="0.35"
+          filter="url(#blNeonGlow)"
         />
 
-        {/* RJ-45 top locking clip */}
+        {/* Primary Vector Pulse 'N' Track */}
         <path
-          d="M24 12H40V17H24V12Z"
-          fill="#0284c7"
-          stroke="var(--accent-primary)"
-          strokeWidth="1.5"
+          d="M 16 48 L 16 18 L 26 33 L 32 17 L 38 43 L 48 23 L 48 48"
+          stroke="url(#blPulseStream)"
+          strokeWidth="3.5"
+          strokeLinecap="round"
           strokeLinejoin="round"
         />
 
-        {/* Modular 8P8C polycarbonate plug nose */}
+        {/* Inner core luminous wire */}
         <path
-          d="M16 17H48V37L42 43H22L16 37V17Z"
-          fill="url(#brandPlugHousing)"
-          stroke="var(--accent-primary)"
-          strokeWidth="2"
+          d="M 16 48 L 16 18 L 26 33 L 32 17 L 38 43 L 48 23 L 48 48"
+          stroke="#ffffff"
+          strokeWidth="1.2"
+          strokeLinecap="round"
           strokeLinejoin="round"
+          opacity="0.85"
         />
 
-        {/* Internal pin bay */}
-        <rect x="19" y="19.5" width="26" height="10" rx="1.5" fill="#050b16" fillOpacity="0.7" />
+        {/* Network Nodes */}
+        <circle cx="16" cy="48" r="3" fill="#0284c7" stroke="#ffffff" strokeWidth="1" />
+        <circle cx="16" cy="18" r="3.2" fill="#38bdf8" stroke="#ffffff" strokeWidth="1" />
+        <circle cx="32" cy="17" r="3.5" fill="#22c55e" stroke="#ffffff" strokeWidth="1.2" filter="url(#blNeonGlow)" />
+        <circle cx="48" cy="23" r="3.2" fill="#38bdf8" stroke="#ffffff" strokeWidth="1" />
+        <circle cx="48" cy="48" r="3" fill="#818cf8" stroke="#ffffff" strokeWidth="1" />
 
-        {/* Precision gold 8P8C contact pins */}
-        {[20.5, 24, 27.5, 31, 34.5, 38, 41.5].map((x) => (
-          <rect key={x} x={x} y="20.5" width="2" height="7.5" rx="0.6" fill="url(#brandGoldPins)" />
-        ))}
-
-        {/* Link / Activity LEDs */}
-        <circle cx="23.5" cy="36" r="2" fill="#22c55e" />
-        <circle cx="40.5" cy="36" r="2" fill="#38bdf8" />
-
-        {/* Strain-relief boot & cable stem */}
-        <path
-          d="M25 43H39L37 50H27L25 43Z"
-          fill="#0f2544"
-          stroke="var(--accent-primary)"
-          strokeWidth="1.5"
-          strokeLinejoin="round"
-        />
-        <line x1="32" y1="50" x2="32" y2="57" stroke="var(--accent-primary)" strokeWidth="3.5" strokeLinecap="round" />
+        {/* Signal Spark */}
+        <circle cx="36" cy="34" r="1.8" fill="#fde047" filter="url(#blNeonGlow)" />
       </svg>
 
       {showWordmark && (
         <span className="font-display text-xl font-extrabold tracking-tight text-[var(--text-primary)] leading-none">
-          NetPulse
+          Net<span className="text-[var(--accent-primary)]">Pulse</span>
         </span>
       )}
     </span>

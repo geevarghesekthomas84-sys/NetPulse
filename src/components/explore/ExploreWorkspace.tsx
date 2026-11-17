@@ -236,8 +236,8 @@ export const ExploreWorkspace: React.FC = () => {
     dockSize === 'collapsed'
       ? 'h-9'
       : dockSize === 'expanded'
-      ? 'h-[500px]'
-      : 'h-[350px]';
+        ? 'h-[500px]'
+        : 'h-[350px]';
 
   return (
     <div className="flex flex-1 min-h-0 flex-col overflow-hidden bg-[var(--bg-canvas)]">
