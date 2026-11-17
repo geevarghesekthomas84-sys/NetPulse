@@ -2,88 +2,105 @@ import type { PacketColorCategory } from '../../engine/types';
 
 export interface PacketColorMeta {
   hex: string;
+  darkHex: string;
   bgClass: string;
   textClass: string;
   borderClass: string;
   label: string;
 }
 
+/**
+ * Calmer, theme-harmonious palette designed to blend seamlessly with
+ * Crisp Daylight (Light) and Deep Ocean Slate (Dark).
+ * Uses balanced saturation to avoid eye fatigue during long simulation sessions.
+ */
 export const PACKET_COLORS: Record<PacketColorCategory, PacketColorMeta> = {
   dns: {
-    hex: '#9333ea',
-    bgClass: 'bg-purple-500/10',
-    textClass: 'text-purple-700 dark:text-purple-300',
-    borderClass: 'border-purple-500/40',
+    hex: '#7c3aed',
+    darkHex: '#a78bfa',
+    bgClass: 'bg-violet-500/10 dark:bg-violet-500/15',
+    textClass: 'text-violet-700 dark:text-violet-300',
+    borderClass: 'border-violet-500/30 dark:border-violet-400/35',
     label: 'DNS',
   },
   tcp: {
-    hex: '#0891b2',
-    bgClass: 'bg-cyan-500/10',
-    textClass: 'text-cyan-700 dark:text-cyan-300',
-    borderClass: 'border-cyan-500/40',
+    hex: '#0284c7',
+    darkHex: '#38bdf8',
+    bgClass: 'bg-sky-500/10 dark:bg-sky-500/15',
+    textClass: 'text-sky-700 dark:text-sky-300',
+    borderClass: 'border-sky-500/30 dark:border-sky-400/35',
     label: 'TCP',
   },
   tls: {
-    hex: '#059669',
-    bgClass: 'bg-emerald-500/10',
-    textClass: 'text-emerald-700 dark:text-emerald-300',
-    borderClass: 'border-emerald-500/40',
+    hex: '#0f766e',
+    darkHex: '#2dd4bf',
+    bgClass: 'bg-teal-500/10 dark:bg-teal-500/15',
+    textClass: 'text-teal-700 dark:text-teal-300',
+    borderClass: 'border-teal-500/30 dark:border-teal-400/35',
     label: 'TLS',
   },
   http_req: {
-    hex: '#ea580c',
-    bgClass: 'bg-orange-500/10',
-    textClass: 'text-orange-700 dark:text-orange-300',
-    borderClass: 'border-orange-500/40',
+    hex: '#d97706',
+    darkHex: '#fbbf24',
+    bgClass: 'bg-amber-500/10 dark:bg-amber-500/15',
+    textClass: 'text-amber-800 dark:text-amber-300',
+    borderClass: 'border-amber-500/30 dark:border-amber-400/35',
     label: 'HTTP Req',
   },
   http_res: {
     hex: '#2563eb',
-    bgClass: 'bg-blue-500/10',
+    darkHex: '#60a5fa',
+    bgClass: 'bg-blue-500/10 dark:bg-blue-500/15',
     textClass: 'text-blue-700 dark:text-blue-300',
-    borderClass: 'border-blue-500/40',
+    borderClass: 'border-blue-500/30 dark:border-blue-400/35',
     label: 'HTTP Res',
   },
   udp: {
-    hex: '#b45309',
-    bgClass: 'bg-amber-500/10',
-    textClass: 'text-amber-700 dark:text-amber-300',
-    borderClass: 'border-amber-500/40',
+    hex: '#c2410c',
+    darkHex: '#fb923c',
+    bgClass: 'bg-orange-500/10 dark:bg-orange-500/15',
+    textClass: 'text-orange-800 dark:text-orange-300',
+    borderClass: 'border-orange-500/30 dark:border-orange-400/35',
     label: 'UDP',
   },
   icmp: {
-    hex: '#db2777',
-    bgClass: 'bg-pink-500/10',
-    textClass: 'text-pink-700 dark:text-pink-300',
-    borderClass: 'border-pink-500/40',
+    hex: '#e11d48',
+    darkHex: '#fb7185',
+    bgClass: 'bg-rose-500/10 dark:bg-rose-500/15',
+    textClass: 'text-rose-700 dark:text-rose-300',
+    borderClass: 'border-rose-500/30 dark:border-rose-400/35',
     label: 'ICMP',
   },
   error: {
-    hex: '#dc2626',
-    bgClass: 'bg-red-500/12',
+    hex: '#b91c1c',
+    darkHex: '#f87171',
+    bgClass: 'bg-red-500/10 dark:bg-red-500/20',
     textClass: 'text-red-700 dark:text-red-300',
-    borderClass: 'border-red-500/50',
+    borderClass: 'border-red-500/40 dark:border-red-400/45',
     label: 'Error / Drop',
   },
   l2: {
-    hex: '#0f766e',
-    bgClass: 'bg-teal-500/10',
-    textClass: 'text-teal-700 dark:text-teal-300',
-    borderClass: 'border-teal-500/40',
+    hex: '#059669',
+    darkHex: '#34d399',
+    bgClass: 'bg-emerald-500/10 dark:bg-emerald-500/15',
+    textClass: 'text-emerald-700 dark:text-emerald-300',
+    borderClass: 'border-emerald-500/30 dark:border-emerald-400/35',
     label: 'L2 / ARP',
   },
   sec: {
-    hex: '#047857',
-    bgClass: 'bg-emerald-500/10',
-    textClass: 'text-emerald-700 dark:text-emerald-300',
-    borderClass: 'border-emerald-500/40',
+    hex: '#0d9488',
+    darkHex: '#2dd4bf',
+    bgClass: 'bg-teal-500/10 dark:bg-teal-500/15',
+    textClass: 'text-teal-700 dark:text-teal-300',
+    borderClass: 'border-teal-500/30 dark:border-teal-400/35',
     label: 'Security',
   },
   routing: {
     hex: '#4f46e5',
-    bgClass: 'bg-indigo-500/10',
+    darkHex: '#818cf8',
+    bgClass: 'bg-indigo-500/10 dark:bg-indigo-500/15',
     textClass: 'text-indigo-700 dark:text-indigo-300',
-    borderClass: 'border-indigo-500/40',
+    borderClass: 'border-indigo-500/30 dark:border-indigo-400/35',
     label: 'Routing',
   },
 };
@@ -96,5 +113,5 @@ export const LEGEND_ITEMS: Array<{ key: PacketColorCategory; label: string; hex:
   { key: 'http_res', label: 'HTTP Res', hex: PACKET_COLORS.http_res.hex },
   { key: 'udp', label: 'UDP', hex: PACKET_COLORS.udp.hex },
   { key: 'icmp', label: 'ICMP', hex: PACKET_COLORS.icmp.hex },
-  { key: 'error', label: 'Error/Drop', hex: PACKET_COLORS.error.hex },
+  { key: 'error', label: 'Error / Drop', hex: PACKET_COLORS.error.hex },
 ];

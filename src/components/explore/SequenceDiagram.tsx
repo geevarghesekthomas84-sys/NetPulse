@@ -4,6 +4,7 @@ import { ZoomIn, ZoomOut } from 'lucide-react';
 import type { CapturedPacket } from '../../engine/types';
 import { clampSvgZoom, wheelDeltaToZoomFactor } from '../../lib/svgViewport';
 import type { ProtocolNodeDef } from '../../protocols/types';
+import { useAppStore } from '../../store/useAppStore';
 import { PACKET_COLORS } from './colors';
 
 const SEQ_MIN_ZOOM = 0.5;
@@ -23,6 +24,7 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
   onSelectPacket,
 }) => {
   const { t } = useTranslation();
+  const { theme } = useAppStore();
   const [zoom, setZoom] = useState(1);
   const zoomRef = useRef(1);
   zoomRef.current = zoom;
@@ -172,7 +174,9 @@ export const SequenceDiagram: React.FC<SequenceDiagramProps> = ({
             const x2 = xForNode(pkt.toDeviceId);
             const isCurrent = idx === currentPacketIndex;
             const isReached = idx <= currentPacketIndex;
-            const color = PACKET_COLORS[pkt.colorCategory]?.hex || '#0891b2';
+            const color = theme === 'dark'
+              ? (PACKET_COLORS[pkt.colorCategory]?.darkHex || PACKET_COLORS[pkt.colorCategory]?.hex || '#38bdf8')
+              : (PACKET_COLORS[pkt.colorCategory]?.hex || '#0284c7');
             const dir = x2 >= x1 ? 1 : -1;
             const midX = (x1 + x2) / 2;
 

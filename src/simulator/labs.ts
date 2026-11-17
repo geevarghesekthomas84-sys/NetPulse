@@ -463,3 +463,100 @@ export const PRESET_LABS: PresetLab[] = [
     onSolve: (engine) => engine.execCommand('h', 'ping 203.0.113.10 -s 1400 -c 1'),
   },
 ];
+
+export const BREAK_IT_CHALLENGES: PresetLab[] = [
+  {
+    id: 'break-1-gateway',
+    number: 1,
+    title: '🔧 Break-It: Broken Default Gateway',
+    category: 'Break-It Challenge',
+    description: 'Host 1 cannot reach the Internet Web Server. A junior admin misconfigured the network interface. Diagnose the fault with CLI or inspector, correct it, and restore connectivity!',
+    goals: [
+      'Observe ping 203.0.113.10 failing on Host 1',
+      'Inspect Host 1 interface and identify the invalid gateway',
+      'Fix the Gateway to 192.168.1.1 and verify successful ping',
+    ],
+    hints: [
+      'Check Host 1 interface gateway with `ifconfig` or the Properties Inspector',
+      'The gateway is set to 192.168.1.254, but Router IP is 192.168.1.1',
+    ],
+    solutionSummary: 'Host 1 gateway corrected from 192.168.1.254 to 192.168.1.1. Packets can now traverse the border router.',
+    devices: [
+      dev('h1', 'Host 1 (Faulty)', 'host', 140, 220, '192.168.1.10', {
+        interfaces: [createDefaultInterface('eth0', 'eth0', '192.168.1.10', '255.255.255.0', '192.168.1.254', 'h1')],
+      }),
+      dev('r1', 'Border Router', 'router', 480, 220, '192.168.1.1', {
+        interfaces: [
+          createDefaultInterface('eth0', 'lan0', '192.168.1.1', '255.255.255.0', undefined, 'r1'),
+          createDefaultInterface('eth1', 'wan0', '198.51.100.1', '255.255.255.0', undefined, 'r2'),
+        ],
+      }),
+      dev('srv', 'Internet Web Server', 'web_server', 820, 220, '203.0.113.10', {
+        interfaces: [createDefaultInterface('eth0', 'eth0', '203.0.113.10', '255.255.255.0', '198.51.100.1', 's1')],
+      }),
+    ],
+    links: [lnk('l1', 'h1', 'r1'), lnk('l2', 'r1', 'srv')],
+    onSolve: (engine) => engine.execCommand('h1', 'ping 203.0.113.10 -c 2'),
+  },
+  {
+    id: 'break-2-acl',
+    number: 2,
+    title: '🔧 Break-It: Accidental Firewall Port Drop',
+    category: 'Break-It Challenge',
+    description: 'Clients can ping the Web Server, but HTTP connections to port 80 are timing out. The router firewall has a blocking ACL rule! Find and remove the block.',
+    goals: [
+      'Observe that ICMP ping succeeds but HTTP port 80 fails',
+      'Inspect Firewall ACL rules on the Firewall Router',
+      'Remove or modify the DENY TCP 80 rule to restore web traffic',
+    ],
+    hints: [
+      'Click on Firewall Router in Pro mode to view Firewall ACL Rules',
+      'Delete the rule blocking TCP port 80 or change action to ALLOW',
+    ],
+    solutionSummary: 'Removed blocking DENY rule on port 80. HTTP web traffic flow restored.',
+    devices: [
+      dev('client', 'Client PC', 'host', 140, 220, '192.168.1.50', {
+        interfaces: [createDefaultInterface('eth0', 'eth0', '192.168.1.50', '255.255.255.0', '192.168.1.1', 'c1')],
+      }),
+      dev('fw', 'Firewall Router', 'firewall', 480, 220, '192.168.1.1', {
+        firewallRules: [
+          { id: 'fw-block-80', action: 'deny', direction: 'both', protocol: 'TCP', srcIp: 'any', dstIp: 'any', dstPort: 80 },
+        ],
+      }),
+      dev('web', 'Company Web Server', 'web_server', 820, 220, '192.168.1.100'),
+    ],
+    links: [lnk('l1', 'client', 'fw'), lnk('l2', 'fw', 'web')],
+    onSolve: (engine) => engine.execCommand('client', 'ping 192.168.1.100 -c 1'),
+  },
+  {
+    id: 'break-3-mask',
+    number: 3,
+    title: '🔧 Break-It: Subnet Mask Isolation',
+    category: 'Break-It Challenge',
+    description: 'Host A (192.168.1.10) and Host B (192.168.1.75) are connected to the same switch, but Host B is isolated due to an incorrect subnet mask. Align the masks!',
+    goals: [
+      'Test `ping 192.168.1.75` from Host A',
+      'Identify why Host B considers Host A outside its subnet',
+      'Correct Host B subnet mask from 255.255.255.240 (/28) to 255.255.255.0 (/24)',
+    ],
+    hints: [
+      'Host B mask 255.255.255.240 limits its subnet to 192.168.1.64 - 192.168.1.79',
+      'Align Host B subnet mask to 255.255.255.0',
+    ],
+    solutionSummary: 'Subnet mask adjusted to /24. Both hosts are now in the same broadcast domain and ARP succeeds.',
+    devices: [
+      dev('ha', 'Host A', 'host', 140, 220, '192.168.1.10', {
+        interfaces: [createDefaultInterface('eth0', 'eth0', '192.168.1.10', '255.255.255.0', undefined, 'a1')],
+      }),
+      dev('sw', 'Workgroup Switch', 'switch', 480, 220, '0.0.0.0'),
+      dev('hb', 'Host B (Isolated)', 'host', 820, 220, '192.168.1.75', {
+        interfaces: [createDefaultInterface('eth0', 'eth0', '192.168.1.75', '255.255.255.240', undefined, 'b1')],
+      }),
+    ],
+    links: [lnk('l1', 'ha', 'sw'), lnk('l2', 'sw', 'hb')],
+    onSolve: (engine) => engine.execCommand('ha', 'ping 192.168.1.75 -c 2'),
+  },
+];
+
+export const ALL_SIM_LABS: PresetLab[] = [...PRESET_LABS, ...BREAK_IT_CHALLENGES];
+

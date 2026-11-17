@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { ChevronDown, ChevronRight, Code2, Layers, Maximize2, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, Code2, Layers, Maximize2, PackageCheck, X } from 'lucide-react';
 import type { CapturedPacket, FieldByteRange } from '../../engine/types';
 import { formatChecksum } from '../../lib/checksum';
 import { formatHexDump } from '../../lib/hexDump';
+import { EncapsulationModal } from '../explore/EncapsulationModal';
 
 interface PacketInspectorContentProps {
   packet: CapturedPacket | null;
@@ -28,6 +29,7 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
   });
   const [activeRange, setActiveRange] = useState<FieldByteRange | null>(null);
   const [showHex, setShowHex] = useState(defaultShowHex);
+  const [showEncapsulation, setShowEncapsulation] = useState(false);
 
   const hexLines = useMemo(() => (packet ? formatHexDump(packet.rawBytes) : []), [packet]);
 
@@ -90,6 +92,15 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => setShowEncapsulation(true)}
+            title="Open Layer-by-Layer Encapsulation View"
+            className="flex h-8 items-center gap-1.5 rounded-lg border border-emerald-500/35 bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 transition-colors shadow-xs"
+          >
+            <PackageCheck className="w-3.5 h-3.5" />
+            <span>Encapsulation</span>
+          </button>
           <button
             type="button"
             onClick={() => setShowHex((s) => !s)}
@@ -503,6 +514,10 @@ export const PacketInspectorContent: React.FC<PacketInspectorContentProps> = ({
           </div>
         )}
       </div>
+
+      {showEncapsulation && (
+        <EncapsulationModal packet={packet} onClose={() => setShowEncapsulation(false)} />
+      )}
     </div>
   );
 };

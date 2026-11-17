@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Award, CheckCircle2, RotateCcw, Shuffle, XCircle } from 'lucide-react';
+import { Award, CheckCircle2, Flame, RotateCcw, Shuffle, Sparkles, Target, XCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PROTOCOLS } from '../../protocols';
 import type { ProtocolQuizQuestion } from '../../protocols/types';
@@ -12,12 +12,30 @@ interface QuizItem extends ProtocolQuizQuestion {
 
 export const QuizzesView: React.FC = () => {
   const { t } = useTranslation();
-  const { quizScores, recordQuizScore } = useAppStore();
+  const {
+    quizScores,
+    recordQuizScore,
+    dailyStreak,
+    updateDailyStreak,
+    wrongQuizQuestions,
+    recordWrongQuizQuestion,
+    clearWrongQuizQuestion,
+  } = useAppStore();
   const [selectedProtocolId, setSelectedProtocolId] = useState<string>('challenge-10');
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [submitted, setSubmitted] = useState(false);
 
   const questions: QuizItem[] = useMemo(() => {
+    if (selectedProtocolId === 'review-missed') {
+      return wrongQuizQuestions.slice(0, 10).map((wq) => ({
+        protocolId: wq.protocolId,
+        protocolName: PROTOCOLS.find((p) => p.id === wq.protocolId)?.name ?? wq.protocolId.toUpperCase(),
+        question: wq.question,
+        options: wq.options,
+        correctIndex: wq.correctIndex,
+        explanation: wq.explanation,
+      }));
+    }
     if (selectedProtocolId === 'challenge-10') {
       const pool: QuizItem[] = [];
       for (const p of PROTOCOLS) {
@@ -29,7 +47,7 @@ export const QuizzesView: React.FC = () => {
     }
     const proto = PROTOCOLS.find((p) => p.id === selectedProtocolId) ?? PROTOCOLS[0];
     return proto.quiz.map((q) => ({ ...q, protocolId: proto.id, protocolName: proto.name }));
-  }, [selectedProtocolId]);
+  }, [selectedProtocolId, wrongQuizQuestions]);
 
   const correctCount = questions.reduce(
     (acc, q, idx) => (answers[idx] === q.correctIndex ? acc + 1 : acc),
@@ -40,6 +58,21 @@ export const QuizzesView: React.FC = () => {
   const handleSubmit = () => {
     setSubmitted(true);
     recordQuizScore(selectedProtocolId, percent);
+    updateDailyStreak();
+    questions.forEach((q, idx) => {
+      const picked = answers[idx];
+      if (picked !== q.correctIndex) {
+        recordWrongQuizQuestion({
+          protocolId: q.protocolId,
+          question: q.question,
+          options: q.options,
+          correctIndex: q.correctIndex,
+          explanation: q.explanation,
+        });
+      } else {
+        clearWrongQuizQuestion(q.question);
+      }
+    });
   };
 
   const handleReset = () => {
@@ -49,13 +82,50 @@ export const QuizzesView: React.FC = () => {
 
   return (
     <div className="space-y-4">
+      {/* Daily Streak Banner */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-4 shadow-xs">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/15 text-amber-500">
+            <Flame className="w-5 h-5 fill-amber-500 text-amber-500" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-display font-bold text-sm text-[var(--text-primary)]">
+                {dailyStreak.current} Day Streak!
+              </span>
+              <span className="rounded-full bg-[var(--bg-inset)] px-2 py-0.5 font-mono text-[11px] font-bold text-[var(--text-secondary)] border border-[var(--border-hairline)]">
+                Best: {dailyStreak.longest} days
+              </span>
+            </div>
+            <p className="text-xs text-[var(--text-secondary)]">
+              Solve a quiz daily to keep your learning momentum going.
+            </p>
+          </div>
+        </div>
+
+        {wrongQuizQuestions.length > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedProtocolId('review-missed');
+              setAnswers({});
+              setSubmitted(false);
+            }}
+            className="flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-500 hover:bg-rose-500/20 transition-colors"
+          >
+            <Target className="w-3.5 h-3.5" />
+            <span>Practice {wrongQuizQuestions.length} Missed Question{wrongQuizQuestions.length === 1 ? '' : 's'}</span>
+          </button>
+        )}
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-4.5">
         <div>
           <h2 className="font-display text-lg font-bold text-[var(--text-primary)]">
             {t('learn.quizzes')}
           </h2>
           <p className="mt-0.5 text-[13px] text-[var(--text-secondary)]">
-            Test your knowledge on any of the 39 protocols or take the mixed challenge.
+            Test your knowledge on any of the 39 protocols or review questions you got wrong.
           </p>
         </div>
 
@@ -70,6 +140,11 @@ export const QuizzesView: React.FC = () => {
             }}
             className="h-9.5 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-3 text-[13px] font-medium text-[var(--text-primary)]"
           >
+            {wrongQuizQuestions.length > 0 && (
+              <option value="review-missed">
+                🎯 Review Missed Questions ({wrongQuizQuestions.length})
+              </option>
+            )}
             <option value="challenge-10">Mixed 10-Question Challenge</option>
             {PROTOCOLS.map((p) => (
               <option key={p.id} value={p.id}>
@@ -91,6 +166,18 @@ export const QuizzesView: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {selectedProtocolId === 'review-missed' && questions.length === 0 && (
+        <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-8 text-center space-y-2">
+          <CheckCircle2 className="w-8 h-8 text-[var(--tone-success)] mx-auto" />
+          <h3 className="font-display text-base font-bold text-[var(--text-primary)]">
+            Zero Missed Questions!
+          </h3>
+          <p className="text-xs text-[var(--text-secondary)] max-w-md mx-auto">
+            You've cleared all missed questions or haven't gotten any wrong yet. Select a protocol quiz or mixed challenge to test your knowledge!
+          </p>
+        </div>
+      )}
 
       {/* Questions List */}
       <div className="space-y-3.5">

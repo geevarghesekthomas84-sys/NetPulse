@@ -7,6 +7,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  FileText,
+  FileUp,
   GitCompare,
   Layers,
   ListOrdered,
@@ -14,19 +16,26 @@ import {
   Minimize2,
   Network,
   PanelLeft,
+  RotateCcw,
   ScrollText,
   Share2,
   Sparkles,
   Star,
+  X,
 } from 'lucide-react';
-import type { SimLogEntry } from '../../engine/types';
+import type { CapturedPacket, DeviceRole, SimLogEntry } from '../../engine/types';
 import { encodeExploreHash } from '../../lib/deepLink';
+import { parsePcapFile } from '../../lib/pcapReader';
 import { getProtocolById } from '../../protocols';
+import type { ProtocolLinkDef, ProtocolNodeDef, ProtocolStepDef, ScenarioResult } from '../../protocols/types';
 import { useAppStore } from '../../store/useAppStore';
 import { EventLogPanel } from '../common/EventLogPanel';
 import { PacketInspectorContent } from '../common/PacketInspector';
 import { CompareView } from './CompareView';
+import { EncapsulationModal } from './EncapsulationModal';
 import { EntrySite } from './EntrySite';
+import { FinishedRecapCard } from './FinishedRecapCard';
+import { GuidedTrackBanner } from './GuidedTrackBanner';
 import { NetworkDiagram } from './NetworkDiagram';
 import { OsiRuler } from './OsiRuler';
 import { PacketTable } from './PacketTable';
@@ -60,6 +69,8 @@ export const ExploreWorkspace: React.FC = () => {
     selectProtocol,
     setMode,
     settings,
+    customPcapPackets,
+    setCustomPcapPackets,
   } = useAppStore();
 
   const [packetProgress, setPacketProgress] = useState(0.5);
@@ -69,7 +80,41 @@ export const ExploreWorkspace: React.FC = () => {
   );
   const [dockSize, setDockSize] = useState<'collapsed' | 'compact' | 'expanded'>('compact');
   const [copiedLink, setCopiedLink] = useState(false);
+  const [recapDismissed, setRecapDismissed] = useState(false);
+  const [encapPacket, setEncapPacket] = useState<CapturedPacket | null>(null);
+  const [pcapError, setPcapError] = useState<string | null>(null);
+
   const workbenchRef = useRef<HTMLDivElement>(null);
+  const pcapInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setRecapDismissed(false);
+  }, [activeProtocolId]);
+
+  const handlePcapUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPcapError(null);
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const buffer = reader.result as ArrayBuffer;
+        const parsed = parsePcapFile(buffer);
+        if (parsed.length === 0) {
+          setPcapError('No packets found in PCAP file.');
+          return;
+        }
+        setCustomPcapPackets(parsed);
+        setCurrentPacketIndex(0);
+        setCurrentStepIndex(0);
+      } catch (err: unknown) {
+        setPcapError(err instanceof Error ? err.message : 'Failed to parse PCAP file.');
+      }
+    };
+    reader.onerror = () => setPcapError('Failed to read PCAP file.');
+    reader.readAsArrayBuffer(file);
+    e.target.value = '';
+  };
 
   const jumpToWorkbench = (protocolId?: string) => {
     if (protocolId) {
@@ -90,10 +135,47 @@ export const ExploreWorkspace: React.FC = () => {
   }, [isSimple, dockTab]);
 
   const protocol = useMemo(() => getProtocolById(activeProtocolId), [activeProtocolId]);
-  const scenarioResult = useMemo(
-    () => protocol.scenario({ ...whatIfOptions, seed: settings.defaultSeed }),
-    [protocol, whatIfOptions, settings.defaultSeed]
-  );
+
+  const scenarioResult = useMemo(() => {
+    if (customPcapPackets && customPcapPackets.length > 0) {
+      const uniqueDevs = new Set<string>();
+      customPcapPackets.forEach((p) => {
+        uniqueDevs.add(p.fromDeviceId);
+        uniqueDevs.add(p.toDeviceId);
+      });
+      const devList = Array.from(uniqueDevs);
+      const nodes: ProtocolNodeDef[] = devList.map((id, idx) => ({
+        id,
+        label: id,
+        ip: id,
+        role: (idx === 0 ? 'host' : idx === devList.length - 1 ? 'web_server' : 'router') as DeviceRole,
+        x: Math.round(150 + (idx * 700) / Math.max(1, devList.length - 1)),
+        y: 250,
+      }));
+      const links: ProtocolLinkDef[] = devList.slice(0, -1).map((id, idx) => ({
+        id: `link-${id}-${devList[idx + 1]}`,
+        sourceId: id,
+        targetId: devList[idx + 1],
+        bandwidthMbps: 1000,
+        delayMs: 5,
+      }));
+      const steps: ProtocolStepDef[] = [
+        {
+          title: 'Imported PCAP Trace',
+          subtitle: `${customPcapPackets.length} Frames`,
+          caption: `Replaying ${customPcapPackets.length} captured frames. Step through the sequence diagram or packet table to inspect headers and payloads.`,
+          osiLayer: customPcapPackets[0]?.osiLayer ?? 3,
+        },
+      ];
+      return {
+        packets: customPcapPackets,
+        steps,
+        nodes,
+        links,
+      } as ScenarioResult;
+    }
+    return protocol.scenario({ ...whatIfOptions, seed: settings.defaultSeed });
+  }, [customPcapPackets, protocol, whatIfOptions, settings.defaultSeed]);
 
   const safePacketIndex = Math.min(currentPacketIndex, Math.max(0, scenarioResult.packets.length - 1));
   const activePacket = scenarioResult.packets[safePacketIndex] ?? null;
@@ -122,6 +204,12 @@ export const ExploreWorkspace: React.FC = () => {
       };
     });
   }, [scenarioResult]);
+
+  const showFinishedRecap =
+    !recapDismissed &&
+    !customPcapPackets &&
+    scenarioResult.packets.length > 1 &&
+    safePacketIndex >= scenarioResult.packets.length - 1;
 
   const isFav = favorites.includes(protocol.id);
 
@@ -285,8 +373,56 @@ export const ExploreWorkspace: React.FC = () => {
               <span className="hidden md:inline">{copiedLink ? t('explore.copied') : t('explore.share')}</span>
             </button>
           )}
+
+          <input
+            ref={pcapInputRef}
+            type="file"
+            accept=".pcap"
+            className="hidden"
+            onChange={handlePcapUpload}
+          />
+          <button
+            type="button"
+            onClick={() => pcapInputRef.current?.click()}
+            title="Import .pcap packet capture file"
+            className="flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] px-2.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--accent-teal)] whitespace-nowrap shrink-0"
+          >
+            <FileUp className="w-3.5 h-3.5 text-[var(--accent-teal)]" />
+            <span className="hidden sm:inline">Import .pcap</span>
+          </button>
         </div>
       </div>
+
+      {/* PCAP Error Toast */}
+      {pcapError && (
+        <div className="shrink-0 flex items-center justify-between border-b border-[var(--tone-danger)] bg-[var(--tone-danger)]/15 px-3.5 py-1.5 text-xs text-[var(--tone-danger)]">
+          <span>{pcapError}</span>
+          <button type="button" onClick={() => setPcapError(null)} className="p-0.5">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* Active PCAP Replay Banner */}
+      {customPcapPackets && customPcapPackets.length > 0 && (
+        <div className="shrink-0 flex items-center justify-between border-b border-[var(--border-hairline)] bg-[var(--accent-primary-soft)] px-3.5 py-1.5 text-xs text-[var(--accent-primary)] font-semibold">
+          <div className="flex items-center gap-2">
+            <FileText className="w-4 h-4" />
+            <span>Replaying Custom PCAP: {customPcapPackets.length} Packets</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setCustomPcapPackets(null)}
+            className="flex items-center gap-1 rounded bg-[var(--bg-surface)] px-2.5 py-0.5 text-[11px] font-bold text-[var(--text-primary)] border border-[var(--border-hairline)] hover:bg-[var(--bg-inset)]"
+          >
+            <X className="w-3 h-3" />
+            <span>Exit PCAP</span>
+          </button>
+        </div>
+      )}
+
+      {/* Guided First Path Banner */}
+      {!customPcapPackets && <GuidedTrackBanner />}
 
       {/* Main Split Stage: Collapsible Steps & OSI Rail | Full-Width Canvas */}
       <div
@@ -422,6 +558,22 @@ export const ExploreWorkspace: React.FC = () => {
             )}
           </div>
 
+          {showFinishedRecap && (
+            <FinishedRecapCard
+              protocolId={protocol.id}
+              protocolName={protocol.name}
+              onReplay={() => {
+                setCurrentPacketIndex(0);
+                setCurrentStepIndex(0);
+                setIsPlaying(true);
+              }}
+              onOpenEncapsulation={() => {
+                setEncapPacket(activePacket || scenarioResult.packets[0] || null);
+              }}
+              onDismiss={() => setRecapDismissed(true)}
+            />
+          )}
+
           <PlaybackBar
             packets={scenarioResult.packets}
             steps={scenarioResult.steps}
@@ -556,6 +708,13 @@ export const ExploreWorkspace: React.FC = () => {
           </div>
         )}
       </section>
+
+      {encapPacket && (
+        <EncapsulationModal
+          packet={encapPacket}
+          onClose={() => setEncapPacket(null)}
+        />
+      )}
     </div>
   );
 };

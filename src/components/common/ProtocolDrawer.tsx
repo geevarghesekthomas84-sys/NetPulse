@@ -360,19 +360,23 @@ export const ProtocolDrawer: React.FC = () => {
         </aside>
       )}
 
-      {/* Mobile / Tablet Slide-over Overlay (<lg) */}
+      {/* Mobile / Tablet Slide-up Sheet (<lg) */}
       {drawerOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
+        <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end">
           <div
-            className="fixed inset-0 bg-black/65 backdrop-blur-xs"
+            className="fixed inset-0 bg-black/65 backdrop-blur-xs transition-opacity"
             onClick={() => setDrawerOpen(false)}
             aria-hidden="true"
           />
           <aside
             role="dialog"
             aria-label={t('drawer.title')}
-            className="relative z-10 flex h-full w-full sm:w-[360px] flex-col border-e border-[var(--border-strong)] bg-[var(--bg-surface)] shadow-2xl"
+            className="relative z-10 flex h-[82vh] sm:h-full w-full sm:w-[360px] flex-col rounded-t-2xl sm:rounded-none border-t sm:border-t-0 sm:border-e border-[var(--border-strong)] bg-[var(--bg-surface)] shadow-2xl overflow-hidden animate-in slide-in-from-bottom sm:slide-in-from-left duration-200"
           >
+            {/* Grab handle for slide-up sheet on phones */}
+            <div className="sm:hidden flex justify-center pt-2.5 pb-1 shrink-0 bg-[var(--bg-surface)]">
+              <div className="w-10 h-1.5 rounded-full bg-[var(--border-strong)]" />
+            </div>
             {renderProtocolBody(true)}
           </aside>
         </div>

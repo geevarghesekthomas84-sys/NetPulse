@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { AboutModal } from './components/common/AboutModal';
 import { CommandPalette } from './components/common/CommandPalette';
 import { Header } from './components/common/Header';
+import { MobileTabBar } from './components/common/MobileTabBar';
 import { OnboardingTour } from './components/common/OnboardingTour';
 import { PacketInspector } from './components/common/PacketInspector';
 import { ProtocolDrawer } from './components/common/ProtocolDrawer';
@@ -97,7 +98,7 @@ export default function App() {
       <OfflineIndicator />
 
       {/* Packet-Tracer Workbench Shell: Global Collapsible Sidebar + Central Full-Width Workspace */}
-      <div className="flex flex-1 min-h-0 w-full overflow-hidden">
+      <div className="flex flex-1 min-h-0 w-full overflow-hidden pb-14 lg:pb-0">
         <ProtocolDrawer />
 
         <main className="flex flex-1 min-w-0 min-h-[240px] flex-col overflow-hidden bg-[var(--bg-canvas)]">
@@ -107,7 +108,7 @@ export default function App() {
         </main>
       </div>
 
-      <footer className="shrink-0 border-t border-[var(--border-hairline)] bg-[var(--bg-surface)] px-4 py-1.5 text-xs font-medium text-[var(--text-secondary)]">
+      <footer className="hidden lg:block shrink-0 border-t border-[var(--border-hairline)] bg-[var(--bg-surface)] px-4 py-1.5 text-xs font-medium text-[var(--text-secondary)]">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span>
             {t('brand')} · {t('credit')} · {t('nav.footerTagline')}
@@ -153,6 +154,7 @@ export default function App() {
       <SettingsModal />
       <AboutModal />
       <OnboardingTour />
+      <MobileTabBar />
     </div>
   );
 }

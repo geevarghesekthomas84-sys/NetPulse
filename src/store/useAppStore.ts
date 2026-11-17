@@ -3,8 +3,22 @@ import i18n, { LANGUAGES } from '../i18n';
 import { getProtocolById } from '../protocols';
 import type { ScenarioOptions } from '../protocols/types';
 import { PRESET_LABS } from '../simulator/labs';
-import type { SimDevice, SimLink } from '../engine/types';
+import type { CapturedPacket, SimDevice, SimLink } from '../engine/types';
 import { playPacketBlip } from '../lib/sound';
+
+export interface WrongQuestion {
+  protocolId: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+}
+
+export interface DailyStreakData {
+  current: number;
+  lastDate: string;
+  longest: number;
+}
 
 export type AppMode = 'explore' | 'simulator' | 'learn';
 export type ExploreView = 'network' | 'sequence';
@@ -63,10 +77,14 @@ interface AppState {
   tourOpen: boolean;
   settings: AppSettings;
 
-  // Learn progress
+  // Learn progress & Daily practice
   viewedProtocols: string[];
   completedLabs: string[];
   quizScores: Record<string, number>;
+  dailyStreak: DailyStreakData;
+  wrongQuizQuestions: WrongQuestion[];
+  customPcapPackets: CapturedPacket[] | null;
+  guidedTrackDismissed: boolean;
 
   // Simulator workspace state
   simDevices: SimDevice[];
@@ -112,6 +130,11 @@ interface AppState {
 
   recordQuizScore: (protocolId: string, score: number) => void;
   markLabCompleted: (labId: string) => void;
+  updateDailyStreak: () => void;
+  recordWrongQuizQuestion: (q: WrongQuestion) => void;
+  clearWrongQuizQuestion: (question: string) => void;
+  setCustomPcapPackets: (packets: CapturedPacket[] | null) => void;
+  setGuidedTrackDismissed: (dismissed: boolean) => void;
 
   loadLab: (labId: string) => void;
   setSimTopology: (devices: SimDevice[], links: SimLink[]) => void;
@@ -185,6 +208,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   viewedProtocols: loadJson<string[]>('gg-viewed', ['http']),
   completedLabs: loadJson<string[]>('gg-completed-labs', []),
   quizScores: loadJson<Record<string, number>>('gg-quiz-scores', {}),
+  dailyStreak: loadJson<DailyStreakData>('netpulse-streak', { current: 1, lastDate: '', longest: 1 }),
+  wrongQuizQuestions: loadJson<WrongQuestion[]>('netpulse-wrong-quiz', []),
+  customPcapPackets: null,
+  guidedTrackDismissed: loadJson<boolean>('netpulse-guided-dismissed', false),
 
   simDevices: structuredClone(defaultLab.devices),
   simLinks: structuredClone(defaultLab.links),
@@ -255,7 +282,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (typeof window !== 'undefined') {
       localStorage.setItem('gg-recent', JSON.stringify(recent));
       localStorage.setItem('gg-viewed', JSON.stringify(viewed));
-      document.title = `${proto.name} (${proto.fullName}) – gg`;
+      document.title = `${proto.name} (${proto.fullName}) – NetPulse`;
     }
     const result = proto.scenario(get().whatIfOptions);
     const firstPacketOfStep = Math.max(
@@ -329,6 +356,47 @@ export const useAppStore = create<AppState>((set, get) => ({
     const next = Array.from(new Set([...get().completedLabs, labId]));
     if (typeof window !== 'undefined') localStorage.setItem('gg-completed-labs', JSON.stringify(next));
     set({ completedLabs: next });
+  },
+
+  updateDailyStreak: () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const { current, lastDate, longest } = get().dailyStreak;
+    if (lastDate === today) return;
+
+    let nextCurrent = 1;
+    if (lastDate) {
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      if (lastDate === yesterday) {
+        nextCurrent = current + 1;
+      }
+    }
+    const nextLongest = Math.max(longest, nextCurrent);
+    const updated = { current: nextCurrent, lastDate: today, longest: nextLongest };
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-streak', JSON.stringify(updated));
+    set({ dailyStreak: updated });
+  },
+
+  recordWrongQuizQuestion: (q) => {
+    const prev = get().wrongQuizQuestions;
+    const exists = prev.some((item) => item.question === q.question);
+    if (!exists) {
+      const next = [q, ...prev].slice(0, 30);
+      if (typeof window !== 'undefined') localStorage.setItem('netpulse-wrong-quiz', JSON.stringify(next));
+      set({ wrongQuizQuestions: next });
+    }
+  },
+
+  clearWrongQuizQuestion: (question) => {
+    const next = get().wrongQuizQuestions.filter((q) => q.question !== question);
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-wrong-quiz', JSON.stringify(next));
+    set({ wrongQuizQuestions: next });
+  },
+
+  setCustomPcapPackets: (customPcapPackets) => set({ customPcapPackets }),
+
+  setGuidedTrackDismissed: (guidedTrackDismissed) => {
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-guided-dismissed', JSON.stringify(guidedTrackDismissed));
+    set({ guidedTrackDismissed });
   },
 
   loadLab: (labId) => {

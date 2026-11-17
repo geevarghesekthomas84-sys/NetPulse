@@ -103,8 +103,8 @@ export const Header: React.FC = () => {
           </a>
         </div>
 
-        {/* Center: Clean Workspace Mode Switcher + Simple/Pro Toggle */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        {/* Center: Clean Workspace Mode Switcher + Simple/Pro Toggle (Desktop) */}
+        <div className="hidden md:flex items-center gap-2.5 shrink-0">
           <nav
             aria-label="Workspace modes"
             className="flex items-center gap-1 rounded-xl bg-[var(--bg-inset)] p-1 border border-[var(--border-hairline)] shrink-0"

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Award, BookOpen, Calculator, Gamepad2, HelpCircle } from 'lucide-react';
+import { Award, BookOpen, Calculator, Flame, Gamepad2, HelpCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../../store/useAppStore';
 import { GamesView } from './GamesView';
@@ -8,7 +8,7 @@ import { ToolsAndRefView } from './ToolsAndRefView';
 
 export const LearnWorkspace: React.FC = () => {
   const { t } = useTranslation();
-  const { viewedProtocols, completedLabs, quizScores } = useAppStore();
+  const { viewedProtocols, completedLabs, quizScores, dailyStreak } = useAppStore();
   const [subTab, setSubTab] = useState<'quizzes' | 'games' | 'tools'>('quizzes');
 
   const passedQuizzes = Object.values(quizScores).filter((s) => s >= 70).length;
@@ -41,11 +41,18 @@ export const LearnWorkspace: React.FC = () => {
                 <div className="font-sans text-xs font-semibold text-[var(--text-secondary)]">{t('learn.labsCompleted')}</div>
                 <div className="mt-0.5 text-lg font-bold text-[var(--tone-success)]">{completedLabs.length} / 20</div>
               </div>
-              <div className="ps-5">
+              <div className="px-5">
                 <div className="font-sans text-xs font-semibold text-[var(--text-secondary)]">{t('learn.quizzesPassed')}</div>
                 <div className="mt-0.5 flex items-center gap-1.5 text-lg font-bold text-[var(--tone-warning)]">
                   <Award className="w-4 h-4" />
                   <span>{passedQuizzes}</span>
+                </div>
+              </div>
+              <div className="ps-5">
+                <div className="font-sans text-xs font-semibold text-[var(--text-secondary)]">Daily Streak</div>
+                <div className="mt-0.5 flex items-center gap-1 text-lg font-bold text-amber-500">
+                  <Flame className="w-4 h-4 fill-amber-500" />
+                  <span>{dailyStreak.current}d</span>
                 </div>
               </div>
             </div>

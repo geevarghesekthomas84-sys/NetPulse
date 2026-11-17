@@ -16,6 +16,8 @@ import {
 import { useAppStore } from '../../store/useAppStore';
 import { IsometricHardwareArt } from '../icons/IsometricHardwareLibrary';
 import { LEGEND_ITEMS, PACKET_COLORS } from './colors';
+import { AnnotatedCaption } from '../common/AnnotatedCaption';
+import { TextToSpeechButton } from '../common/TextToSpeechButton';
 
 interface NetworkDiagramProps {
   protocolName: string;
@@ -188,8 +190,10 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
 
   const hoveredNode = hoveredNodeId ? nodeMap.get(hoveredNodeId) : undefined;
   const activeColor = activePacket
-    ? PACKET_COLORS[activePacket.colorCategory]?.hex || '#0891b2'
-    : '#0891b2';
+    ? theme === 'dark'
+      ? PACKET_COLORS[activePacket.colorCategory]?.darkHex || PACKET_COLORS[activePacket.colorCategory]?.hex || '#38bdf8'
+      : PACKET_COLORS[activePacket.colorCategory]?.hex || '#0284c7'
+    : (theme === 'dark' ? '#38bdf8' : '#0284c7');
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-[var(--bg-canvas)] blueprint-grid">
@@ -199,9 +203,21 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
           <span className="font-mono font-bold text-[var(--accent-primary)] uppercase shrink-0">
             {t('playback.step')} {currentStepIndex + 1}
           </span>
-          <span className="text-[var(--text-primary)] font-medium truncate">
-            {currentStep ? `${currentStep.title} — ${currentStep.caption}` : protocolName}
-          </span>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-[var(--text-primary)] font-medium truncate">
+              {currentStep ? (
+                <>
+                  <span className="font-semibold">{currentStep.title}</span> —{' '}
+                  <AnnotatedCaption text={currentStep.caption} />
+                </>
+              ) : (
+                protocolName
+              )}
+            </span>
+            {currentStep && (
+              <TextToSpeechButton text={`${currentStep.title}. ${currentStep.caption}`} />
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
           {/* Zoom Controls */}
