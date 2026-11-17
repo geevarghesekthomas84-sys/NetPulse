@@ -19,6 +19,7 @@ import {
   Settings2,
   Shield,
   Sliders,
+  Terminal,
   Trash2,
   Unlink,
   Wifi,
@@ -35,6 +36,7 @@ interface PropertiesPanelProps {
   onUpdateLink: (updated: SimLink) => void;
   onDeleteLink: (linkId: string) => void;
   onAddDevicePort: (deviceId: string) => void;
+  onOpenDeviceModal?: (device: SimDevice) => void;
 }
 
 const ROLE_METADATA: Record<
@@ -74,6 +76,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   onUpdateLink,
   onDeleteLink,
   onAddDevicePort,
+  onOpenDeviceModal,
 }) => {
   const [newRulePort, setNewRulePort] = useState('80');
   const [newRuleAction, setNewRuleAction] = useState<'allow' | 'deny'>('deny');
@@ -406,6 +409,17 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             />
           </button>
         </div>
+
+        {onOpenDeviceModal && (
+          <button
+            type="button"
+            onClick={() => onOpenDeviceModal(device)}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-cta)] py-2 text-xs font-bold text-white hover:bg-[var(--accent-cta-hover)] shadow-xs transition-all"
+          >
+            <Terminal className="w-4 h-4" />
+            <span>Open Device Console & Config</span>
+          </button>
+        )}
       </div>
 
       {/* Physical Front-Panel RJ-45 Port Bay */}

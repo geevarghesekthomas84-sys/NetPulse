@@ -14,19 +14,29 @@ interface TerminalEmulatorProps {
   activeDeviceId: string | null;
   onSelectDevice: (id: string) => void;
   onExecute: (deviceId: string, command: string) => string;
+  getPrompt?: (deviceId: string) => string;
   externalLogTrigger?: { deviceId: string; cmd: string; output: string } | null;
 }
 
-const QUICK_CMDS = [
-  'help',
-  'ipconfig',
-  'ping 203.0.113.10 -c 2',
-  'traceroute 203.0.113.10',
-  'nslookup example.com',
-  'curl http://203.0.113.10 -v',
-  'arp -a',
+const QUICK_CISCO_CMDS = [
+  'enable',
+  'show ip int brief',
+  'conf t',
   'show ip route',
-  'nmap 203.0.113.10',
+  'show running-config',
+  'show version',
+  'write memory',
+];
+
+const QUICK_HOST_CMDS = [
+  'ipconfig /all',
+  'ipconfig /renew',
+  'ping 192.168.1.1 -c 2',
+  'traceroute 192.168.1.1',
+  'nslookup example.com',
+  'curl http://192.168.1.100 -v',
+  'arp -a',
+  'netstat -an',
 ];
 
 export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
@@ -34,10 +44,21 @@ export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
   activeDeviceId,
   onSelectDevice,
   onExecute,
+  getPrompt,
   externalLogTrigger,
 }) => {
   const { t } = useTranslation();
   const targetDevice = devices.find((d) => d.id === activeDeviceId) ?? devices[0] ?? null;
+  const isCisco =
+    targetDevice &&
+    (targetDevice.role === 'router' ||
+      targetDevice.role === 'switch' ||
+      targetDevice.role === 'firewall' ||
+      targetDevice.role === 'nat_gateway');
+
+  const prompt =
+    getPrompt && targetDevice ? getPrompt(targetDevice.id) : `${targetDevice?.name ?? 'host'}$`;
+
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<string[]>([]);
   const [histIdx, setHistIdx] = useState(-1);
@@ -75,11 +96,12 @@ export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
       setInput('');
       return;
     }
+    const currentPrompt = prompt;
     const output = onExecute(targetDevice.id, cmd);
     setLines((prev) => [
       ...prev,
-      { id: `c-${Date.now()}-${Math.random()}`, kind: 'cmd', text: `${targetDevice.name}$ ${cmd}` },
-      { id: `o-${Date.now()}-${Math.random()}`, kind: 'out', text: output },
+      { id: `c-${Date.now()}-${Math.random()}`, kind: 'cmd', text: `${currentPrompt} ${cmd}` },
+      ...(output ? [{ id: `o-${Date.now()}-${Math.random()}`, kind: 'out' as const, text: output }] : []),
     ]);
     setHistory((prev) => [cmd, ...prev.slice(0, 30)]);
     setHistIdx(-1);
@@ -139,7 +161,7 @@ export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
 
       {/* Quick Command Chips */}
       <div className="shrink-0 flex flex-wrap gap-1.5 border-b border-[var(--terminal-border)] bg-[var(--bg-inset)] px-3.5 py-2">
-        {QUICK_CMDS.map((q) => (
+        {(isCisco ? QUICK_CISCO_CMDS : QUICK_HOST_CMDS).map((q) => (
           <button
             key={q}
             type="button"
@@ -173,7 +195,7 @@ export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
         }}
         className="shrink-0 flex items-center gap-2 border-t border-[var(--terminal-border)] bg-[var(--terminal-header)] px-3.5 py-2.5 font-mono text-[13px]"
       >
-        <span className="text-[var(--accent-primary)] font-bold shrink-0">{targetDevice?.name ?? 'host'}$</span>
+        <span className="text-[var(--accent-primary)] font-bold shrink-0">{prompt}</span>
         <input
           type="text"
           value={input}

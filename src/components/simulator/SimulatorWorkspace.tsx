@@ -39,6 +39,9 @@ import { SimAnalyticsPanel } from './SimAnalyticsPanel';
 import { type CanvasAnnotation, type ConnectPortsPayload, SimCanvas } from './SimCanvas';
 import { SimControls } from './SimControls';
 import { TerminalEmulator } from './TerminalEmulator';
+import { PacketTracerDeviceModal } from './PacketTracerDeviceModal';
+import { PduListBar } from './PduListBar';
+import { PacketTracerPduModal } from './PacketTracerPduModal';
 
 interface Snapshot {
   devices: SimDevice[];
@@ -110,6 +113,12 @@ export const SimulatorWorkspace: React.FC = () => {
   const [captureFilter, setCaptureFilter] = useState('');
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
+  // Cisco Packet Tracer Pro States
+  const [ptModalDevice, setPtModalDevice] = useState<SimDevice | null>(null);
+  const [ptPduModalPacket, setPtPduModalPacket] = useState<CapturedPacket | null>(null);
+  const [isAddingSimplePdu, setIsAddingSimplePdu] = useState(false);
+  const [pduSourceId, setPduSourceId] = useState<string | null>(null);
+
   // Packet-Tracer IDE Workbench Panel States
   const [labsOpen, setLabsOpen] = useState(false);
   const [leftRailCollapsed, setLeftRailCollapsed] = useState(false);
@@ -174,6 +183,40 @@ export const SimulatorWorkspace: React.FC = () => {
     } else if (playbackMode === 'live') {
       setLiveCursor(null);
     }
+    bump();
+  };
+
+  const handleStartAddSimplePdu = () => {
+    setIsAddingSimplePdu(true);
+    setPduSourceId(null);
+  };
+
+  const handleCancelSimplePdu = () => {
+    setIsAddingSimplePdu(false);
+    setPduSourceId(null);
+  };
+
+  const handleFireSimplePdu = (srcId: string, dstId: string) => {
+    const prevCount = engineRef.current.packets.length;
+    engineRef.current.sendSimplePdu(srcId, dstId);
+    syncAfterPacketEmission(prevCount);
+    bump();
+  };
+
+  const handleSelectSimplePduEndpoint = (devId: string) => {
+    if (!pduSourceId) {
+      setPduSourceId(devId);
+    } else {
+      if (pduSourceId !== devId) {
+        handleFireSimplePdu(pduSourceId, devId);
+      }
+      setIsAddingSimplePdu(false);
+      setPduSourceId(null);
+    }
+  };
+
+  const handleClearPdus = () => {
+    engineRef.current.simplePdus = [];
     bump();
   };
 
@@ -1229,6 +1272,11 @@ export const SimulatorWorkspace: React.FC = () => {
           stepDurationMs={stepIntervalMs}
           animationTick={playbackMode === 'step' ? clampedStepCursor : clampedLiveCursor ?? tickVersion}
           exportActionsRef={canvasExportRef}
+          onOpenDeviceModal={(dev) => setPtModalDevice(dev)}
+          isAddingSimplePdu={isAddingSimplePdu}
+          pduSourceId={pduSourceId}
+          onSelectSimplePduEndpoint={handleSelectSimplePduEndpoint}
+          onCancelSimplePdu={handleCancelSimplePdu}
         />
 
         {isPro && rightInspectorOpen && (
@@ -1257,9 +1305,21 @@ export const SimulatorWorkspace: React.FC = () => {
               setSelectedLinkId(null);
             }}
             onAddDevicePort={handleAddDevicePort}
+            onOpenDeviceModal={(d) => setPtModalDevice(d)}
           />
         )}
       </div>
+
+      {/* Packet Tracer Simple PDU Simulation Table Drawer (Pro Mode) */}
+      {isPro && (
+        <PduListBar
+          pdus={engineRef.current.simplePdus}
+          onFirePdu={handleFireSimplePdu}
+          onClearPdus={handleClearPdus}
+          onStartAddPdu={handleStartAddSimplePdu}
+          isAddingPdu={isAddingSimplePdu}
+        />
+      )}
 
       {/* Bottom Docked Resizable IDE Workbench Deck: Capture | Event Logs | Packet Inspector | CLI | Metrics | Tables */}
       <section
@@ -1385,14 +1445,33 @@ export const SimulatorWorkspace: React.FC = () => {
             {effectiveDockTab === 'logs' && <EventLogPanel logs={visibleLogs} devices={simDevices} />}
 
             {effectiveDockTab === 'inspector' && (
-              <PacketInspectorContent
-                packet={dockedInspectedPacket}
-                defaultShowHex={settings.showHexByDefault}
-                embedded
-                onPopOut={
-                  dockedInspectedPacket ? () => setModalInspectedId(dockedInspectedPacket.id) : undefined
-                }
-              />
+              <div className="flex flex-col h-full overflow-hidden">
+                {isPro && dockedInspectedPacket && (
+                  <div className="shrink-0 flex items-center justify-between px-3 py-1.5 bg-[var(--bg-inset)] border-b border-[var(--border-hairline)] text-xs">
+                    <span className="font-mono text-[var(--text-secondary)] font-medium">
+                      PDU Model: {dockedInspectedPacket.protocol} · Layer {dockedInspectedPacket.osiLayer || 3}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setPtPduModalPacket(dockedInspectedPacket)}
+                      className="flex items-center gap-1.5 rounded-md bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] hover:bg-[var(--accent-primary)] hover:text-white px-2.5 py-1 font-semibold transition-colors shadow-2xs"
+                    >
+                      <Layers className="w-3.5 h-3.5" />
+                      <span>Packet Tracer PDU Layers (In/Out)</span>
+                    </button>
+                  </div>
+                )}
+                <div className="flex-1 overflow-auto">
+                  <PacketInspectorContent
+                    packet={dockedInspectedPacket}
+                    defaultShowHex={settings.showHexByDefault}
+                    embedded
+                    onPopOut={
+                      dockedInspectedPacket ? () => setModalInspectedId(dockedInspectedPacket.id) : undefined
+                    }
+                  />
+                </div>
+              </div>
             )}
 
             {effectiveDockTab === 'terminal' && (
@@ -1407,6 +1486,7 @@ export const SimulatorWorkspace: React.FC = () => {
                   return out;
                 }}
                 externalLogTrigger={externalLog}
+                getPrompt={(id) => engineRef.current.getCiscoPrompt(id)}
               />
             )}
 
@@ -1531,6 +1611,33 @@ export const SimulatorWorkspace: React.FC = () => {
         onClose={() => setModalInspectedId(null)}
         defaultShowHex={settings.showHexByDefault}
       />
+
+      {/* Cisco Packet Tracer Device Modal (Physical, Config, CLI, Desktop, Services) */}
+      {ptModalDevice && (
+        <PacketTracerDeviceModal
+          device={ptModalDevice}
+          engine={engineRef.current}
+          links={simLinks}
+          onUpdateDevice={(updated) => {
+            pushHistory(
+              simDevices.map((d) => (d.id === updated.id ? updated : d)),
+              simLinks
+            );
+            setPtModalDevice(updated);
+            bump();
+          }}
+          onClose={() => setPtModalDevice(null)}
+        />
+      )}
+
+      {/* Cisco Packet Tracer In/Out Layers PDU Inspector Modal */}
+      {ptPduModalPacket && (
+        <PacketTracerPduModal
+          packet={ptPduModalPacket}
+          device={liveDevices.find((d) => d.id === ptPduModalPacket.fromDeviceId) || null}
+          onClose={() => setPtPduModalPacket(null)}
+        />
+      )}
     </div>
   );
 };

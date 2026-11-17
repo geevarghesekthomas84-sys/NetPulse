@@ -5,6 +5,7 @@ import {
   Check,
   Download,
   LayoutGrid,
+  Mail,
   Maximize2,
   MessageSquarePlus,
   Plus,
@@ -92,6 +93,11 @@ interface SimCanvasProps {
     exportSvg: () => void;
     fitView?: () => void;
   } | null>;
+  onOpenDeviceModal?: (device: SimDevice) => void;
+  isAddingSimplePdu?: boolean;
+  pduSourceId?: string | null;
+  onSelectSimplePduEndpoint?: (deviceId: string) => void;
+  onCancelSimplePdu?: () => void;
 }
 
 const MULTI_PORT_ROLES = new Set<DeviceRole>([
@@ -170,6 +176,11 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
   stepDurationMs = 720,
   animationTick = 0,
   exportActionsRef,
+  onOpenDeviceModal,
+  isAddingSimplePdu = false,
+  pduSourceId = null,
+  onSelectSimplePduEndpoint,
+  onCancelSimplePdu,
 }) => {
   const { t } = useTranslation();
   const { theme, settings } = useAppStore();
@@ -221,6 +232,16 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
     x: number;
     y: number;
   } | null>(null);
+
+  // Escape cancels Simple PDU mode
+  useEffect(() => {
+    if (!isAddingSimplePdu) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onCancelSimplePdu?.();
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [isAddingSimplePdu, onCancelSimplePdu]);
 
   const devMap = useMemo(() => new Map(devices.map((d) => [d.id, d])), [devices]);
   const recentPackets = useMemo(() => {
@@ -957,6 +978,24 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
           }
         }}
       >
+        {/* Simple PDU Mode Banner */}
+        {isAddingSimplePdu && (
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2.5 rounded-full border border-amber-500/50 bg-amber-950/90 text-amber-200 px-4 py-1.5 shadow-xl backdrop-blur-md text-xs font-semibold animate-in slide-in-from-top-2">
+            <Mail className="w-4 h-4 text-amber-400 animate-pulse" />
+            <span>
+              {pduSourceId
+                ? 'Step 2: Click the Destination device to send Simple PDU (Ping)'
+                : 'Step 1: Click the Source device for the Simple PDU'}
+            </span>
+            <button
+              type="button"
+              onClick={onCancelSimplePdu}
+              className="ml-2 rounded-full bg-amber-800/80 hover:bg-amber-700 px-2 py-0.5 text-[11px] text-white"
+            >
+              Cancel (Esc)
+            </button>
+          </div>
+        )}
         <svg
           ref={svgRef}
           viewBox={`${pan.x} ${pan.y} ${vbW} ${vbH}`}
@@ -1422,8 +1461,17 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                 transform={`translate(${dev.x}, ${dev.y})`}
                 onMouseEnter={() => setHoveredDeviceId(dev.id)}
                 onMouseLeave={() => setHoveredDeviceId((curr) => (curr === dev.id ? null : curr))}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  onOpenDeviceModal?.(dev);
+                }}
                 onMouseDown={(e) => {
                   e.stopPropagation();
+                  if (isAddingSimplePdu) {
+                    onSelectSimplePduEndpoint?.(dev.id);
+                    return;
+                  }
+
                   // If completing a click-mode wire by clicking target device body
                   if (activeWire && activeWire.sourceDeviceId !== dev.id) {
                     const freeIfaces = dev.interfaces.filter((i) => !portConnectionMap.has(`${dev.id}:${i.name}`));
@@ -1457,10 +1505,34 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                   setPortPicker(null);
                   setDraggingId(dev.id);
                 }}
-                className="cursor-pointer"
+                className={isAddingSimplePdu ? 'cursor-crosshair' : 'cursor-pointer'}
               >
                 {/* Generous invisible hit pad so hovering perimeter port handles never flickers */}
                 <circle cx={0} cy={0} r={54} fill="transparent" />
+
+                {/* Packet Tracer Simple PDU Source Marker */}
+                {pduSourceId === dev.id && (
+                  <g transform="translate(0, -46)">
+                    <rect
+                      x={-42}
+                      y={-12}
+                      width={84}
+                      height={20}
+                      rx={6}
+                      fill="#f59e0b"
+                      stroke="#ffffff"
+                      strokeWidth={1.5}
+                    />
+                    <text
+                      x={0}
+                      y={2}
+                      textAnchor="middle"
+                      className="fill-black font-sans text-[10px] font-extrabold uppercase tracking-wider"
+                    >
+                      PDU Source
+                    </text>
+                  </g>
+                )}
 
                 {(isSelected || isWireSource || isSnapTarget) && (
                   <circle

@@ -435,3 +435,19 @@ export interface TopologyWarning {
   deviceId?: string;
   message: string;
 }
+
+export interface CiscoCliSession {
+  mode: 'user' | 'privileged' | 'config' | 'config-if' | 'config-router';
+  ifaceName?: string;
+  routerProto?: string;
+}
+
+export interface SimplePduEntry {
+  id: string;
+  srcId: string;
+  dstId: string;
+  status: 'successful' | 'failed' | 'in_progress';
+  timeMs: number;
+  rttMs: number;
+  info: string;
+}
