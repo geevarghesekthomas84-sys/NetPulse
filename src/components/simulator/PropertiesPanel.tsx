@@ -329,55 +329,40 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
       className="w-full lg:w-[350px] xl:w-[380px] shrink-0 border-t lg:border-t-0 lg:border-s border-[var(--border-hairline)] bg-[var(--bg-surface)] p-4 space-y-4 text-[13px] overflow-y-auto"
     >
       {/* Redesigned Device Header Card */}
-      <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-elevated)]/40 p-3.5 space-y-3 shadow-xs">
-        <div className="flex items-start justify-between gap-3">
+      <div className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-elevated)] p-4 space-y-3.5 shadow-xs">
+        <div className="flex items-center justify-between gap-3">
           {/* Device Icon + Name + Meta */}
-          <div className="flex items-start gap-3 min-w-0 flex-1">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <div
-              className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-all ${
+              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-all ${
                 device.poweredOn
-                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-sm shadow-emerald-500/10'
-                  : 'border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 text-slate-400'
+                  ? 'border-emerald-500/35 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                  : 'border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-400'
               }`}
             >
               <RoleIcon className="w-5 h-5" />
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="relative group">
-                <input
-                  type="text"
-                  aria-label="Device Hostname"
-                  value={device.name}
-                  onChange={(e) => onUpdateDevice({ ...device, name: e.target.value })}
-                  placeholder="Device Name"
-                  className="w-full rounded-lg border border-transparent bg-transparent hover:border-[var(--border-hairline)] hover:bg-[var(--bg-surface)] focus:border-[var(--accent-primary)] focus:bg-[var(--bg-surface)] px-2 py-1 font-display font-bold text-base text-[var(--text-primary)] transition-all outline-none focus:ring-2 focus:ring-[var(--accent-primary)]/15"
-                />
-                <Edit3 className="w-3.5 h-3.5 absolute right-2 top-2.5 text-[var(--text-muted)] opacity-0 group-hover:opacity-60 transition-opacity pointer-events-none" />
-              </div>
-
-              <div className="mt-1 flex flex-wrap items-center gap-1.5 px-2">
-                {/* Role Pill */}
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] tracking-wide">
+              <input
+                type="text"
+                aria-label="Device Hostname"
+                value={device.name}
+                onChange={(e) => onUpdateDevice({ ...device, name: e.target.value })}
+                placeholder="Device Name"
+                className="w-full font-display font-extrabold text-base text-[var(--text-primary)] bg-transparent border-b border-transparent hover:border-[var(--border-strong)] focus:border-[var(--accent-primary)] outline-none py-0.5 transition-colors"
+              />
+              <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]">
                   {roleMeta.label}
                 </span>
-
-                {/* Connection Status Pill */}
-                <span
-                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border ${
-                    deviceLinks.length > 0
-                      ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
-                      : 'border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--text-muted)]'
-                  }`}
-                >
+                <span className="inline-flex items-center gap-1.5 text-xs text-[var(--text-secondary)] font-mono">
                   <span
-                    className={`h-1.5 w-1.5 rounded-full ${
+                    className={`h-2 w-2 rounded-full ${
                       deviceLinks.length > 0 ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'
                     }`}
                   />
-                  <span>
-                    {deviceLinks.length} active {deviceLinks.length === 1 ? 'link' : 'links'}
-                  </span>
+                  {deviceLinks.length} {deviceLinks.length === 1 ? 'link' : 'links'}
                 </span>
               </div>
             </div>
@@ -414,7 +399,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
           <button
             type="button"
             onClick={() => onOpenDeviceModal(device)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-cta)] py-2 text-xs font-bold text-white hover:bg-[var(--accent-cta-hover)] shadow-xs transition-all"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-cta)] py-2.5 text-xs font-bold text-white hover:bg-[var(--accent-cta-hover)] shadow-sm transition-all active:scale-[0.99]"
           >
             <Terminal className="w-4 h-4" />
             <span>Open Device Console & Config</span>

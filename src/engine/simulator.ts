@@ -1434,8 +1434,8 @@ export class SimulationEngine {
       assignedOctet++;
     }
     const assignedIp = `${subnetPrefix}.${assignedOctet}`;
-    const gatewayIp = srvIp;
-    const dnsIp = dhcpServer.dnsServer || '8.8.8.8';
+    const gatewayIp = dhcpServer.services.dhcp?.gateway || srvIp;
+    const dnsIp = dhcpServer.services.dhcp?.dns || dhcpServer.dnsServer || '8.8.8.8';
 
     const startT = this.clockMs;
     // 1. DHCP Discover

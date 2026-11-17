@@ -241,20 +241,48 @@ export const ExploreWorkspace: React.FC = () => {
       : 'h-[310px]';
 
   return (
-    <div className="flex flex-1 min-h-0 flex-col overflow-y-auto bg-[var(--bg-canvas)]">
-      {/* Architectural Full-Page Entry Site */}
+    <div className="flex flex-1 min-h-0 flex-col overflow-hidden bg-[var(--bg-canvas)]">
+      {/* Quick Guide & Overview Modal (shown when requested) */}
       {!welcomeDismissed && (
-        <EntrySite
-          activeProtocolId={activeProtocolId}
-          activeProtocol={protocol}
-          isSimple={isSimple}
-          onSelectProtocol={(id) => selectProtocol(id, 0)}
-          onJumpToWorkbench={jumpToWorkbench}
-          onSwitchToPro={() => setExperienceLevel('pro')}
-          onOpenSimulator={() => setMode('simulator')}
-          onOpenLearn={() => setMode('learn')}
-          onDismiss={dismissWelcome}
-        />
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="NetPulse Quick Guide"
+          className="fixed inset-0 z-50 flex flex-col bg-[var(--bg-canvas)] overflow-y-auto animate-in fade-in"
+        >
+          <div className="sticky top-0 z-30 flex items-center justify-between border-b border-[var(--border-hairline)] bg-[var(--bg-surface)]/95 backdrop-blur-md px-4 py-2.5 shadow-sm">
+            <span className="font-display text-sm font-bold text-[var(--text-primary)]">
+              NetPulse Quick Guide & Architecture Tour
+            </span>
+            <button
+              type="button"
+              onClick={dismissWelcome}
+              aria-label="Close guide modal"
+              title="Close guide modal"
+              className="flex items-center gap-1.5 rounded-lg bg-[var(--accent-cta)] text-white hover:bg-[var(--accent-cta-hover)] px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs"
+            >
+              <X className="w-4 h-4" />
+              <span>Enter Interactive Workbench</span>
+            </button>
+          </div>
+          <EntrySite
+            activeProtocolId={activeProtocolId}
+            activeProtocol={protocol}
+            isSimple={isSimple}
+            onSelectProtocol={(id) => {
+              selectProtocol(id, 0);
+              dismissWelcome();
+            }}
+            onJumpToWorkbench={() => {
+              jumpToWorkbench();
+              dismissWelcome();
+            }}
+            onSwitchToPro={() => setExperienceLevel('pro')}
+            onOpenSimulator={() => setMode('simulator')}
+            onOpenLearn={() => setMode('learn')}
+            onDismiss={dismissWelcome}
+          />
+        </div>
       )}
 
       {/* Top Protocol Workbench Ribbon */}
@@ -425,11 +453,7 @@ export const ExploreWorkspace: React.FC = () => {
       {!customPcapPackets && <GuidedTrackBanner />}
 
       {/* Main Split Stage: Collapsible Steps & OSI Rail | Full-Width Canvas */}
-      <div
-        className={`flex flex-col lg:flex-row flex-1 overflow-hidden ${
-          welcomeDismissed ? 'min-h-[300px]' : 'min-h-[540px]'
-        }`}
-      >
+      <div className="flex flex-col lg:flex-row flex-1 overflow-hidden min-h-0">
         {leftRailOpen && (
           <aside
             aria-label={t('explore.stepsAndOsi')}

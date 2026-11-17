@@ -1,6 +1,20 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Command, Globe, Menu, Moon, Search, Settings, Sparkles, Sun, SlidersHorizontal, X } from 'lucide-react';
+import {
+  BookOpen,
+  Command,
+  Compass,
+  Globe,
+  HelpCircle,
+  Menu,
+  Moon,
+  Network,
+  Search,
+  Settings,
+  SlidersHorizontal,
+  Sun,
+  X,
+} from 'lucide-react';
 import { LANGUAGES } from '../../i18n';
 import { fuzzySearchProtocols } from '../../protocols';
 import { useAppStore } from '../../store/useAppStore';
@@ -78,88 +92,92 @@ export const Header: React.FC = () => {
     <header className="shrink-0 sticky top-0 z-40 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)]/95 backdrop-blur-md">
       <div className="flex min-h-14 flex-wrap items-center justify-between gap-2 sm:gap-3 px-3.5 sm:px-5 py-2">
         {/* Left: Protocol Drawer Toggle + Brand Mark */}
-        <div className="flex items-center gap-2.5 min-w-0 shrink-0">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 shrink-0">
           <button
             type="button"
             onClick={() => setDrawerOpen(!drawerOpen)}
             aria-label={t('nav.protocols')}
             aria-expanded={drawerOpen}
-            className="flex h-9.5 items-center gap-2 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-3 text-[13px] font-semibold text-[var(--text-primary)] hover:border-[var(--accent-teal)] hover:bg-[var(--accent-teal-soft)] transition-colors shrink-0 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-[var(--accent-primary)]"
+            className={`flex h-9.5 items-center gap-2 rounded-xl border px-3 text-[13px] font-bold transition-all shrink-0 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-[var(--accent-primary)] shadow-2xs ${
+              drawerOpen
+                ? 'border-[var(--accent-teal)] bg-[var(--accent-teal-soft)] text-[var(--accent-teal)]'
+                : 'border-[var(--border-hairline)] bg-[var(--bg-inset)]/70 text-[var(--text-primary)] hover:border-[var(--accent-teal)]/50'
+            }`}
           >
             <Menu className="w-4 h-4 text-[var(--accent-teal)]" />
             <span className="hidden xl:inline">{t('nav.protocols')}</span>
+            <span className="rounded-full bg-[var(--bg-surface)] px-1.5 py-0.2 font-mono text-[10px] font-extrabold text-[var(--accent-teal)] border border-[var(--border-hairline)]">
+              39
+            </span>
           </button>
 
           <a
             href="#explore"
             onClick={(e) => {
               e.preventDefault();
-              reopenWelcome();
               setMode('explore');
             }}
-            className="flex items-center whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[var(--accent-primary)] rounded-md px-1"
+            className="flex items-center gap-2 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[var(--accent-primary)] rounded-lg px-1 group"
           >
-            <BrandLogo size={30} showWordmark />
+            <BrandLogo size={32} showWordmark />
+            <span className="hidden sm:inline-block rounded-md bg-[var(--accent-primary-soft)] border border-[var(--accent-primary)]/20 px-1.5 py-0.5 text-[10px] font-mono font-bold text-[var(--accent-primary)] uppercase tracking-wider">
+              v2.4
+            </span>
           </a>
         </div>
 
-        {/* Center: Clean Workspace Mode Switcher + Simple/Pro Toggle (Desktop) */}
-        <div className="hidden md:flex items-center gap-2.5 shrink-0">
+        {/* Center: Modern Unified Mode Bar + Pro Switch */}
+        <div className="hidden md:flex items-center gap-3 shrink-0">
           <nav
             aria-label="Workspace modes"
-            className="flex items-center gap-1 rounded-xl bg-[var(--bg-inset)] p-1 border border-[var(--border-hairline)] shrink-0"
+            className="flex items-center gap-1 rounded-2xl bg-[var(--bg-inset)]/80 p-1 border border-[var(--border-hairline)] shadow-2xs"
           >
-            {(['explore', 'simulator', 'learn'] as const).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => setMode(m)}
-                className={`px-3 sm:px-4 py-1.5 text-[13px] font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[var(--accent-primary)] ${
-                  mode === m
-                    ? 'bg-[var(--accent-cta)] text-white shadow-sm'
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                {t(`nav.${m}`)}
-              </button>
-            ))}
+            {[
+              { id: 'explore', label: t('nav.explore'), icon: Compass },
+              { id: 'simulator', label: t('nav.simulator'), icon: Network },
+              { id: 'learn', label: t('nav.learn'), icon: BookOpen },
+            ].map(({ id, label, icon: Icon }) => {
+              const active = mode === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setMode(id as typeof mode)}
+                  className={`flex items-center gap-2 px-3.5 py-1.5 text-[13px] font-semibold rounded-xl transition-all whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[var(--accent-primary)] ${
+                    active
+                      ? 'bg-[var(--accent-cta)] text-white shadow-sm'
+                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]/60'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{label}</span>
+                </button>
+              );
+            })}
           </nav>
 
-          {/* Simple / Pro Experience Switch */}
-          <div
-            role="group"
-            aria-label="Interface Complexity"
-            className="hidden sm:flex items-center gap-1 rounded-xl bg-[var(--bg-inset)] p-1 border border-[var(--border-hairline)] shrink-0"
+          {/* Pro Mode Chip Toggle */}
+          <button
+            type="button"
+            onClick={() => setExperienceLevel(experienceLevel === 'pro' ? 'simple' : 'pro')}
+            title={experienceLevel === 'pro' ? t('nav.proTooltip') : t('nav.simpleTooltip')}
+            aria-pressed={experienceLevel === 'pro'}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl border transition-all whitespace-nowrap shrink-0 shadow-2xs ${
+              experienceLevel === 'pro'
+                ? 'border-[var(--accent-primary)]/40 bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
+                : 'border-[var(--border-hairline)] bg-[var(--bg-inset)]/70 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)]'
+            }`}
           >
-            <button
-              type="button"
-              onClick={() => setExperienceLevel('simple')}
-              title={t('nav.simpleTooltip')}
-              aria-pressed={experienceLevel === 'simple'}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 ${
-                experienceLevel === 'simple'
-                  ? 'bg-[var(--accent-teal)] text-white shadow-sm'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{t('nav.simpleMode')}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setExperienceLevel('pro')}
-              title={t('nav.proTooltip')}
-              aria-pressed={experienceLevel === 'pro'}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 ${
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            <span>PRO</span>
+            <span
+              className={`h-2 w-2 rounded-full ${
                 experienceLevel === 'pro'
-                  ? 'bg-[var(--accent-cta)] text-white shadow-sm'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                  ? 'bg-[var(--accent-primary)] animate-pulse shadow-[0_0_8px_var(--accent-primary)]'
+                  : 'bg-slate-400'
               }`}
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              <span>{t('nav.proMode')}</span>
-            </button>
-          </div>
+            />
+          </button>
         </div>
 
         {/* Right: Inline Search + Language + Theme + Settings */}
@@ -242,6 +260,18 @@ export const Header: React.FC = () => {
           </button>
 
           <PWAInstallButton />
+
+          {/* Quick Architecture Guide Launcher */}
+          <button
+            type="button"
+            onClick={reopenWelcome}
+            title={t('nav.quickGuide')}
+            aria-label={t('nav.quickGuide')}
+            className="hidden lg:flex h-9 items-center gap-1.5 rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-inset)]/70 px-2.5 text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--accent-primary)] hover:border-[var(--accent-primary)] transition-colors whitespace-nowrap shrink-0 shadow-2xs"
+          >
+            <HelpCircle className="w-3.5 h-3.5 text-[var(--accent-teal)]" />
+            <span>Guide</span>
+          </button>
 
           {experienceLevel === 'pro' && (
             <button
