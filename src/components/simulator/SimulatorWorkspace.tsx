@@ -22,7 +22,7 @@ import { createDefaultInterface, SimulationEngine } from '../../engine/simulator
 import type { CapturedPacket, DeviceRole, LinkMedium, SimDevice, SimLink } from '../../engine/types';
 import { compressTopology, encodeExploreHash } from '../../lib/deepLink';
 import { matchesDisplayFilter, validateDisplayFilter } from '../../lib/displayFilter';
-import { triggerDownload } from '../../lib/pcapWriter';
+import { buildCsvExport, buildPcapFile, triggerDownload } from '../../lib/pcapWriter';
 import { computeSimulationAnalytics } from '../../lib/simAnalytics';
 import { describePacketStateChange, resolveSimShortcutAction, SIM_PLAYBACK_SPEEDS } from '../../lib/simPlayback';
 import { PRESET_LABS, type PresetLab } from '../../simulator/labs';
@@ -983,7 +983,7 @@ export const SimulatorWorkspace: React.FC = () => {
       : 'h-[330px]';
 
   return (
-    <div className="flex flex-1 min-h-0 flex-col overflow-y-auto bg-[var(--bg-canvas)]">
+    <div className="flex flex-1 min-h-0 flex-col overflow-hidden bg-[var(--bg-canvas)]">
       {/* Top Compact Command Strip */}
       <SimControls
         clockMs={displayedClockMs}
@@ -1198,7 +1198,7 @@ export const SimulatorWorkspace: React.FC = () => {
       )}
 
       {/* Middle Stage: Topology Canvas (+ Palette & Inspector in Pro Mode) */}
-      <div className="flex flex-col lg:flex-row flex-1 min-h-[300px] overflow-hidden">
+      <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden">
         {isPro && (
           <DevicePalette
             collapsed={leftRailCollapsed}
@@ -1412,8 +1412,8 @@ export const SimulatorWorkspace: React.FC = () => {
         {dockSize !== 'collapsed' && (
           <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
             {effectiveDockTab === 'capture' && (
-              <div className="flex-1 min-h-0 overflow-y-auto">
-                <div className="border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3 py-2">
+              <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+                <div className="shrink-0">
                   <CaptureFilterBar
                     value={captureFilter}
                     validation={filterValidation}
@@ -1421,24 +1421,37 @@ export const SimulatorWorkspace: React.FC = () => {
                     totalCount={packets.length}
                     onChange={setCaptureFilter}
                     onClear={() => setCaptureFilter('')}
+                    onExportPcap={() => {
+                      const bytes = buildPcapFile(filteredPackets);
+                      const copy = new Uint8Array(bytes.byteLength);
+                      copy.set(bytes);
+                      triggerDownload(new Blob([copy], { type: 'application/vnd.tcpdump.pcap' }), 'gg-sim-capture.pcap');
+                    }}
+                    onExportCsv={() => {
+                      const csv = buildCsvExport(filteredPackets);
+                      triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'gg-sim-capture.csv');
+                    }}
                   />
                 </div>
-                <PacketTable
-                  packets={filteredPackets}
-                  currentPacketIndex={Math.max(0, filteredPackets.length - 1)}
-                  filenamePrefix="gg-sim-capture"
-                  flat
-                  onSelectPacket={(id) => setDockInspectedId(id)}
-                  onInspectPacket={(id) => {
-                    setDockInspectedId(id);
-                    setDockTab('inspector');
-                    setDockSize((s) => (s === 'collapsed' ? 'compact' : s));
-                  }}
-                  externalFilter={captureFilter}
-                  totalPacketCount={packets.length}
-                  onClearExternalFilter={() => setCaptureFilter('')}
-                  hideInternalFilter
-                />
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                  <PacketTable
+                    packets={filteredPackets}
+                    currentPacketIndex={Math.max(0, filteredPackets.length - 1)}
+                    filenamePrefix="gg-sim-capture"
+                    flat
+                    onSelectPacket={(id) => setDockInspectedId(id)}
+                    onInspectPacket={(id) => {
+                      setDockInspectedId(id);
+                      setDockTab('inspector');
+                      setDockSize((s) => (s === 'collapsed' ? 'compact' : s));
+                    }}
+                    externalFilter={captureFilter}
+                    totalPacketCount={packets.length}
+                    onClearExternalFilter={() => setCaptureFilter('')}
+                    hideInternalFilter
+                    hideToolbar
+                  />
+                </div>
               </div>
             )}
 

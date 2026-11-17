@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle, CheckCircle2, Filter, X } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Download, Filter, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { DisplayFilterValidation } from '../../lib/displayFilter';
 
@@ -12,8 +12,8 @@ const FILTER_PRESETS: CaptureFilterPreset[] = [
   { label: 'TCP', expr: 'tcp' },
   { label: 'DNS', expr: 'dns' },
   { label: 'ICMP', expr: 'icmp' },
-  { label: 'SYN Only', expr: 'tcp.flags.syn == 1' },
-  { label: 'HTTP Req', expr: 'http.request' },
+  { label: 'SYN', expr: 'tcp.flags.syn == 1' },
+  { label: 'HTTP', expr: 'http.request' },
   { label: '!ARP', expr: '!arp' },
 ];
 
@@ -24,6 +24,8 @@ interface CaptureFilterBarProps {
   totalCount: number;
   onChange: (next: string) => void;
   onClear: () => void;
+  onExportPcap?: () => void;
+  onExportCsv?: () => void;
 }
 
 export const CaptureFilterBar: React.FC<CaptureFilterBarProps> = ({
@@ -33,23 +35,24 @@ export const CaptureFilterBar: React.FC<CaptureFilterBarProps> = ({
   totalCount,
   onChange,
   onClear,
+  onExportPcap,
+  onExportCsv,
 }) => {
   const { t } = useTranslation();
   const hasFilter = value.trim().length > 0;
 
   return (
     <section
-      aria-label="Simulator Capture Filter"
-      className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)]/60 px-3 py-2.5 space-y-2"
+      aria-label="Simulator Capture Filter Toolbar"
+      className="flex flex-wrap items-center justify-between gap-2.5 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3 py-2 text-xs"
     >
-      <div className="flex flex-wrap items-center gap-2.5">
-        <div className="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--text-primary)] whitespace-nowrap shrink-0">
-          <Filter className="w-3.5 h-3.5 text-[var(--accent-primary)]" aria-hidden="true" />
-          <span>{t('simulator.captureFilter')}</span>
-        </div>
-
-        {/* Display Filter Input */}
-        <div className="relative flex-1 min-w-[240px]">
+      {/* Left: Filter Input with syntax status + Presets */}
+      <div className="flex flex-1 flex-wrap items-center gap-2 min-w-[280px]">
+        {/* Search input with embedded icons */}
+        <div className="relative flex-1 min-w-[220px] max-w-lg flex items-center">
+          <span className="absolute start-2.5 flex items-center pointer-events-none text-[var(--accent-primary)] font-bold text-xs" aria-hidden="true">
+            <Filter className="w-3.5 h-3.5" />
+          </span>
           <input
             type="text"
             value={value}
@@ -63,80 +66,97 @@ export const CaptureFilterBar: React.FC<CaptureFilterBarProps> = ({
             placeholder={t('simulator.filterPlaceholder')}
             aria-label="Wireshark capture display filter"
             aria-invalid={hasFilter && !validation.valid}
-            className={`w-full rounded-lg border bg-[var(--bg-surface)] py-2 ps-3 pe-8 font-mono text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none transition-colors ${
+            className={`h-8 w-full rounded-lg border bg-[var(--bg-inset)] ps-8 pe-16 font-mono text-[12.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none transition-colors ${
               !hasFilter
                 ? 'border-[var(--border-hairline)] focus:border-[var(--accent-primary)]'
                 : validation.valid
-                ? 'border-[var(--tone-success)]/60 focus:border-[var(--tone-success)]'
-                : 'border-[var(--tone-danger)]/70 focus:border-[var(--tone-danger)]'
+                ? 'border-[var(--tone-success)]/80 focus:border-[var(--tone-success)] bg-[var(--tone-success)]/5'
+                : 'border-[var(--tone-danger)]/80 focus:border-[var(--tone-danger)] bg-[var(--tone-danger)]/5'
             }`}
           />
-          {hasFilter && (
-            <button
-              type="button"
-              onClick={onClear}
-              aria-label="Clear capture filter"
-              title={t('simulator.clearFilter')}
-              className="absolute end-2 top-1/2 -translate-y-1/2 rounded p-0.5 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
+          {/* Quick status icon & clear button */}
+          <div className="absolute end-2 flex items-center gap-1.5">
+            {hasFilter && (
+              <>
+                {validation.valid ? (
+                  <span title={t('simulator.validFilter')} className="flex items-center">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[var(--tone-success)]" />
+                  </span>
+                ) : (
+                  <span title={`${t('simulator.invalidFilter')}: ${validation.reason}`} className="flex items-center">
+                    <AlertCircle className="w-3.5 h-3.5 text-[var(--tone-danger)]" />
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={onClear}
+                  aria-label={t('simulator.clearFilter')}
+                  title={t('simulator.clearFilter')}
+                  className="rounded p-0.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Syntax Validation Indicator (Dual-coded icon + text) */}
-        <div className="flex items-center gap-3 shrink-0 text-[13px]">
-          {hasFilter ? (
-            validation.valid ? (
-              <span className="inline-flex items-center gap-1 font-semibold text-[var(--tone-success)] whitespace-nowrap shrink-0">
-                <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>{t('simulator.validFilter')}</span>
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 font-semibold text-[var(--tone-danger)] whitespace-nowrap shrink-0">
-                <AlertCircle className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>{t('simulator.invalidFilter')}: {validation.reason}</span>
-              </span>
-            )
-          ) : (
-            <span className="text-[var(--text-secondary)] whitespace-nowrap shrink-0">{t('simulator.allTraffic')}</span>
-          )}
-
-          <span className="text-[var(--border-strong)]" aria-hidden="true">·</span>
-
-          <span className="font-mono text-xs font-semibold text-[var(--text-secondary)] tabular-nums whitespace-nowrap shrink-0">
-            {matchedCount} / {totalCount}
-          </span>
+        {/* Quick Filter Presets Chips */}
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
+          {FILTER_PRESETS.map((preset) => {
+            const isActive = value.trim().toLowerCase() === preset.expr.toLowerCase();
+            return (
+              <button
+                key={preset.expr}
+                type="button"
+                onClick={() => onChange(isActive ? '' : preset.expr)}
+                aria-pressed={isActive}
+                className={`h-7 rounded-md border px-2 font-mono text-[11px] font-semibold transition-all shrink-0 ${
+                  isActive
+                    ? 'border-[var(--accent-cta)] bg-[var(--accent-cta)] text-white shadow-2xs'
+                    : 'border-[var(--border-hairline)] bg-[var(--bg-inset)]/70 text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]'
+                }`}
+              >
+                {preset.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Preset Filter Controls */}
-      <div className="flex flex-wrap items-center gap-1.5">
-        {FILTER_PRESETS.map((preset) => {
-          const isActive = value.trim().toLowerCase() === preset.expr.toLowerCase();
-          return (
-            <button
-              key={preset.expr}
-              type="button"
-              onClick={() => onChange(isActive ? '' : preset.expr)}
-              aria-pressed={isActive}
-              className={`rounded-md border px-2.5 py-1 font-mono text-xs font-semibold transition-colors whitespace-nowrap shrink-0 ${
-                isActive
-                  ? 'border-[var(--accent-cta)] bg-[var(--accent-cta)] text-white'
-                  : 'border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--accent-primary)]/50 hover:text-[var(--text-primary)]'
-              }`}
-            >
-              {preset.label}
-            </button>
-          );
-        })}
-        {hasFilter && (
+      {/* Right: Matched Counts + Export Action Buttons */}
+      <div className="flex items-center gap-2.5 shrink-0">
+        <span className="font-mono text-xs font-semibold text-[var(--text-secondary)] tabular-nums">
+          <strong className="text-[var(--text-primary)]">{matchedCount}</strong> / {totalCount} pkts
+        </span>
+
+        <span className="h-4 w-px bg-[var(--border-hairline)] shrink-0" aria-hidden="true" />
+
+        {onExportPcap && (
           <button
             type="button"
-            onClick={onClear}
-            className="ms-auto rounded-md border border-[var(--border-hairline)] px-2.5 py-1 text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
+            onClick={onExportPcap}
+            title={t('explore.exportPcap')}
+            aria-label={t('explore.exportPcap')}
+            className="flex h-7.5 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)]/60 px-2.5 font-mono text-xs font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all whitespace-nowrap shadow-2xs"
           >
-            {t('common.clear')}
+            <Download className="w-3 h-3 text-[var(--accent-teal)]" />
+            <span className="hidden sm:inline">{t('explore.exportPcap')}</span>
+            <span className="sm:hidden">PCAP</span>
+          </button>
+        )}
+
+        {onExportCsv && (
+          <button
+            type="button"
+            onClick={onExportCsv}
+            title={t('explore.exportCsv')}
+            aria-label={t('explore.exportCsv')}
+            className="flex h-7.5 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)]/60 px-2.5 font-mono text-xs font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all whitespace-nowrap shadow-2xs"
+          >
+            <Download className="w-3 h-3 text-[var(--accent-teal)]" />
+            <span className="hidden sm:inline">{t('explore.exportCsv')}</span>
+            <span className="sm:hidden">CSV</span>
           </button>
         )}
       </div>

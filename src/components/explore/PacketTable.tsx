@@ -17,6 +17,7 @@ interface PacketTableProps {
   totalPacketCount?: number;
   onClearExternalFilter?: () => void;
   hideInternalFilter?: boolean;
+  hideToolbar?: boolean;
   flat?: boolean;
 }
 
@@ -33,6 +34,7 @@ export const PacketTable: React.FC<PacketTableProps> = ({
   totalPacketCount,
   onClearExternalFilter,
   hideInternalFilter = false,
+  hideToolbar = false,
   flat = false,
 }) => {
   const { t } = useTranslation();
@@ -100,65 +102,67 @@ export const PacketTable: React.FC<PacketTableProps> = ({
       }
     >
       {/* Toolbar: Display Filter + Exports */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] px-3.5 py-2.5">
-        {hideInternalFilter ? (
-          <div className="flex flex-wrap items-center gap-2 text-[13px] font-mono text-[var(--text-secondary)]">
-            <Filter className="w-3.5 h-3.5 text-[var(--tone-info)] shrink-0" />
-            {externalFilter?.trim() ? (
-              <>
-                <span>
-                  {t('simulator.captureFilter')}: <strong className="text-[var(--text-primary)]">{externalFilter}</strong>
-                </span>
-                {onClearExternalFilter && (
-                  <button
-                    type="button"
-                    onClick={onClearExternalFilter}
-                    className="text-xs font-semibold text-[var(--accent-primary)] hover:underline"
-                  >
-                    {t('common.clear')}
-                  </button>
-                )}
-              </>
-            ) : (
-              <span className="text-[var(--text-secondary)]">{t('simulator.allTraffic')}</span>
-            )}
-          </div>
-        ) : (
-          <div className="relative flex-1 min-w-[220px]">
-            <Filter className="w-4 h-4 text-[var(--text-muted)] absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={filterExpr}
-              onChange={(e) => setFilterExpr(e.target.value)}
-              placeholder={t('simulator.filterPlaceholder')}
-              aria-label="Wireshark display filter"
-              className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] py-2 ps-9 pe-3 font-mono text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
-            />
-          </div>
-        )}
+      {!hideToolbar && (
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] px-3.5 py-2.5">
+          {hideInternalFilter ? (
+            <div className="flex flex-wrap items-center gap-2 text-[13px] font-mono text-[var(--text-secondary)]">
+              <Filter className="w-3.5 h-3.5 text-[var(--tone-info)] shrink-0" />
+              {externalFilter?.trim() ? (
+                <>
+                  <span>
+                    {t('simulator.captureFilter')}: <strong className="text-[var(--text-primary)]">{externalFilter}</strong>
+                  </span>
+                  {onClearExternalFilter && (
+                    <button
+                      type="button"
+                      onClick={onClearExternalFilter}
+                      className="text-xs font-semibold text-[var(--accent-primary)] hover:underline"
+                    >
+                      {t('common.clear')}
+                    </button>
+                  )}
+                </>
+              ) : (
+                <span className="text-[var(--text-secondary)]">{t('simulator.allTraffic')}</span>
+              )}
+            </div>
+          ) : (
+            <div className="relative flex-1 min-w-[220px]">
+              <Filter className="w-4 h-4 text-[var(--text-muted)] absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={filterExpr}
+                onChange={(e) => setFilterExpr(e.target.value)}
+                placeholder={t('simulator.filterPlaceholder')}
+                aria-label="Wireshark display filter"
+                className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] py-2 ps-9 pe-3 font-mono text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+              />
+            </div>
+          )}
 
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="font-mono text-xs font-medium text-[var(--text-secondary)] tabular-nums">
-            {visiblePackets.length}/{totalPacketCount ?? packets.length} pkts
-          </span>
-          <button
-            type="button"
-            onClick={handleExportPcap}
-            className="flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] px-3 text-xs font-mono font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>{t('explore.exportPcap')}</span>
-          </button>
-          <button
-            type="button"
-            onClick={handleExportCsv}
-            className="flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] px-3 text-xs font-mono font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>{t('explore.exportCsv')}</span>
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="font-mono text-xs font-medium text-[var(--text-secondary)] tabular-nums">
+              {visiblePackets.length}/{totalPacketCount ?? packets.length} pkts
+            </span>
+            <button
+              type="button"
+              onClick={handleExportPcap}
+              className="flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] px-3 text-xs font-mono font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>{t('explore.exportPcap')}</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleExportCsv}
+              className="flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] px-3 text-xs font-mono font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>{t('explore.exportCsv')}</span>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Table */}
       <div className="overflow-x-auto max-h-80 overflow-y-auto">
