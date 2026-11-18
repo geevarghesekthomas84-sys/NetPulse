@@ -977,10 +977,10 @@ export const SimulatorWorkspace: React.FC = () => {
 
   const dockHeightClass =
     dockSize === 'collapsed'
-      ? 'h-10'
+      ? 'h-9.5'
       : dockSize === 'expanded'
-      ? 'h-[460px]'
-      : 'h-[330px]';
+      ? 'h-[420px] max-h-[60vh]'
+      : 'h-[280px] sm:h-[300px] max-h-[45vh]';
 
   return (
     <div className="flex flex-1 min-h-0 flex-col overflow-hidden bg-[var(--bg-canvas)]">
@@ -1052,8 +1052,8 @@ export const SimulatorWorkspace: React.FC = () => {
       />
 
       {/* Simple Mode Guided Lab Goal Strip */}
-      {!isPro && (
-        <div className="shrink-0 flex flex-wrap items-center justify-between gap-2.5 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-4 py-2.5 text-[13px]">
+      {!isPro && !labsOpen && (
+        <div className="shrink-0 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 py-1.5 text-xs sm:text-[13px] shadow-2xs">
           <div className="flex flex-wrap items-center gap-2.5 min-w-0">
             <span className="font-mono text-xs font-bold text-[var(--accent-primary)] tabular-nums shrink-0">
               Lab {activeLab.number}
@@ -1324,7 +1324,7 @@ export const SimulatorWorkspace: React.FC = () => {
       {/* Bottom Docked Resizable IDE Workbench Deck: Capture | Event Logs | Packet Inspector | CLI | Metrics | Tables */}
       <section
         aria-label="Simulator Docked Console Deck"
-        className={`shrink-0 flex flex-col border-t border-[var(--border-strong)] bg-[var(--bg-surface)] transition-[height] duration-150 ${dockHeightClass}`}
+        className={`shrink-0 flex flex-col border-t border-[var(--border-strong)] bg-[var(--bg-surface)] transition-[height] duration-150 overflow-hidden ${dockHeightClass}`}
       >
         {/* Dock Tab Bar + Size Controls */}
         <div className="shrink-0 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] bg-[var(--bg-inset)] px-3 pt-1.5">
@@ -1474,7 +1474,7 @@ export const SimulatorWorkspace: React.FC = () => {
                     </button>
                   </div>
                 )}
-                <div className="flex-1 overflow-auto">
+                <div className="flex-1 min-h-0 overflow-auto pb-2">
                   <PacketInspectorContent
                     packet={dockedInspectedPacket}
                     defaultShowHex={settings.showHexByDefault}
