@@ -1095,6 +1095,13 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
+            <filter id="simPhotonGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="2" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
 
           {/* Physical Cables / Links */}
@@ -1328,6 +1335,30 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
             const curveGeom = resolvePacketCurveGeometry(a, b, matchedLink, curveOff, devMap, pkt.curvedPath);
             const { x: px, y: py } = computeAnimatedPacketPosition(a, b, tPos, curveGeom.control);
 
+            // Compute proximity to device endpoints to prevent node badge / inspect table collisions
+            const distToA = Math.hypot(px - a.x, py - a.y);
+            const distToB = Math.hypot(px - b.x, py - b.y);
+            const isNearNode = distToA < 54 || distToB < 54;
+            const badgeOffsetY = isNearNode ? -52 : -22;
+
+            // Compute tangent angle along linear or curved vector for directional cyber capsule
+            const angleRad = curveGeom.control
+              ? Math.atan2(
+                  2 * (1 - tPos) * (curveGeom.control.y - a.y) + 2 * tPos * (b.y - curveGeom.control.y),
+                  2 * (1 - tPos) * (curveGeom.control.x - a.x) + 2 * tPos * (b.x - curveGeom.control.x)
+                )
+              : Math.atan2(b.y - a.y, b.x - a.x);
+            const angleDeg = (angleRad * 180) / Math.PI;
+
+            // Lead-packet hierarchy: Only show protocol text on lead packet of a link train to prevent horizontal label clumping
+            const isLeadOnLink = !recentPackets.some((other, oIdx) => {
+              if (oIdx >= idx) return false;
+              return (
+                (other.fromDeviceId === pkt.fromDeviceId && other.toDeviceId === pkt.toDeviceId) ||
+                (other.linkId && other.linkId === pkt.linkId)
+              );
+            });
+
             const color = pkt.dropped ? '#ef4444' : PACKET_COLORS[pkt.colorCategory]?.hex || '#38bdf8';
             const labelText =
               isFocus && activePacketStateNote
@@ -1375,41 +1406,106 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                   opacity={focusPacketId && !isFocus ? 0.42 : 1}
                   className="cursor-pointer"
                 >
+                  {/* Focus Pulsing Beacon Ring */}
                   {isFocus && (
                     <circle
-                      r={simPlaying ? 12 + Math.sin(travelProgress * Math.PI) * 3 : 12}
+                      r={simPlaying ? 13 + Math.sin(travelProgress * Math.PI) * 3 : 13}
                       fill={color}
-                      fillOpacity={0.22}
+                      fillOpacity={0.16}
                       stroke={color}
-                      strokeWidth={1.6}
-                      strokeDasharray="3 2"
+                      strokeWidth={1.4}
+                      strokeDasharray="4 2"
                     />
                   )}
-                  <circle r={isFocus ? 7.5 : 5.5} fill={color} stroke="#ffffff" strokeWidth={1.5} />
+
+                  {/* Directional Cyber Photon Capsule with Motion Chevrons */}
+                  <g transform={`rotate(${angleDeg})`}>
+                    {/* Motion Speed Trail */}
+                    {simPlaying && settings.animationsEnabled && (
+                      <g opacity={0.65}>
+                        <line x1={-15} y1={0} x2={-7} y2={0} stroke={color} strokeWidth={2.4} strokeLinecap="round" strokeOpacity={0.4} />
+                        <line x1={-24} y1={0} x2={-17} y2={0} stroke={color} strokeWidth={1.4} strokeLinecap="round" strokeOpacity={0.22} />
+                      </g>
+                    )}
+                    {/* Outer Capsule / Photon Body */}
+                    <rect
+                      x={isFocus ? -10 : -7}
+                      y={isFocus ? -5.5 : -4}
+                      width={isFocus ? 20 : 14}
+                      height={isFocus ? 11 : 8}
+                      rx={isFocus ? 5.5 : 4}
+                      fill={color}
+                      stroke="#ffffff"
+                      strokeWidth={isFocus ? 1.6 : 1.2}
+                      filter="url(#simPhotonGlow)"
+                    />
+                    {/* Forward Motion Chevrons indicating travel direction */}
+                    <path
+                      d={isFocus ? "M-2.5 -3.2 L1.5 0 L-2.5 3.2 M2 -3.2 L6 0 L2 3.2" : "M-1.5 -2.2 L1.5 0 L-1.5 2.2"}
+                      stroke="#ffffff"
+                      strokeWidth={1.2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                    />
+                  </g>
+
+                  {/* Dropped Warning Indicator */}
                   {pkt.dropped && travelProgress >= 0.45 && (
-                    <path d="M-3.5 -3.5 L3.5 3.5 M3.5 -3.5 L-3.5 3.5" stroke="#ffffff" strokeWidth={1.6} strokeLinecap="round" />
+                    <g>
+                      <circle r={11} fill="#ef4444" fillOpacity={0.25} stroke="#ef4444" strokeWidth={1.4} />
+                      <path d="M-3.5 -3.5 L3.5 3.5 M3.5 -3.5 L-3.5 3.5" stroke="#ffffff" strokeWidth={1.8} strokeLinecap="round" />
+                    </g>
                   )}
+
+                  {/* Anti-Collision Elevated Packet Badge with Callout Anchor */}
                   {isFocus ? (
-                    <g transform="translate(0, -18)">
+                    <g transform={`translate(0, ${badgeOffsetY})`}>
+                      {isNearNode && (
+                        <line
+                          x1={0}
+                          y1={12}
+                          x2={0}
+                          y2={Math.abs(badgeOffsetY) - 10}
+                          stroke={color}
+                          strokeWidth={1.2}
+                          strokeDasharray="2.5 2"
+                          strokeOpacity={0.7}
+                        />
+                      )}
                       <rect
-                        x={-(labelText.length * 3.1 + 10)}
+                        x={-(labelText.length * 3.1 + 12)}
                         y={-11}
-                        width={labelText.length * 6.2 + 20}
-                        height={18}
-                        rx={4}
+                        width={labelText.length * 6.2 + 24}
+                        height={20}
+                        rx={5}
                         fill="var(--bg-surface)"
                         stroke={color}
-                        strokeWidth={1.2}
+                        strokeWidth={1.4}
                       />
-                      <text x={0} y={1.5} textAnchor="middle" className="fill-[var(--text-primary)] text-[8.5px] font-mono font-bold">
+                      <circle cx={-(labelText.length * 3.1 + 3)} cy={-0.5} r={2.8} fill={color} />
+                      <text x={3} y={2.2} textAnchor="middle" className="fill-[var(--text-primary)] text-[8.5px] font-mono font-bold">
                         {labelText}
                       </text>
                     </g>
-                  ) : (
-                    <text x={0} y={-10} textAnchor="middle" className="fill-[var(--text-primary)] text-[9px] font-mono font-bold">
-                      {pkt.protocol}
-                    </text>
-                  )}
+                  ) : isLeadOnLink ? (
+                    <g transform="translate(0, -14)">
+                      <rect
+                        x={-(pkt.protocol.length * 2.8 + 6)}
+                        y={-8}
+                        width={pkt.protocol.length * 5.6 + 12}
+                        height={15}
+                        rx={3.5}
+                        fill="var(--bg-surface)"
+                        stroke={color}
+                        strokeWidth={0.9}
+                        strokeOpacity={0.8}
+                      />
+                      <text x={0} y={2.5} textAnchor="middle" className="fill-[var(--text-primary)] text-[8px] font-mono font-bold">
+                        {pkt.protocol}
+                      </text>
+                    </g>
+                  ) : null}
                 </g>
               </React.Fragment>
             );
@@ -1782,7 +1878,7 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                     <g
                       data-multihop-node={dev.id}
                       data-hop-index={hopIndex}
-                      transform="translate(-30, -34)"
+                      transform="translate(-32, -36)"
                       className="pointer-events-none"
                     >
                       <circle
@@ -1810,7 +1906,7 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                     tabIndex={0}
                     aria-label={t('simulator.inspectTables', { device: dev.name })}
                     data-inspect-tables={dev.id}
-                    transform="translate(30, -34)"
+                    transform="translate(32, -36)"
                     onMouseDown={(e) => {
                       e.stopPropagation();
                       onSelectDevice(dev.id);
