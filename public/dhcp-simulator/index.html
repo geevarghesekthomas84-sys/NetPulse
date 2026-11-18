@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DHCP DORA Flow Simulator &amp; Interactive Visualizer – NetPulse</title>
+    <meta
+      name="description"
+      content="Interactive DHCP DORA (Discover, Offer, Request, Acknowledge) 4-step handshake visualizer. Watch IP address lease negotiations, gateway assignments, and subnet mask delivery live."
+    />
+    <meta
+      name="keywords"
+      content="dhcp dora simulator, dhcp discover offer request ack visualizer, dhcp 4 way handshake, how dhcp works animation, dynamic host configuration protocol simulator, dhcp lease visualizer"
+    />
+    <link rel="canonical" href="https://netpulse.itgg.space/dhcp-simulator/" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/dhcp-simulator/" />
+    <meta property="og:title" content="DHCP DORA Flow Simulator &amp; Interactive Visualizer" />
+    <meta property="og:description" content="Step-by-step visual animation of the 4-stage DHCP DORA protocol handshake." />
+    <meta property="og:image" content="https://netpulse.itgg.space/images/network-simulator-hero.jpg" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "NetPulse – DHCP DORA Flow Simulator",
+        "url": "https://netpulse.itgg.space/dhcp-simulator/",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "All web browsers",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "description": "Interactive visual simulation of DHCP DORA broadcast discovery, offer unicast, request broadcast, and lease acknowledgment."
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root { --bg: #08111e; --surface: #0f1d30; --border: #1e3a5f; --accent: #38bdf8; --teal: #2dd4bf; --text: #f1f5f9; --muted: #94a3b8; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1.6; padding: 24px 16px; }
+      .container { max-width: 960px; margin: 0 auto; }
+      header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+      .brand { font-size: 22px; font-weight: 800; color: var(--accent); text-decoration: none; }
+      .badge { background: rgba(56,189,248,0.15); border: 1px solid var(--accent); color: var(--accent); font-size: 11px; padding: 3px 8px; border-radius: 999px; font-weight: 700; text-transform: uppercase; }
+      h1 { font-size: 36px; font-weight: 800; line-height: 1.2; margin-bottom: 16px; background: linear-gradient(135deg, #ffffff 40%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      p.lead { font-size: 18px; color: var(--muted); margin-bottom: 28px; }
+      .hero-cta { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #fff; font-weight: 700; font-size: 16px; padding: 14px 28px; border-radius: 10px; text-decoration: none; box-shadow: 0 0 25px rgba(14,165,233,0.4); }
+      .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 0 35px rgba(14,165,233,0.6); }
+      .dora-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 30px 0; }
+      .dora-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+      .dora-letter { font-size: 28px; font-weight: 800; color: var(--teal); font-family: 'JetBrains Mono', monospace; }
+      footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); text-align: center; }
+      footer a { color: var(--accent); text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <a href="/" class="brand">⚡ NetPulse</a>
+        <span class="badge">Dynamic IP Allocation</span>
+      </header>
+
+      <main>
+        <h1>DHCP DORA Flow Simulator &amp; Interactive Visualizer</h1>
+        <p class="lead">
+          Watch every step of the DHCP DORA process as an unconfigured client discovers local DHCP servers, receives IP offers, requests lease confirmation, and receives final network parameters.
+        </p>
+
+        <a href="/#explore/dhcp" class="hero-cta">
+          ⚡ Open Interactive DHCP Simulator
+        </a>
+
+        <div class="dora-grid">
+          <div class="dora-card">
+            <div class="dora-letter">D</div>
+            <h3 style="color: var(--accent); font-size: 16px;">Discover</h3>
+            <p style="color: var(--muted); font-size: 13px; margin-top: 6px;">Client broadcasts UDP message on port 67 looking for available DHCP servers.</p>
+          </div>
+          <div class="dora-card">
+            <div class="dora-letter">O</div>
+            <h3 style="color: var(--teal); font-size: 16px;">Offer</h3>
+            <p style="color: var(--muted); font-size: 13px; margin-top: 6px;">DHCP Server reserves an available IP and replies with subnet mask and default gateway.</p>
+          </div>
+          <div class="dora-card">
+            <div class="dora-letter">R</div>
+            <h3 style="color: #a78bfa; font-size: 16px;">Request</h3>
+            <p style="color: var(--muted); font-size: 13px; margin-top: 6px;">Client broadcasts its acceptance of the offered IP address so other servers release theirs.</p>
+          </div>
+          <div class="dora-card">
+            <div class="dora-letter">A</div>
+            <h3 style="color: #4ade80; font-size: 16px;">Acknowledge</h3>
+            <p style="color: var(--muted); font-size: 13px; margin-top: 6px;">Server sends final ACK packet committing the lease and client binds the IP.</p>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+          <a href="/#explore/dhcp" class="hero-cta">Run Live DHCP Simulation in NetPulse &rarr;</a>
+        </div>
+      </main>
+
+      <footer>
+        <p>&copy; 2026 NetPulse. Interactive Network Education. <a href="/">Return to Home</a></p>
+      </footer>
+    </div>
+  </body>
+</html>

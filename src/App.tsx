@@ -61,9 +61,13 @@ export default function App() {
   }, [language]);
 
   useEffect(() => {
-    const hash = window.location.hash;
-    if (!hash) return;
-    const parsed = decodeExploreHash(hash);
+    const rawTarget = window.location.hash
+      ? window.location.hash
+      : window.location.search
+      ? window.location.search.slice(1)
+      : '';
+    if (!rawTarget) return;
+    const parsed = decodeExploreHash(rawTarget);
     if (parsed.theme) setTheme(parsed.theme);
     if (parsed.view) setExploreView(parsed.view);
     if (parsed.speed) setPlaybackSpeed(parsed.speed);
