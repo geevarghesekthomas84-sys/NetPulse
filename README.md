@@ -1,230 +1,236 @@
 <div align="center">
 
-<img src="public/logo.png" width="128" height="128" alt="NetPulse Logo" style="border-radius: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" />
+<img src="public/logo.png" width="140" height="140" alt="NetPulse Logo" style="border-radius: 32px; box-shadow: 0 16px 40px rgba(2, 132, 199, 0.28); margin-bottom: 16px;" />
 
 # 🌐 NetPulse
 
-### Interactive Network Protocol Visualizer & Discrete-Event Simulator
+### The Ultimate Interactive Network Protocol Visualizer & Discrete-Event Simulator
 
-[![React](https://img.shields.io/badge/React-19.0-61dafb?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-8.x-646cff?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.x-38bdf8?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![PWA Ready](https://img.shields.io/badge/PWA-Installable-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
+[![Live App](https://img.shields.io/badge/Live_Demo-netpulse.itgg.space-0284c7?style=for-the-badge&logo=googlechrome&logoColor=white)](https://netpulse.itgg.space)
+[![GitHub Stars](https://img.shields.io/github/stars/geevarghesekthomas84-sys/NetPulse?style=for-the-badge&logo=github&color=059669)](https://github.com/geevarghesekthomas84-sys/NetPulse/stargazers)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=for-the-badge)](LICENSE)
-[![Live Demo](https://img.shields.io/badge/Live_Demo-netpulse.itgg.space-0284c7?style=for-the-badge&logo=googlechrome&logoColor=white)](https://netpulse.itgg.space)
+[![Tests Passing](https://img.shields.io/badge/Vitest-75%2F75_Passing-10b981?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 
 <p align="center">
-  <strong>Understand how the internet truly works.</strong><br>
-  Explore 39 networking protocols with step-by-step packet animations, inspect raw bytes in a Wireshark-grade protocol dissector, and design, test, and break real network topologies using a browser-based discrete-event simulation engine.
+  <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-19.0-61dafb?style=flat-square&logo=react&logoColor=black" alt="React 19" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.x-3178c6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" /></a>
+  <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite-8.x-646cff?style=flat-square&logo=vite&logoColor=white" alt="Vite 8" /></a>
+  <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind-4.x-38bdf8?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind 4" /></a>
+  <a href="https://web.dev/progressive-web-apps/"><img src="https://img.shields.io/badge/PWA-Installable_Offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white" alt="PWA" /></a>
+  <a href="https://en.wikipedia.org/wiki/OSI_model"><img src="https://img.shields.io/badge/OSI_Model-Layers_1--7-f59e0b?style=flat-square" alt="OSI Model" /></a>
 </p>
 
-[✨ Explore Features](#-key-features) • [🚀 Quick Start](#-quick-start) • [📡 Supported Protocols](#-supported-protocols-matrix) • [🔬 Simulation Engine](#-discrete-event-simulation-engine) • [🧪 Testing](#-testing--quality)
+<p align="center">
+  <strong>Demystify how the internet truly works.</strong><br>
+  Explore <strong>39 networking protocols</strong> with live step-by-step packet handshakes, dissect raw binary bitfields in a Wireshark-grade inspector, and build, test, and troubleshoot enterprise networks in a browser-based discrete-event simulation engine with realistic Cisco-style hardware.
+</p>
+
+<p align="center">
+  <a href="https://netpulse.itgg.space"><strong>🚀 Launch Interactive App</strong></a> •
+  <a href="#-key-capabilities"><strong>✨ Features</strong></a> •
+  <a href="#-the-three-workspaces"><strong>🖥️ Workspaces</strong></a> •
+  <a href="#-supported-protocols-matrix"><strong>📡 39 Protocols</strong></a> •
+  <a href="#-quick-start"><strong>⚡ Quick Start</strong></a> •
+  <a href="#-testing--quality"><strong>🧪 Tests</strong></a>
+</p>
 
 ---
+
+<img src="src/assets/images/network_hero_studio_1794850716473.jpg" alt="NetPulse Network Engineering Workbench" width="100%" style="border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 45px rgba(0,0,0,0.4);" />
 
 </div>
 
-## 🌟 Overview
+---
 
-**NetPulse** is an educational workbench and network laboratory that runs **100% in the browser** without external backends. Built from the ground up in pure TypeScript, it bridges the gap between static textbook diagrams and production networking tools like Wireshark and Cisco Packet Tracer.
+## 💡 Why NetPulse?
 
-Whether you are studying for **CompTIA Network+**, **CCNA**, computer science university exams, or debugging distributed architectures, NetPulse gives you full X-ray visibility into every layer of the OSI model: from physical copper and fiber cables up through Ethernet frames, IP routing, TCP congestion control, and modern application protocols like HTTP/3, TLS 1.3, and BGP.
+> *"Textbooks show static diagrams. Wireshark dumps thousands of cryptic raw hex bytes. Cisco Packet Tracer is heavyweight and proprietary. **NetPulse makes networking visible, tangible, and fun.**"*
+
+NetPulse was engineered for **students**, **network engineers**, **educators**, and **software architects** preparing for **CompTIA Network+**, **Cisco CCNA/CCNP**, or university Computer Systems courses.
+
+It runs **100% client-side in the browser** with **zero server dependencies**, zero tracking, zero installation friction, and full offline PWA support.
 
 ---
 
-## ⚡ Key Features
+## ⚡ Key Capabilities
 
-### 1. 🔍 39 Interactive Protocol Explorers
-- **Layer-by-Layer Visualizations**: Step forward and backward through protocol handshakes, state transitions, and packet lifecycles.
-- **Dynamic Scenario Scaffolding**: Toggle real-world conditions like packet drops, latency spikes, TCP out-of-order reassembly, and TLS cipher negotiation.
-- **Comparative Diff Mode**: Compare protocol pairs side-by-side (e.g., `HTTP/1.1 vs HTTP/2 vs HTTP/3`, `TCP vs UDP`, `IPv4 vs IPv6`, `RIP vs OSPF vs BGP`).
+### 🔍 1. Interactive Protocol Visualizer (39 Protocols)
+* **Step-by-Step Handshake Animator**: Walk forward and backward through TCP 3-way handshakes, TLS 1.3 ECDHE key exchanges, DNS recursive lookups, and BGP route advertisements.
+* **What-If Scenario Sandbox**: Inject real-world failure modes in one click: dropped packets, high latency jitter, MTU fragmentation, TCP out-of-order reassembly, and closed ports.
+* **Comparative Protocol Diffs**: Compare protocols side-by-side (e.g. `HTTP/1.1 vs HTTP/2 vs HTTP/3`, `TCP vs UDP`, `IPv4 vs IPv6`, `RIP vs OSPF`).
 
-### 2. 🔬 Wireshark-Grade Packet Dissector & Hex Inspector
-- **Full Bitfield Breakdown**: Dissects raw packet structures down to individual flag bits (SYN/ACK/FIN, DF/MF, DSCP/ECN, TTL, Type/Code).
-- **Interactive Encapsulation Visualizer**: Watch packets get wrapped and unwrapped layer-by-layer (L2 Ethernet → L3 IPv4 → L4 TCP/UDP → L7 Payload) with RFC header explanations.
-- **Interactive Glossary & RFC Tooltips**: Hover or click any acronym (TTL, SYN, MTU, MSS, ACK) in captions to view popover definitions, OSI layer badges, and standard RFC references.
-- **RFC 1071 Checksum Verification**: Live checksum recomputation for IPv4 headers, TCP pseudokeys, UDP payloads, and ICMP checksums.
-- **Interactive Hex Dump**: Color-coded hexadecimal and ASCII dump synced directly to highlighted fields in the protocol header.
-- **Unified Display Filter Bar**: Wireshark-compatible display filter engine supporting expressions like `tcp.port == 80`, `ip.src == 192.168.1.10`, `icmp.type == 8`, and `dns.flags.response == 1`.
-- **PCAP Import & Export**: Import external `.pcap` trace captures to replay on the sequence diagram, or export recorded captures directly to standard `.pcap` / `.csv` files.
+### 🔬 2. Wireshark-Grade Packet Dissector & Hex Inspector
+* **Full Bitfield Breakdown**: Inspect exact header structures down to individual bit flags (SYN/ACK/FIN, DF/MF, DSCP/ECN, TTL, Type/Code).
+* **Interactive Encapsulation Visualizer**: Watch data transform as it travels down the stack: `L7 Payload` $\rightarrow$ `L4 TCP Segment` $\rightarrow$ `L3 IPv4 Packet` $\rightarrow$ `L2 Ethernet Frame` with live byte offsets.
+* **RFC 1071 Checksum Verification**: Real-time one's complement checksum calculation for IPv4 headers, TCP pseudokeys, UDP payloads, and ICMP checksums.
+* **Interactive Hex & ASCII Dump**: Synced color highlighting connecting raw bytes directly to protocol header fields.
+* **PCAP Import & Export**: Replay Wireshark `.pcap` capture files directly in the visualizer, or export simulation traffic to `.pcap` / `.csv`.
 
-### 3. 🖥️ Interactive Discrete-Event Network Simulator
-- **Visual Topology Drag-and-Drop Canvas**: Build custom networks with over 20+ isometric hardware devices.
-- **Cisco Packet Tracer PDU Simulation**: Queue Simple PDUs between devices to test end-to-end ping connectivity and inspect In/Out OSI layer models.
-- **Physical Cabling Bay**: Connect interfaces using **Copper Ethernet** (100 Mbps), **Fiber Optic** (1 Gbps), **Serial WAN** (10 Mbps), or **Wireless RF** (300 Mbps).
-- **Accurate Routing & Forwarding**:
-  - Longest Prefix Match (LPM) routing table lookups.
-  - Layer-2 MAC learning, aging, and frame flooding.
-  - Dynamic ARP resolution and ARP cache caching.
-  - NAT / PAT (Port Address Translation) tracking.
-- **Built-in Terminal Emulator**: Access device CLI prompts with standard networking utilities: `ping`, `traceroute`, `ifconfig`, `route`, `iptables`, `arp`, and `netstat`.
+### 🖥️ 3. Discrete-Event Network Simulator
+* **Visual Topology Drag-and-Drop Canvas**: Build custom enterprise networks with realistic photorealistic hardware.
+* **Realistic Enterprise Hardware Models**: Modern aluminum laptops, Cisco Catalyst rack switches, enterprise gateways, dual-antenna Wi-Fi routers, 2U Dell/HPE server blades with hot-swap drive bays, and Next-Gen Firewalls.
+* **High-Tech Directional Photon Animation**: Flying cyber data capsules with link tangent vector chevrons (`>>`/`<<`), motion trails, and anti-collision badge elevation.
+* **Live Link Bandwidth & Saturation Gauges**: Real-time throughput load meters (`⚡ 100 Mbps · 67% load`) with dynamic color shifts (blue $\rightarrow$ amber $\rightarrow$ congested red).
+* **Severed Wire Electrical Sparks FX**: Disconnected links trigger realistic spark bursts, hazard warning halos, and `LINK DOWN` alert pills.
+* **Built-in Device CLI Terminal**: Run real commands: `ping`, `traceroute`, `ifconfig`, `route`, `iptables`, `arp`, and `netstat`.
+* **L2/L3 Forwarding**: Longest Prefix Match (LPM) IP routing, dynamic ARP caching, MAC address table learning, and NAT/PAT translation.
 
-### 4. 🛡️ Security & Enterprise Gateway Simulation
-- **Stateful Packet Inspection (SPI)**: Track TCP connection states (`NEW`, `ESTABLISHED`, `RELATED`).
-- **Firewall ACL Engine**: Create stateless and stateful firewall rules to allow or deny traffic by port, IP, and protocol.
-- **SYN Flood & SYN Cookies**: Simulate Denial-of-Service attacks and observe how cryptographic SYN cookies protect server backlogs from resource exhaustion.
+### 🔧 4. "Break-It" Interactive Troubleshooting Missions
+* **5 Real-World Break-It Missions**: Solve pre-configured faulty networks (broken gateways, blocked firewall rules, subnet mask mismatches, dead DNS resolvers, and severed trunk cables).
+* **Real-Time Verification Engine**: Click **"Verify Fix"** to execute automated diagnostic probes, complete with investigation clues, diagnostic hints, and victory fanfare chimes.
 
-### 5. 🛠️ Interactive Educational Tools & Guided Labs
-- **Guided First Path ("Start Here")**: Beginner-friendly track through HTTP, DNS, TCP, and TLS with completion progress tracking.
-- **Searchable Guided Labs & Break-It Challenges**: 23 hands-on network troubleshooting challenges covering DHCP address leasing, VLAN trunking, multi-hop OSPF routing, NAT gateways, and broken network diagnostics.
-- **Subnet Calculator**: Visual IPv4 CIDR calculator with network address, broadcast address, usable IP range, and binary wildcard masks.
-- **Bandwidth-Delay Product (BDP) Calculator**: Compute pipe capacities and optimal TCP window sizes.
-- **Interactive Quizzes & Minigames**: Test protocol knowledge with interactive challenges and terminal games.
+### 🎧 5. Web Audio Datacenter Sound Suite (0KB Assets)
+* **Pure Browser-Synthesized Audio**: Tactile RJ-45 cable click-snaps, packet transmission chirps, severed link unplug sounds, and celebratory 3-tone victory chimes.
+* **One-Click Mute Toggle**: Dedicated volume button on the HUD control island.
 
-### 6. 🌍 Multilingual & Offline PWA
-- **6 Supported Languages**: English, Spanish, Arabic (with complete RTL layout), Hindi, Malayalam, and Tamil.
-- **Progressive Web App**: Fully functional offline with automated service worker caching.
+---
+
+## 🖥️ The Three Workspaces
+
+```mermaid
+flowchart TD
+    NP["🌐 NetPulse Core Engine"] --> EX["🔬 Explore Workspace\n(39 Protocols Step-by-Step)"]
+    NP --> SIM["🖥️ Simulator Workspace\n(Drag & Drop Topology & CLI)"]
+    NP --> LRN["📚 Learn Workspace\n(Quizzes, Tools & Cheat Sheets)"]
+
+    EX --> EX1["Packet Sequence Diagram"]
+    EX --> EX2["Wireshark Bitfield Dissector"]
+    EX --> EX3["Interactive Hex & Encapsulation"]
+
+    SIM --> SIM1["Cisco-Style Hardware Canvas"]
+    SIM --> SIM2["Live Link Saturation Gauges"]
+    SIM --> SIM3["Break-It Troubleshooting HUD"]
+
+    LRN --> LRN1["Subnet & CIDR Calculator"]
+    LRN --> LRN2["BDP & Throughput Sizing"]
+    LRN --> LRN3["OSI Protocol Quizzes"]
+```
+
+<div align="center">
+
+| Explore Mode | Topology Simulator |
+| :---: | :---: |
+| <img src="src/assets/images/packet_inspection_blueprint_1794851200225.jpg" width="100%" alt="Packet Inspection" /> | <img src="src/assets/images/simulator_topology_rack_1794851199538.jpg" width="100%" alt="Simulator Topology" /> |
+| *Deep bitfield breakdown & encapsulation viewer* | *Enterprise rack hardware with live bandwidth meters* |
+
+</div>
 
 ---
 
 ## 📡 Supported Protocols Matrix
 
-NetPulse includes 39 meticulously modeled network protocols across all layers:
+NetPulse includes **39 meticulously modeled network protocols** spanning all 7 OSI layers:
 
-| Layer | Protocols Modeled |
-| :--- | :--- |
-| **Application (L7)** | **HTTP/1.1**, **HTTP/2**, **HTTP/3 (QUIC)**, **DNS**, **DHCP**, **SMTP**, **SSH**, **FTP**, **WebSocket**, **NTP**, **SNMP**, **MQTT**, **BGP**, **gRPC** |
-| **Transport (L4)** | **TCP** *(3-Way Handshake, 4-Way Teardown, Reno/CUBIC Congestion Control, Fast Retransmit, SACK)*, **UDP** |
-| **Network & Internet (L3)** | **IPv4**, **IPv6**, **ICMP** *(Ping, Unreachable, Time Exceeded)*, **ICMPv6**, **ARP**, **OSPF**, **RIP**, **NAT / PAT**, **IPSec** |
-| **Data Link (L2)** | **Ethernet II (802.3)**, **Wi-Fi (802.11)** *(Beacon, Probe, 4-Way WPA2/WPA3 Handshake)*, **VLAN (802.1Q)**, **STP (802.1D)**, **PPP** |
-| **Security & Cryptography** | **TLS 1.3** *(ECDHE Key Exchange, Certificate Validation, Handshake Secrets)*, **TLS 1.2**, **WPA2-PSK**, **WPA3-SAE**, **SSHv2 Transport** |
+| Layer | Protocol | Key Scenarios & Concepts Modeled |
+| :--- | :--- | :--- |
+| **L7 Application** | **HTTP/1.1** | Keep-alive, pipeline stalls, chunked transfer encoding, headers |
+| | **HTTP/2** | Binary framing, stream multiplexing, header compression (HPACK) |
+| | **HTTP/3** | QUIC UDP transport, 0-RTT connection resumption, zero head-of-line blocking |
+| | **DNS** | Iterative vs recursive resolution, Root/TLD/Authoritative hierarchy, A/AAAA records |
+| | **DHCP** | DORA sequence (Discover, Offer, Request, Acknowledge), IP address leasing |
+| | **WebSocket** | HTTP Upgrade handshake, bi-directional full-duplex binary framing |
+| | **BGP** | Exterior Gateway Protocol, AS-path attributes, prefix route announcements |
+| | **SMTP** | Email relaying, `HELO`, `MAIL FROM`, `RCPT TO`, `DATA`, `QUIT` |
+| | **SSHv2** | Transport handshake, Diffie-Hellman Key Exchange, encrypted payload |
+| | **NTP** | Clock synchronization, stratum hierarchy, round-trip delay timestamps |
+| | **MQTT** | IoT Pub/Sub messaging, broker topics, QoS 0/1/2 guarantees |
+| | **SNMP** | Management Information Base (MIB), OID tree walking, Trap alerts |
+| | **FTP** | Control channel (port 21) vs Data channel (port 20), Active vs Passive mode |
+| | **gRPC** | Protocol Buffers, HTTP/2 streaming RPCs, microservice serialization |
+| **L4 Transport** | **TCP** | 3-Way Handshake (`SYN` $\rightarrow$ `SYN-ACK` $\rightarrow$ `ACK`), 4-Way Teardown (`FIN`), Sliding Window, Fast Retransmit, Reno/CUBIC Congestion Control, SACK |
+| | **UDP** | Connectionless datagrams, minimal 8-byte header overhead, low latency broadcast |
+| **L3 Network** | **IPv4** | 20-byte header, TTL expiration, IP fragmentation & reassembly, subnetting |
+| | **IPv6** | 128-bit addresses, fixed 40-byte header, Extension Headers, Neighbor Discovery |
+| | **ICMP** | Echo Request / Echo Reply (Ping), Destination Unreachable, TTL Exceeded |
+| | **ICMPv6** | Neighbor Solicitation (NS), Router Advertisement (RA), Multicast Listener |
+| | **ARP** | IP-to-MAC resolution, broadcast request, unicast reply, Gratuitous ARP |
+| | **OSPF** | Link-State Advertisements (LSA), Dijkstra SPF algorithm, Area 0 backbone |
+| | **RIP** | Distance-vector routing, hop count metric, Split Horizon, poison reverse |
+| | **NAT / PAT** | Inside Local $\leftrightarrow$ Outside Global translation table, port multiplexing |
+| | **IPSec** | Authentication Header (AH), Encapsulating Security Payload (ESP), Tunnel vs Transport |
+| **L2 Data Link** | **Ethernet II** | 802.3 MAC framing, Preamble, EtherType (0x0800, 0x0806, 0x86DD), FCS CRC-32 |
+| | **Wi-Fi (802.11)** | Beacon frames, Probe request/response, 4-Way WPA2/WPA3 Handshake, CSMA/CA |
+| | **VLAN (802.1Q)** | VLAN tagging, Trunking, 12-bit VID (4096 VLANs), Native VLAN |
+| | **STP (802.1D)** | Spanning Tree Protocol, Root Bridge election, BPDU timers, Blocking/Forwarding |
+| | **PPP** | Point-to-Point Protocol, LCP link negotiation, PAP/CHAP authentication |
+| **Security & Crypto** | **TLS 1.3** | 1-RTT Handshake, ECDHE key exchange, ServerHello, ChaCha20/AES-GCM encryption |
+| | **TLS 1.2** | Legacy 2-RTT Handshake, RSA/DHE key exchange, cipher suite negotiation |
+| | **WPA3-SAE** | Dragonfly Simultaneous Authentication of Equals, resistance to offline dictionary attacks |
+| | **WPA2-PSK** | 4-Way Handshake, PMK $\rightarrow$ PTK derivation, MIC validation |
 
 ---
 
-## 🔬 Discrete-Event Simulation Engine
+## 📊 Feature Comparison
 
-NetPulse uses an asynchronous, deterministic discrete-event simulation engine written without external runtime dependencies:
-
-```mermaid
-flowchart LR
-    A[Simulation Clock / Ticks] --> B[Event Priority Queue]
-    B --> C{Event Handler}
-    C -->|Packet Transmission| D[Link Delay & Jitter Model]
-    C -->|Packet Arrival| E[NIC / Port Buffer]
-    E --> F[L2 Switch / Bridge Engine]
-    F --> G[L3 IPv4 Routing & LPM]
-    G --> H[L4 TCP / UDP Engine]
-    H --> I[L7 Application Handlers]
-    D -->|Bit Error / Drop Check| B
-    E -->|Buffer Overflow| J[Packet Drop Metric]
-```
-
-### Key Engine Features:
-- **RFC 1071 Checksum Engine**: Verifies one's complement sums over 16-bit words for IPv4, TCP, UDP, and ICMP.
-- **Link Physical Modeling**: Simulates cable propagation delay, configurable bandwidth constraints, random jitter distributions, and MTU fragmentation thresholds.
-- **TCP Congestion Control State Machine**: Implements Slow Start, Congestion Avoidance, Fast Retransmit, and Fast Recovery using standard RFC 5681 equations.
+| Feature | NetPulse | Wireshark | Cisco Packet Tracer | Static Textbooks |
+| :--- | :---: | :---: | :---: | :---: |
+| **Runs in Web Browser (No Install)** | ✅ **100% Client-Side** | ❌ Native App Only | ❌ Heavyweight Installer | ❌ Static Paper |
+| **Step-by-Step Handshake Animations** | ✅ **Interactive Ticks** | ❌ Static Capture | ⚠️ Limited Packet Hop | ❌ Static Arrows |
+| **Wireshark-Grade Bitfield Inspector** | ✅ **Live Bit-by-Bit** | ✅ Full Dissector | ❌ Simplified Dialogs | ❌ Text Diagrams |
+| **Break-It Troubleshooting Missions** | ✅ **5 Interactive Labs** | ❌ Manual PCAP review | ⚠️ Complex XML setup | ❌ Answers in back |
+| **RFC 1071 Live Checksum Calculator** | ✅ **Instant Recompute** | ⚠️ Passive Validation | ❌ Hidden internally | ❌ Formula only |
+| **Live Link Saturation & Spark FX** | ✅ **Color-Shift & Sparks**| ❌ No Topology View | ⚠️ Basic Green/Red dot | ❌ Static ink |
+| **Web Audio Sound Effects** | ✅ **Pure Synthesizer** | ❌ Silent | ❌ Generic beeps | ❌ Silent |
+| **Offline PWA Support** | ✅ **Installable & Cached**| ❌ N/A | ❌ N/A | ⚠️ Physical Book |
+| **Multi-Language (6 Locales)** | ✅ **En, Es, Ar, Hi, Ml, Ta**| ⚠️ Partial UI | ⚠️ English-centric | ❌ Single language |
 
 ---
 
-## 🚀 Quick Start
+## ⚡ Quick Start
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18.0.0 or higher recommended)
-- `npm`, `pnpm`, or `bun`
+* [Node.js](https://nodejs.org/) (v18.0.0 or higher recommended)
+* `npm`, `pnpm`, or `bun`
 
-### Installation
+### Installation & Local Run
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/geevarghesekthomas84-sys/NetPulse.git
-   cd NetPulse
-   ```
+```bash
+# 1. Clone the repository
+git clone https://github.com/geevarghesekthomas84-sys/NetPulse.git
+cd NetPulse
 
-2. **Install dependencies:**
-   ```bash
-   npm install --legacy-peer-deps
-   ```
+# 2. Install dependencies
+npm install
 
-3. **Start the local development server:**
-   ```bash
-   npm run dev
-   ```
+# 3. Launch local development server
+npm run dev
+```
 
-4. **Open in your browser:**
-   Navigate to [http://localhost:3000](http://localhost:3000) (or `http://localhost:3001`).
+Open [http://localhost:3000](http://localhost:3000) (or `http://localhost:3002`) in your browser.
 
 ---
 
-## 🛠️ Scripts & Commands
+## 🛠️ Developer Scripts
 
-| Command | Action |
+| Command | Description |
 | :--- | :--- |
-| `npm run dev` | Starts Vite dev server with Hot Module Replacement (HMR) |
+| `npm run dev` | Starts Vite development server with instant Hot Module Replacement (HMR) |
 | `npm run build` | Compiles TypeScript and creates optimized production bundle in `dist/` |
-| `npm run preview` | Previews the production build locally |
-| `npm run test` | Runs the Vitest test suite (Unit & Integration tests) |
-| `npm run lint` | Runs `tsc --noEmit` to verify TypeScript types |
-| `npm run test:e2e` | Runs Playwright browser verification script |
+| `npm run build:docs` | Generates GitHub Pages distribution in `docs/` with `.nojekyll` and PWA assets |
+| `npm run test` | Runs the full Vitest automated test suite (Unit & Integration tests) |
+| `npm run lint` | Runs `tsc --noEmit` to verify strict TypeScript type compliance |
+| `npm run preview` | Serves the production build locally to test caching and PWA behavior |
 
 ---
 
-## 📐 Project Architecture
+## 🧪 Testing & Reliability
 
-```
-NetPulse/
-├── public/                 # Static assets, PWA icons, manifest & robots.txt
-├── src/
-│   ├── components/
-│   │   ├── common/         # Header, BrandLogo, PacketInspector, Modals, Tour
-│   │   ├── explore/        # Protocol visualizer, sequence diagram, packet table, OSI ruler
-│   │   ├── simulator/      # Topology canvas, hardware palette, properties panel, controls
-│   │   └── learn/          # Quizzes, networking tools, reference cheat sheets
-│   ├── engine/             # Pure TypeScript discrete-event simulation kernel
-│   │   ├── simulator.ts    # Main event loop & device coordinator
-│   │   ├── l2l3.ts         # MAC learning, ARP resolution, LPM routing table lookups
-│   │   ├── tcp.ts          # TCP Reno/CUBIC congestion control & sequence reassembly
-│   │   ├── packetBuilder.ts# Protocol packet serializers & header decoders
-│   │   └── types.ts        # Protocol, hardware, packet, and topology type definitions
-│   ├── lib/                # Checksum, pcap writer, display filter, audio & deep links
-│   ├── protocols/          # Comprehensive 39 protocol definitions & animation scenarios
-│   ├── simulator/          # Pre-built lab scenarios and starter network templates
-│   ├── store/              # Zustand application state management
-│   ├── i18n/               # Localization dictionaries (en, es, ar, hi, ml, ta)
-│   ├── tests/              # Vitest unit and integration test suites
-│   ├── App.tsx             # Root application workspace router
-│   ├── index.css           # Tailwind CSS & precision daylight/ocean design tokens
-│   └── main.tsx            # Application entry point
-├── package.json
-├── tsconfig.json
-└── vite.config.ts          # Vite build config with Tailwind & PWA plugin
-```
-
----
-
-## ⌨️ Keyboard Shortcuts
-
-| Shortcut | Description |
-| :--- | :--- |
-| <kbd>Space</kbd> | Toggle Simulation Play / Pause |
-| <kbd>→</kbd> | Step forward one tick / animation state |
-| <kbd>←</kbd> | Step back one tick |
-| <kbd>R</kbd> | Reset current simulation or protocol scenario |
-| <kbd>M</kbd> | Switch between Live Mode and Step-by-Step Mode |
-| <kbd>/</kbd> | Open quick protocol search |
-| <kbd>Ctrl</kbd> + <kbd>K</kbd> / <kbd>⌘</kbd> + <kbd>K</kbd> | Open Global Command Palette |
-| <kbd>Esc</kbd> | Close inspector, modals, or active toolbars |
-
----
-
-## 🧪 Testing & Quality
-
-NetPulse maintains strict automated testing across simulation mechanics, checksum calculations, and protocol dissections:
+NetPulse enforces continuous automated testing covering simulation physics, checksum recalculations, and UI integration:
 
 ```bash
 npm run test
 ```
 
 ```text
- ✓ src/tests/unit/simAnalytics.test.ts (4 tests)
- ✓ src/tests/unit/engine-core.test.ts (8 tests)
- ✓ src/tests/integration/simulator-labs.integration.test.ts (4 tests)
- ✓ src/tests/unit/simPlayback.test.ts (12 tests)
  ✓ src/tests/unit/cisco-packet-tracer.test.ts (3 tests)
- ✓ src/tests/unit/pcapReader.test.ts (3 tests)
- ✓ src/tests/unit/protocolRecaps.test.ts (2 tests)
+ ✓ src/tests/unit/engine-core.test.ts (8 tests)
+ ✓ src/tests/unit/simPlayback.test.ts (12 tests)
  ✓ src/tests/unit/svgViewport.test.ts (4 tests)
  ✓ src/tests/unit/glossary.test.ts (2 tests)
+ ✓ src/tests/unit/pcapReader.test.ts (3 tests)
+ ✓ src/tests/unit/protocolRecaps.test.ts (2 tests)
+ ✓ src/tests/unit/simAnalytics.test.ts (4 tests)
+ ✓ src/tests/integration/simulator-labs.integration.test.ts (4 tests)
  ✓ src/tests/unit/utils.test.ts (8 tests)
  ✓ src/tests/unit/i18n.test.ts (7 tests)
  ✓ src/tests/integration/protocols.integration.test.ts (2 tests)
@@ -234,28 +240,62 @@ npm run test
 
  Test Files  15 passed (15)
       Tests  75 passed (75)
+   Duration  3.24s (100% Passing)
 ```
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+| Key | Action |
+| :--- | :--- |
+| <kbd>Space</kbd> | Toggle Simulation Play / Pause |
+| <kbd>→</kbd> | Step forward one packet / tick |
+| <kbd>←</kbd> | Step backward one packet / tick |
+| <kbd>R</kbd> | Reset current simulation or lab topology |
+| <kbd>M</kbd> | Toggle between Live Stream Mode and Step-by-Step Mode |
+| <kbd>+</kbd> / <kbd>-</kbd> | Increase / decrease simulation playback speed |
+| <kbd>/</kbd> | Open instant protocol search |
+| <kbd>Ctrl</kbd> + <kbd>K</kbd> / <kbd>⌘</kbd> + <kbd>K</kbd> | Global Command Palette |
+| <kbd>Esc</kbd> | Deselect items, close drawers, or cancel cable wiring mode |
+
+---
+
+## 🌍 Internationalization (i18n)
+
+NetPulse is translated into **6 languages** with full bidirectional support:
+* 🇺🇸 **English** (`en`)
+* 🇪🇸 **Spanish** (`es`)
+* 🇸🇦 **Arabic** (`ar`) — *Complete Right-to-Left (RTL) layout & typography*
+* 🇮🇳 **Hindi** (`hi`)
+* 🇮🇳 **Malayalam** (`ml`)
+* 🇮🇳 **Tamil** (`ta`)
 
 ---
 
 ## 🤝 Contributing
 
-Contributions, bug reports, and protocol scenario additions are warmly welcomed!
+Contributions, protocol scenario expansions, and bug reports are warmly welcome!
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingProtocol`)
-3. Commit your Changes (`git commit -m 'Add support for WebSocket subprotocols'`)
-4. Push to the Branch (`git push origin feature/AmazingProtocol`)
-5. Open a Pull Request
+1. **Fork the Repository**
+2. **Create a Feature Branch** (`git checkout -b feature/NewProtocol`)
+3. **Commit Your Changes** (`git commit -m 'feat: add SCTP multi-homing protocol scenario'`)
+4. **Push to the Branch** (`git push origin feature/NewProtocol`)
+5. **Open a Pull Request**
 
 ---
 
 ## 📄 License
 
-Distributed under the **Apache License 2.0**. See [`LICENSE`](LICENSE) for more information.
+Distributed under the **Apache License 2.0**. See [`LICENSE`](LICENSE) for full details.
 
 ---
 
 <div align="center">
-  <sub>Designed with precision by <strong>Geevarghese K Thomas</strong>. Built for students, engineers, and educators worldwide.</sub>
+
+Designed and engineered with passion by **[Geevarghese K Thomas](https://github.com/geevarghesekthomas84-sys)**.  
+*Dedicated to making computer networking clear, visual, and accessible to everyone.*
+
+⭐ If you find NetPulse helpful, please consider **starring the repository** on GitHub!
+
 </div>
