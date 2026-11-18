@@ -1392,11 +1392,19 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
             const curveGeom = resolvePacketCurveGeometry(a, b, matchedLink, curveOff, devMap, pkt.curvedPath);
             const { x: px, y: py } = computeAnimatedPacketPosition(a, b, tPos, curveGeom.control);
 
+            const color = pkt.dropped ? '#ef4444' : PACKET_COLORS[pkt.colorCategory]?.hex || '#38bdf8';
+            const labelText =
+              isFocus && activePacketStateNote
+                ? `#${pkt.no} ${pkt.protocol} · ${activePacketStateNote}`
+                : isFocus
+                ? `#${pkt.no} ${pkt.protocol}`
+                : pkt.protocol;
+
             // Compute proximity to device endpoints to prevent node badge / inspect table collisions
             const distToA = Math.hypot(px - a.x, py - a.y);
             const distToB = Math.hypot(px - b.x, py - b.y);
-            const isNearNode = distToA < 54 || distToB < 54;
-            const badgeOffsetY = isNearNode ? -52 : -22;
+            const isNearNode = distToA < 60 || distToB < 60;
+            const badgeOffsetY = isNearNode ? (labelText.length > 16 ? -72 : -68) : -24;
 
             // Compute tangent angle along linear or curved vector for directional cyber capsule
             const angleRad = curveGeom.control
@@ -1407,22 +1415,18 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
               : Math.atan2(b.y - a.y, b.x - a.x);
             const angleDeg = (angleRad * 180) / Math.PI;
 
-            // Lead-packet hierarchy: Only show protocol text on lead packet of a link train to prevent horizontal label clumping
-            const isLeadOnLink = !recentPackets.some((other, oIdx) => {
-              if (oIdx >= idx) return false;
-              return (
-                (other.fromDeviceId === pkt.fromDeviceId && other.toDeviceId === pkt.toDeviceId) ||
-                (other.linkId && other.linkId === pkt.linkId)
-              );
-            });
-
-            const color = pkt.dropped ? '#ef4444' : PACKET_COLORS[pkt.colorCategory]?.hex || '#38bdf8';
-            const labelText =
-              isFocus && activePacketStateNote
-                ? `#${pkt.no} ${pkt.protocol} · ${activePacketStateNote}`
-                : isFocus
-                ? `#${pkt.no} ${pkt.protocol}`
-                : pkt.protocol;
+            // Lead-packet hierarchy: Only show protocol text on lead packet of a link train to prevent horizontal label clumping.
+            // When an active focus packet is present, suppress background trailing packet labels to maintain a clean HUD.
+            const isLeadOnLink =
+              !focusPacketId &&
+              !recentPackets.some((other, oIdx) => {
+                if (oIdx >= idx) return false;
+                const samePair =
+                  (other.fromDeviceId === pkt.fromDeviceId && other.toDeviceId === pkt.toDeviceId) ||
+                  (other.fromDeviceId === pkt.toDeviceId && other.toDeviceId === pkt.fromDeviceId);
+                const sameLink = Boolean(other.linkId && pkt.linkId && other.linkId === pkt.linkId);
+                return samePair || sameLink;
+              });
 
             return (
               <React.Fragment key={pkt.id}>
