@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Cable, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { Cable, ChevronLeft, ChevronRight, ChevronUp, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { DeviceRole, LinkMedium } from '../../engine/types';
 import { IsometricDeviceIcon } from '../common/IsometricIcons';
@@ -68,17 +68,23 @@ export const DevicePalette: React.FC<DevicePaletteProps> = ({
     return (
       <aside
         aria-label="Collapsed Hardware Palette"
-        className="hidden lg:flex w-12 shrink-0 flex-col items-center border-e border-[var(--border-hairline)] bg-[var(--bg-surface)] py-2 gap-2"
+        className="flex lg:flex-col w-full lg:w-12 shrink-0 items-center justify-between lg:justify-start border-b lg:border-b-0 lg:border-e border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3 py-1.5 lg:py-2 gap-2 shadow-2xs"
       >
-        <button
-          type="button"
-          onClick={onToggleCollapse}
-          title="Expand Hardware & Cabling Rail"
-          aria-label="Expand Hardware & Cabling Rail"
-          className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/60"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            title="Expand Hardware & Cabling Rail"
+            aria-label="Expand Hardware & Cabling Rail"
+            className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/60 transition-colors"
+          >
+            <ChevronRight className="w-4 h-4 hidden lg:inline" />
+            <Plus className="w-4 h-4 lg:hidden text-[var(--accent-primary)]" />
+          </button>
+          <span className="lg:hidden text-xs font-bold text-[var(--text-primary)]">
+            {t('simulator.palette')}
+          </span>
+        </div>
 
         <button
           type="button"
@@ -86,18 +92,19 @@ export const DevicePalette: React.FC<DevicePaletteProps> = ({
           title={t('simulator.connectCable')}
           aria-label="Toggle Connect Cable"
           aria-pressed={connectMode}
-          className={`flex h-8 w-8 items-center justify-center rounded-md border transition-colors ${
+          className={`flex h-7.5 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-semibold transition-colors ${
             connectMode
               ? 'border-[var(--accent-cta)] bg-[var(--accent-cta)] text-white'
               : 'border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
           }`}
         >
-          <Cable className="w-4 h-4" />
+          <Cable className="w-3.5 h-3.5" />
+          <span className="lg:hidden">{connectMode ? t('simulator.cancelConnect') : t('simulator.connectCable')}</span>
         </button>
 
-        <span className="h-px w-6 bg-[var(--border-hairline)]" />
+        <span className="hidden lg:block h-px w-6 bg-[var(--border-hairline)]" />
 
-        <div className="flex flex-col gap-1.5 overflow-y-auto px-1">
+        <div className="hidden lg:flex flex-col gap-1.5 overflow-y-auto px-1">
           {PALETTE_ITEMS.slice(0, 8).map((item) => (
             <button
               key={item.role}
@@ -119,11 +126,11 @@ export const DevicePalette: React.FC<DevicePaletteProps> = ({
   return (
     <aside
       aria-label="Network Hardware & Cabling Rail"
-      className="flex lg:w-[276px] shrink-0 flex-col border-b lg:border-b-0 lg:border-e border-[var(--border-hairline)] bg-[var(--bg-surface)] overflow-hidden"
+      className="flex lg:w-[276px] max-h-60 lg:max-h-none shrink-0 flex-col border-b lg:border-b-0 lg:border-e border-[var(--border-hairline)] bg-[var(--bg-surface)] overflow-hidden shadow-2xs"
     >
       {/* Header + Collapse */}
-      <div className="flex items-center justify-between border-b border-[var(--border-hairline)] px-4 py-2.5">
-        <span className="font-display text-sm font-bold tracking-tight text-[var(--text-primary)]">
+      <div className="flex items-center justify-between border-b border-[var(--border-hairline)] px-3.5 py-2">
+        <span className="font-display text-xs sm:text-sm font-bold tracking-tight text-[var(--text-primary)]">
           {t('simulator.palette')}
         </span>
         <button
@@ -131,9 +138,10 @@ export const DevicePalette: React.FC<DevicePaletteProps> = ({
           onClick={onToggleCollapse}
           title="Collapse Rail"
           aria-label="Collapse Hardware Rail"
-          className="hidden lg:flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+          className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-4 h-4 hidden lg:inline" />
+          <ChevronUp className="w-4 h-4 lg:hidden" />
         </button>
       </div>
 

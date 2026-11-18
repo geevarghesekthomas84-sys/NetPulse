@@ -88,6 +88,27 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules/lucide-react')) {
+              return 'vendor-icons';
+            }
+            if (
+              id.includes('node_modules/react') ||
+              id.includes('node_modules/react-dom') ||
+              id.includes('node_modules/zustand')
+            ) {
+              return 'vendor-react';
+            }
+            if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next')) {
+              return 'vendor-i18n';
+            }
+          },
+        },
+      },
+    },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modify—file watching is disabled to prevent flickering during agent edits.

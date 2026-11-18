@@ -69,6 +69,7 @@ export const SimulatorWorkspace: React.FC = () => {
     settingsOpen,
     aboutOpen,
     tourOpen,
+    setTourOpen,
   } = useAppStore();
   const isPro = experienceLevel === 'pro';
   const activeLab = PRESET_LABS.find((l) => l.id === activeLabId) ?? PRESET_LABS[0];
@@ -224,6 +225,16 @@ export const SimulatorWorkspace: React.FC = () => {
     engineRef.current.loadTopology(simDevices, simLinks);
     bump();
   }, [simDevices, simLinks]);
+
+  // First-time visitor interactive simulator tour trigger
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !localStorage.getItem('netpulse-sim-tour-dismissed')) {
+      const timer = setTimeout(() => {
+        setTourOpen(true);
+      }, 700);
+      return () => clearTimeout(timer);
+    }
+  }, [setTourOpen]);
 
   const stepIntervalMs =
     playbackMode === 'step'

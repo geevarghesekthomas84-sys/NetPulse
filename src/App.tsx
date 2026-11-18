@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import React, { Suspense, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AboutModal } from './components/common/AboutModal';
 import { CommandPalette } from './components/common/CommandPalette';
@@ -10,13 +10,18 @@ import { ProtocolDrawer } from './components/common/ProtocolDrawer';
 import { OfflineIndicator } from './components/common/PWAInstallButton';
 import { SettingsModal } from './components/common/SettingsModal';
 import { ExploreWorkspace } from './components/explore/ExploreWorkspace';
-import { LearnWorkspace } from './components/learn/LearnWorkspace';
-import { SimulatorWorkspace } from './components/simulator/SimulatorWorkspace';
 import type { SimDevice, SimLink } from './engine/types';
 import { LANGUAGES } from './i18n';
 import { decodeExploreHash, decompressTopology } from './lib/deepLink';
 import { getProtocolById } from './protocols';
 import { useAppStore } from './store/useAppStore';
+
+const SimulatorWorkspace = React.lazy(() =>
+  import('./components/simulator/SimulatorWorkspace').then((m) => ({ default: m.SimulatorWorkspace }))
+);
+const LearnWorkspace = React.lazy(() =>
+  import('./components/learn/LearnWorkspace').then((m) => ({ default: m.LearnWorkspace }))
+);
 
 export default function App() {
   const { t } = useTranslation();
@@ -102,9 +107,20 @@ export default function App() {
         <ProtocolDrawer />
 
         <main className="flex flex-1 min-w-0 min-h-[240px] flex-col overflow-hidden bg-[var(--bg-canvas)]">
-          {mode === 'explore' && <ExploreWorkspace />}
-          {mode === 'simulator' && <SimulatorWorkspace />}
-          {mode === 'learn' && <LearnWorkspace />}
+          <Suspense
+            fallback={
+              <div className="flex flex-1 items-center justify-center bg-[var(--bg-canvas)]">
+                <div className="flex flex-col items-center gap-2.5">
+                  <div className="h-7 w-7 animate-spin rounded-full border-2 border-[var(--accent-primary)]/30 border-t-[var(--accent-primary)]" />
+                  <span className="font-mono text-xs font-semibold text-[var(--text-secondary)]">Loading workspace...</span>
+                </div>
+              </div>
+            }
+          >
+            {mode === 'explore' && <ExploreWorkspace />}
+            {mode === 'simulator' && <SimulatorWorkspace />}
+            {mode === 'learn' && <LearnWorkspace />}
+          </Suspense>
         </main>
       </div>
 
