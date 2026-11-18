@@ -1,21 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>/#explore/http</loc></url>
-  <url><loc>/#explore/https</loc></url>
-  <url><loc>/#explore/dns</loc></url>
-  <url><loc>/#explore/tcp</loc></url>
-  <url><loc>/#explore/udp</loc></url>
-  <url><loc>/#explore/ip</loc></url>
-  <url><loc>/#explore/ipv6</loc></url>
-  <url><loc>/#explore/icmp</loc></url>
-  <url><loc>/#explore/bgp</loc></url>
-  <url><loc>/#explore/dhcp</loc></url>
-  <url><loc>/#explore/ethernet</loc></url>
-  <url><loc>/#explore/tls</loc></url>
-  <url><loc>/#explore/quic</loc></url>
-  <url><loc>/#explore/ssh</loc></url>
-  <url><loc>/#explore/smtp</loc></url>
-  <url><loc>/#explore/wpa2</loc></url>
-  <url><loc>/#simulator</loc></url>
-  <url><loc>/#learn</loc></url>
+  <url>
+    <loc>https://netpulse.itgg.space/</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
 </urlset>

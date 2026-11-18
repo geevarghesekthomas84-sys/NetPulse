@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NetPulse – Interactive Network & Protocol Simulator</title>
+    <title>NetPulse – Interactive Network Protocol Visualizer & Online Simulator</title>
+    
+    <!-- Early theme & locale hydration to prevent FOUC -->
     <script>
       (function () {
         try {
@@ -17,25 +19,53 @@
         } catch (e) {}
       })();
     </script>
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://netpulse.itgg.space/" />
+
+    <!-- Search Engine Indexing & Crawling -->
     <meta
       name="description"
-      content="Explore 39 internet protocols with live packet animations, Wireshark-grade inspection, and a discrete-event network simulator in your browser."
+      content="Free online interactive network protocol visualizer and discrete-event simulator. Explore 39 protocols with step-by-step animations, Wireshark-grade packet bitfield inspection, Cisco-style drag-and-drop hardware, and troubleshooting challenges."
     />
+    <meta
+      name="keywords"
+      content="network protocol visualizer, packet tracer online free, wireshark online simulator, interactive osi model, tcp 3 way handshake animation, ccna simulator, computer networking lab, how dns works visualizer, network troubleshooting challenges, network engineering workbench"
+    />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="author" content="Geevarghese K Thomas" />
+
+    <!-- Open Graph (Facebook, LinkedIn, Discord, Slack) -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="NetPulse – Interactive Network & Protocol Simulator" />
+    <meta property="og:url" content="https://netpulse.itgg.space/" />
+    <meta property="og:title" content="NetPulse – Interactive Network Protocol Visualizer & Online Simulator" />
     <meta
       property="og:description"
       content="Explore 39 internet protocols with live packet animations, Wireshark-grade inspection, and a discrete-event network simulator in your browser."
     />
     <meta property="og:site_name" content="NetPulse" />
     <meta property="og:image" content="https://netpulse.itgg.space/logo.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content="NetPulse Interactive Network Visualizer Logo" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="es_ES" />
+    <meta property="og:locale:alternate" content="ar_SA" />
+    <meta property="og:locale:alternate" content="hi_IN" />
+    <meta property="og:locale:alternate" content="ml_IN" />
+    <meta property="og:locale:alternate" content="ta_IN" />
+
+    <!-- Twitter / X Card Metadata -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="NetPulse – Interactive Network & Protocol Simulator" />
+    <meta name="twitter:title" content="NetPulse – Interactive Network Protocol Visualizer & Online Simulator" />
     <meta
       name="twitter:description"
-      content="Interactive network protocol animations, Wireshark-style packet inspector, and real discrete-event network simulator."
+      content="Free browser-based network protocol visualizer, Wireshark-grade packet dissector, and Cisco-style discrete-event simulator."
     />
     <meta name="twitter:image" content="https://netpulse.itgg.space/logo.png" />
+    <meta name="twitter:image:alt" content="NetPulse Interactive Network Visualizer Logo" />
+
+    <!-- PWA & Mobile Viewport Experience -->
     <meta name="theme-color" content="#f6f8fb" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -44,30 +74,89 @@
     <link rel="icon" type="image/svg+xml" href="./icon.svg" />
     <link rel="icon" type="image/png" href="./icon.png" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+
+    <!-- Typography Preconnects for High Core Web Vitals -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Google Rich Results: WebApplication & FAQPage JSON-LD Schema -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "NetPulse",
-        "applicationCategory": "EducationalApplication",
-        "operatingSystem": "All",
-        "description": "Interactive network protocol visualizer and discrete-event network simulator teaching how the internet works.",
-        "author": {
-          "@type": "Person",
-          "name": "Geevarghese K Thomas",
-          "url": "https://github.com/geevarghesekthomas84-sys"
-        },
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        }
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "https://netpulse.itgg.space/#app",
+            "name": "NetPulse",
+            "url": "https://netpulse.itgg.space/",
+            "applicationCategory": "EducationalApplication",
+            "operatingSystem": "All modern web browsers",
+            "browserRequirements": "Requires JavaScript. Requires HTML5 Canvas & SVG.",
+            "description": "Free online interactive network protocol visualizer and discrete-event network simulator. Explore 39 protocols with step-by-step packet animations, Wireshark-grade inspection, and troubleshooting labs.",
+            "softwareVersion": "2.4.0",
+            "license": "https://www.apache.org/licenses/LICENSE-2.0",
+            "author": {
+              "@type": "Person",
+              "name": "Geevarghese K Thomas",
+              "url": "https://github.com/geevarghesekthomas84-sys"
+            },
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "featureList": [
+              "Interactive 39-protocol handshake and packet flow animator",
+              "Wireshark-grade packet bitfield dissector and live hex dump",
+              "Discrete-event network topology canvas with Cisco-style hardware",
+              "Break-It troubleshooting challenges with automated verification",
+              "RFC 1071 live checksum verification engine",
+              "Offline progressive web app (PWA) with zero server dependencies"
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://netpulse.itgg.space/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What is NetPulse?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "NetPulse is a free, browser-based educational network workbench and discrete-event simulator. It lets students, engineers, and educators explore 39 networking protocols with live step-by-step packet animations, inspect raw bitfields in a Wireshark-grade dissector, and build custom networks with Cisco-style hardware."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is NetPulse a free alternative to Cisco Packet Tracer?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. NetPulse provides an interactive, zero-install web simulator where you can drag and drop enterprise switches, routers, servers, laptops, and firewalls, wire them with copper or fiber cables, and run CLI commands like ping and traceroute directly in your browser."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Which networking protocols does NetPulse support?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "NetPulse models 39 protocols across all 7 OSI layers, including HTTP/1.1, HTTP/2, HTTP/3 (QUIC), DNS, DHCP, WebSocket, BGP, OSPF, TCP (3-way handshake and congestion control), UDP, IPv4, IPv6, ICMP, ARP, VLAN (802.1Q), STP, TLS 1.3, and WPA3."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I use NetPulse offline?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. NetPulse is a Progressive Web App (PWA) that installs on Windows, macOS, Linux, Android, and iOS, working 100% offline with zero external backend or telemetry dependencies."
+                }
+              }
+            ]
+          }
+        ]
       }
     </script>
     <script type="module" crossorigin src="./assets/index-CGI8uuFV.js"></script>
@@ -78,7 +167,14 @@
     <link rel="stylesheet" crossorigin href="./assets/index-BCdxni4s.css">
   <link rel="manifest" href="./manifest.webmanifest"></head>
   <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased selection:bg-teal-500/25">
-    <div id="root"></div>
+    <!-- Semantic crawlable fallback for search engine crawlers before JS hydration -->
+    <div id="root">
+      <div style="display:none" aria-hidden="true">
+        <h1>NetPulse – Interactive Network Protocol Visualizer & Online Simulator</h1>
+        <p>Understand how the internet truly works. Explore 39 networking protocols with step-by-step packet animations, inspect raw bitfields in a Wireshark-grade dissector, and build, test, and troubleshoot enterprise networks with realistic hardware.</p>
+        <h2>Supported Networking Protocols</h2>
+        <p>HTTP/1.1, HTTP/2, HTTP/3 QUIC, DNS, DHCP, TCP 3-Way Handshake, UDP, IPv4, IPv6, ICMP Ping, ARP, OSPF, BGP, VLAN 802.1Q, Spanning Tree Protocol (STP), TLS 1.3, SSH, WebSocket, and WPA3.</p>
+      </div>
+    </div>
   </body>
 </html>
-
