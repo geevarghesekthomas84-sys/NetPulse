@@ -25,6 +25,7 @@ import type { CapturedPacket, DeviceRole, LinkMedium, SimDevice, SimLink } from 
 import { exportTopologyPng, prepareSvgForExport } from '../../lib/exportTopologyPng';
 import { triggerDownload } from '../../lib/pcapWriter';
 import { computeAnimatedPacketPosition, resolvePacketCurveGeometry } from '../../lib/simPlayback';
+import { playCableConnectSound, playCableDisconnectSound, playPacketBlip } from '../../lib/sound';
 import {
   clientDeltaToSvg,
   clientPointToSvg,
@@ -543,6 +544,9 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
       setActiveWire(null);
       return;
     }
+    if (settings.soundEffects) {
+      playCableConnectSound();
+    }
     onConnectPorts({
       sourceDeviceId: activeWire.sourceDeviceId,
       sourceIface: activeWire.sourceIface,
@@ -583,6 +587,9 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
           activeWireRef.current = null;
           setActiveWire(null);
           setPortPicker(null);
+          if (settings.soundEffects) {
+            playCableConnectSound();
+          }
           onConnectPorts({
             sourceDeviceId: current.sourceDeviceId,
             sourceIface: current.sourceIface,
@@ -1137,6 +1144,27 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                 ? `M ${a.x} ${a.y} L ${b.x} ${b.y}`
                 : `M ${a.x} ${a.y} Q ${mx} ${my} ${b.x} ${b.y}`;
 
+            // Live throughput / packet traffic saturation metrics along this link
+            const activePktsOnLink = recentPackets.filter(
+              (p) =>
+                p.linkId === l.id ||
+                (p.fromDeviceId === a.id && p.toDeviceId === b.id) ||
+                (p.fromDeviceId === b.id && p.toDeviceId === a.id)
+            );
+            const activeCount = activePktsOnLink.length;
+            const bandwidthMbps = l.bandwidthMbps ?? 100;
+            const saturationRatio = Math.min(1, activeCount / 3);
+            const isCongested = saturationRatio >= 0.7;
+
+            // Dynamic energy stream color based on traffic load
+            const streamColor = isCongested
+              ? '#ef4444'
+              : saturationRatio > 0.35
+              ? '#f59e0b'
+              : isStepActiveLink
+              ? 'var(--accent-teal)'
+              : 'var(--accent-primary)';
+
             // RJ45/SFP connector boots & LED dot positions near endpoints (approx 44px out from center)
             const bootDist = Math.min(44, len * 0.35);
             const bootAx = a.x + ux * bootDist + nx * (curveOffset * 0.3);
@@ -1196,15 +1224,15 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                   strokeLinecap="round"
                 />
 
-                {/* Animated traffic energy stream on active hop or multi-hop flow */}
-                {l.up && (isStepActiveLink || isMultiHopLink) && (
+                {/* Animated traffic energy stream with dynamic saturation color */}
+                {l.up && (isStepActiveLink || isMultiHopLink || activeCount > 0) && (
                   <path
                     d={pathD}
                     fill="none"
-                    stroke={isStepActiveLink ? 'var(--accent-teal)' : 'var(--accent-primary)'}
-                    strokeWidth={isStepActiveLink ? 3.5 : 2.5}
-                    strokeOpacity={isStepActiveLink ? 0.8 : 0.55}
-                    strokeDasharray="6 6"
+                    stroke={streamColor}
+                    strokeWidth={isCongested ? 4 : isStepActiveLink ? 3.5 : 2.5}
+                    strokeOpacity={isStepActiveLink || isCongested ? 0.9 : 0.65}
+                    strokeDasharray={isCongested ? '4 3' : '6 6'}
                     strokeDashoffset={dashOffset}
                     strokeLinecap="round"
                   />
@@ -1232,39 +1260,68 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                   </>
                 )}
 
-                {/* Midpoint port/medium pill when selected or hovered */}
-                {(selected || hovered) && l.up && (
+                {/* Midpoint port/medium & live bandwidth utilization pill */}
+                {l.up && (selected || hovered || activeCount > 0) && (
                   <g transform={`translate(${mx}, ${my})`}>
                     <rect
-                      x={-48}
-                      y={-11}
-                      width={96}
-                      height={18}
-                      rx={4}
+                      x={-54}
+                      y={activeCount > 0 ? -13 : -10}
+                      width={108}
+                      height={activeCount > 0 ? 25 : 18}
+                      rx={4.5}
                       fill="var(--bg-surface)"
-                      stroke={stroke}
-                      strokeWidth={1}
+                      stroke={streamColor}
+                      strokeWidth={1.1}
+                      className="shadow-xs"
                     />
                     <text
                       x={0}
-                      y={1.5}
+                      y={activeCount > 0 ? -2 : 1.5}
                       textAnchor="middle"
                       className="fill-[var(--text-primary)] text-[8.5px] font-mono font-semibold"
                     >
                       {l.sourceIface} ↔ {l.targetIface}
                     </text>
+                    {activeCount > 0 && (
+                      <text
+                        x={0}
+                        y={8}
+                        textAnchor="middle"
+                        fill={streamColor}
+                        className="text-[7.5px] font-mono font-bold"
+                      >
+                        ⚡ {bandwidthMbps} Mbps · {Math.round(saturationRatio * 100)}% load
+                      </text>
+                    )}
                   </g>
                 )}
 
+                {/* Severed / Disconnected Wire Sparks & Hazard FX */}
                 {!l.up && (
                   <g transform={`translate(${mx}, ${my})`}>
-                    <circle r={9.5} fill="#450a0a" stroke="#ef4444" strokeWidth={1.6} />
-                    <path d="M-4 -4 L4 4 M4 -4 L-4 4" stroke="#ef4444" strokeWidth={2} strokeLinecap="round" />
+                    <circle r={13} fill="#ef4444" fillOpacity={0.15} stroke="#ef4444" strokeWidth={1} strokeDasharray="3 2" />
+                    {/* Electrical severing spark bursts */}
+                    <path
+                      d="M -9 -7 L -2 0 L 2 -6 L 4 2 L 9 -1 M -5 5 L 0 2 L 4 7"
+                      stroke="#f59e0b"
+                      strokeWidth={1.4}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                    />
+                    <circle r={8.5} fill="#450a0a" stroke="#ef4444" strokeWidth={1.5} />
+                    <path d="M-3.5 -3.5 L3.5 3.5 M3.5 -3.5 L-3.5 3.5" stroke="#ffffff" strokeWidth={1.8} strokeLinecap="round" />
+                    <g transform="translate(0, 16)">
+                      <rect x={-36} y={-8} width={72} height={16} rx={4} fill="#450a0a" stroke="#ef4444" strokeWidth={1} />
+                      <text x={0} y={3} textAnchor="middle" className="fill-[#fca5a5] text-[8px] font-mono font-bold tracking-wider">
+                        LINK DOWN
+                      </text>
+                    </g>
                   </g>
                 )}
 
                 {l.lossPercent > 0 && l.up && (
-                  <text x={mx} y={my - 14} textAnchor="middle" className="fill-amber-400 text-[9.5px] font-mono font-semibold">
+                  <text x={mx} y={my - 16} textAnchor="middle" className="fill-amber-400 text-[9.5px] font-mono font-semibold">
                     {l.lossPercent}% loss
                   </text>
                 )}
@@ -1987,7 +2044,12 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
               {selectedLinkId === activeLinkObj.id && (
                 <button
                   type="button"
-                  onClick={() => onToggleLinkUp(activeLinkObj.id)}
+                  onClick={() => {
+                    if (settings.soundEffects) {
+                      playCableDisconnectSound();
+                    }
+                    onToggleLinkUp(activeLinkObj.id);
+                  }}
                   className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-[10.5px] font-mono font-semibold shrink-0 ${
                     activeLinkObj.up
                       ? 'bg-[var(--tone-danger)]/15 text-[var(--tone-danger)] hover:bg-[var(--tone-danger)]/25'

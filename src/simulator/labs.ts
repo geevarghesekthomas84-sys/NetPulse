@@ -556,6 +556,75 @@ export const BREAK_IT_CHALLENGES: PresetLab[] = [
     links: [lnk('l1', 'ha', 'sw'), lnk('l2', 'sw', 'hb')],
     onSolve: (engine) => engine.execCommand('ha', 'ping 192.168.1.75 -c 2'),
   },
+  {
+    id: 'break-4-dns',
+    number: 4,
+    title: '🔧 Break-It: Dead DNS Resolver',
+    category: 'Break-It Challenge',
+    description: 'Workstation user cannot browse "example.com". Ping to raw IP 203.0.113.10 works, but domain name resolution fails. Diagnose the DNS client settings and point to the active DNS server (8.8.8.8)!',
+    goals: [
+      'Observe DNS queries timing out on Workstation',
+      'Inspect Workstation DNS settings or interfaces',
+      'Change DNS server IP from dead 192.168.1.250 to 8.8.8.8 and verify resolution',
+    ],
+    hints: [
+      'The local workstation has an invalid DNS server configured (192.168.1.250)',
+      'The active recursive DNS server in the topology is 8.8.8.8',
+    ],
+    solutionSummary: 'DNS server address updated to 8.8.8.8. Domain lookups and web navigation restored.',
+    devices: [
+      dev('client', 'Workstation', 'host', 140, 220, '192.168.1.15', {
+        interfaces: [createDefaultInterface('eth0', 'eth0', '192.168.1.15', '255.255.255.0', '192.168.1.1', 'c1')],
+        dnsServer: '192.168.1.250',
+      }),
+      dev('router', 'Default Gateway', 'router', 420, 220, '192.168.1.1', {
+        interfaces: [
+          createDefaultInterface('eth0', 'lan0', '192.168.1.1', '255.255.255.0', undefined, 'r1'),
+          createDefaultInterface('eth1', 'wan0', '198.51.100.1', '255.255.255.0', undefined, 'r2'),
+        ],
+      }),
+      dev('dns', 'Public DNS Server', 'dns_server', 720, 160, '8.8.8.8'),
+      dev('web', 'Web Server (example.com)', 'web_server', 720, 290, '203.0.113.10'),
+    ],
+    links: [lnk('l1', 'client', 'router'), lnk('l2', 'router', 'dns'), lnk('l3', 'router', 'web')],
+    onSolve: (engine) => engine.execCommand('client', 'ping 8.8.8.8 -c 1'),
+  },
+  {
+    id: 'break-5-link',
+    number: 5,
+    title: '🔧 Break-It: Severed Core Uplink',
+    category: 'Break-It Challenge',
+    description: 'The entire Finance department has lost connectivity to the Core Datacenter. A physical link between the Department Switch and the Core Router is down (administratively disabled). Re-enable the cable to restore service!',
+    goals: [
+      'Identify the severed link marked with red hazard styling on the canvas',
+      'Click the severed cable to open Link Properties',
+      'Toggle the link State to "Up" (Active) and verify ping from Host to Datacenter',
+    ],
+    hints: [
+      'Look for the dashed red cable between Department Switch and Core Router',
+      'Click on the link and check "Cable Up / Connected" in the Properties Inspector',
+    ],
+    solutionSummary: 'Core uplink restored to Active (Up). Spanning tree unblocks and department traffic flows.',
+    devices: [
+      dev('pc', 'Finance Host', 'host', 140, 220, '10.0.1.10', {
+        interfaces: [createDefaultInterface('eth0', 'eth0', '10.0.1.10', '255.255.255.0', '10.0.1.1', 'f1')],
+      }),
+      dev('sw', 'Dept Switch', 'switch', 380, 220, '0.0.0.0'),
+      dev('router', 'Core Router', 'router', 620, 220, '10.0.1.1', {
+        interfaces: [
+          createDefaultInterface('eth0', 'lan0', '10.0.1.1', '255.255.255.0', undefined, 'cr1'),
+          createDefaultInterface('eth1', 'wan0', '172.16.0.1', '255.255.255.0', undefined, 'cr2'),
+        ],
+      }),
+      dev('srv', 'Datacenter Server', 'server_rack', 860, 220, '172.16.0.50'),
+    ],
+    links: [
+      lnk('l1', 'pc', 'sw'),
+      lnk('l2', 'sw', 'router', { up: false }),
+      lnk('l3', 'router', 'srv'),
+    ],
+    onSolve: (engine) => engine.execCommand('pc', 'ping 172.16.0.50 -c 2'),
+  },
 ];
 
 export const ALL_SIM_LABS: PresetLab[] = [...PRESET_LABS, ...BREAK_IT_CHALLENGES];

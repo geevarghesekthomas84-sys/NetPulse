@@ -25,12 +25,13 @@ import { matchesDisplayFilter, validateDisplayFilter } from '../../lib/displayFi
 import { buildCsvExport, buildPcapFile, triggerDownload } from '../../lib/pcapWriter';
 import { computeSimulationAnalytics } from '../../lib/simAnalytics';
 import { describePacketStateChange, resolveSimShortcutAction, SIM_PLAYBACK_SPEEDS } from '../../lib/simPlayback';
-import { PRESET_LABS, type PresetLab } from '../../simulator/labs';
+import { ALL_SIM_LABS, BREAK_IT_CHALLENGES, PRESET_LABS, type PresetLab } from '../../simulator/labs';
 import type { StarterTemplate } from '../../simulator/templates';
 import { useAppStore } from '../../store/useAppStore';
 import { EventLogPanel } from '../common/EventLogPanel';
 import { PacketInspector, PacketInspectorContent } from '../common/PacketInspector';
 import { PacketTable } from '../explore/PacketTable';
+import { BreakItChallengeHUD } from './BreakItChallengeHUD';
 import { CaptureFilterBar } from './CaptureFilterBar';
 import { DevicePalette, PALETTE_ITEMS } from './DevicePalette';
 import { LabsDrawer } from './LabsDrawer';
@@ -72,7 +73,8 @@ export const SimulatorWorkspace: React.FC = () => {
     setTourOpen,
   } = useAppStore();
   const isPro = experienceLevel === 'pro';
-  const activeLab = PRESET_LABS.find((l) => l.id === activeLabId) ?? PRESET_LABS[0];
+  const activeLab = ALL_SIM_LABS.find((l) => l.id === activeLabId) ?? PRESET_LABS[0];
+  const isBreakIt = activeLab.category.includes('Break-It');
 
   const engineRef = useRef<SimulationEngine>(
     new SimulationEngine({ seed: settings.defaultSeed, devices: simDevices, links: simLinks })
@@ -1062,8 +1064,46 @@ export const SimulatorWorkspace: React.FC = () => {
         onRunLabSolve={handleRunLabSolve}
       />
 
-      {/* Simple Mode Guided Lab Goal Strip */}
-      {!isPro && !labsOpen && (
+      {/* Break-It Troubleshooting Challenge Interactive HUD Banner */}
+      {isBreakIt && (
+        <BreakItChallengeHUD
+          lab={activeLab}
+          onRunTest={() => {
+            if (activeLab.onSolve) {
+              const output = activeLab.onSolve(engineRef.current);
+              setExternalLog({
+                deviceId: activeLab.devices[0]?.name || 'host',
+                cmd: `diagnose(${activeLab.title})`,
+                output,
+              });
+              if (playbackMode === 'step') {
+                syncAfterPacketEmission(0);
+              } else {
+                if (engineRef.current.packets.length > 0) {
+                  setLiveCursor(1);
+                  setDockInspectedId(engineRef.current.packets[0].id);
+                  setSimPlaying(true);
+                }
+                if (dockSize === 'collapsed') setDockSize('compact');
+                bump();
+              }
+              return output;
+            }
+            return '';
+          }}
+          onReset={() => handleSelectLab(activeLab)}
+          onNext={() => {
+            const currIdx = BREAK_IT_CHALLENGES.findIndex((c) => c.id === activeLab.id);
+            if (currIdx >= 0 && currIdx < BREAK_IT_CHALLENGES.length - 1) {
+              handleSelectLab(BREAK_IT_CHALLENGES[currIdx + 1]);
+            }
+          }}
+          onClose={() => handleSelectLab(PRESET_LABS[0])}
+        />
+      )}
+
+      {/* Simple Mode Guided Lab Goal Strip (for Standard Labs) */}
+      {!isPro && !labsOpen && !isBreakIt && (
         <div className="shrink-0 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 py-1.5 text-xs sm:text-[13px] shadow-2xs">
           <div className="flex flex-wrap items-center gap-2.5 min-w-0">
             <span className="font-mono text-xs font-bold text-[var(--accent-primary)] tabular-nums shrink-0">

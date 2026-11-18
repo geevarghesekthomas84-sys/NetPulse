@@ -21,6 +21,8 @@ import {
   Upload,
   X,
   Zap,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { SimDevice, TopologyWarning } from '../../engine/types';
@@ -95,6 +97,8 @@ export const SimControls: React.FC<SimControlsProps> = ({
     savedProjects,
     saveNamedProject,
     loadNamedProject,
+    settings,
+    updateSettings,
   } = useAppStore();
 
   const isPro = experienceLevel === 'pro';
@@ -416,6 +420,21 @@ export const SimControls: React.FC<SimControlsProps> = ({
                 <Keyboard className="w-3.5 h-3.5" />
               </button>
             )}
+
+            {/* Datacenter Web Audio Sound Effects Toggle */}
+            <button
+              type="button"
+              onClick={() => updateSettings({ soundEffects: !settings.soundEffects })}
+              aria-label={settings.soundEffects ? 'Mute datacenter sound effects' : 'Enable datacenter sound effects'}
+              title={settings.soundEffects ? 'Sound Effects: ON (Click to mute)' : 'Sound Effects: OFF (Click to unmute)'}
+              className={`flex h-7.5 w-7.5 items-center justify-center rounded-md transition-colors ${
+                settings.soundEffects
+                  ? 'bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] font-bold'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]'
+              }`}
+            >
+              {settings.soundEffects ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+            </button>
           </div>
         </div>
 
