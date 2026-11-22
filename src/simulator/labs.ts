@@ -84,7 +84,7 @@ export const PRESET_LABS: PresetLab[] = [
     solutionSummary: 'Home Router translates 192.168.1.10 -> 198.51.100.2 via PAT and forwards to 203.0.113.10.',
     devices: [
       dev('pc', 'Home PC', 'host', 120, 220, '192.168.1.10', { dnsServer: '8.8.8.8', interfaces: [createDefaultInterface('eth0', 'eth0', '192.168.1.10', '255.255.255.0', '192.168.1.1', '10')] }),
-      dev('homerouter', 'Wi-Fi Router', 'nat_gateway', 350, 220, '192.168.1.1', { natEnabled: true, interfaces: [createDefaultInterface('eth0', 'lan0', '192.168.1.1', '255.255.255.0', undefined, '01'), createDefaultInterface('eth1', 'wan0', '198.51.100.2', '255.255.255.0', '198.51.100.1', '02')] }),
+      dev('homerouter', 'Wi-Fi Router', 'nat_gateway', 350, 220, '192.168.1.1', { natEnabled: true, services: { dhcp: { enabled: true, poolStart: '192.168.1.100', poolEnd: '192.168.1.150', mask: '255.255.255.0', gateway: '192.168.1.1', dns: '8.8.8.8' } }, interfaces: [createDefaultInterface('eth0', 'lan0', '192.168.1.1', '255.255.255.0', undefined, '01'), createDefaultInterface('eth1', 'wan0', '198.51.100.2', '255.255.255.0', '198.51.100.1', '02')] }),
       dev('isp', 'ISP AS64500', 'router', 590, 220, '198.51.100.1', { routingProtocol: 'ospf' }),
       dev('web', 'Web Server', 'web_server', 830, 220, '203.0.113.10', { services: { http: { enabled: true, port: 80, body: '<h1>Home Lab Success!</h1>' } } }),
     ],
@@ -167,17 +167,16 @@ export const PRESET_LABS: PresetLab[] = [
     solutionSummary: 'Relay agent forwards UDP/67 broadcasts as unicast to 10.0.0.50.',
     devices: [
       dev('c', 'New Laptop', 'host', 150, 220, '0.0.0.0'),
-      dev('r', 'Relay Router', 'router', 480, 220, '192.168.1.1'),
-      dev('dhcp', 'Central DHCP', 'dhcp_server', 820, 220, '10.0.0.50', { openPorts: [67] }),
+      dev('r', 'Relay Router', 'router', 480, 220, '192.168.1.1', {
+        interfaces: [{ ...createDefaultInterface('eth0', 'eth0', '192.168.1.1', '255.255.255.0', undefined, '0a'), helper: '10.0.0.50' }],
+      }),
+      dev('dhcp', 'Central DHCP', 'dhcp_server', 820, 220, '10.0.0.50', {
+        openPorts: [67],
+        services: { dhcp: { enabled: true, poolStart: '192.168.1.50', poolEnd: '192.168.1.100', mask: '255.255.255.0', gateway: '192.168.1.1', dns: '8.8.8.8' } },
+      }),
     ],
     links: [lnk('l1', 'c', 'r'), lnk('l2', 'r', 'dhcp')],
-    onSolve: (engine) => {
-      engine.enqueueDirectPacket({ fromId: 'c', toId: 'r', protocol: 'DHCP', colorCategory: 'udp', info: 'DHCPDISCOVER (Broadcast)', osiLayer: 7, udp: { srcPort: 68, dstPort: 67 } });
-      engine.enqueueDirectPacket({ fromId: 'r', toId: 'dhcp', startTimeMs: 10, protocol: 'DHCP', colorCategory: 'udp', info: 'Relayed DHCPDISCOVER (giaddr=192.168.1.1)', osiLayer: 7, udp: { srcPort: 67, dstPort: 67 } });
-      engine.enqueueDirectPacket({ fromId: 'dhcp', toId: 'c', startTimeMs: 24, protocol: 'DHCP', colorCategory: 'udp', info: 'DHCPACK 192.168.1.50/24', osiLayer: 7, udp: { srcPort: 67, dstPort: 68 } });
-      engine.runAll();
-      return 'DHCP DORA relayed across router -> assigned 192.168.1.50';
-    },
+    onSolve: (engine) => engine.requestDhcp('c').message,
   },
   {
     id: 'lab-6-nat-pat',
@@ -463,169 +462,3 @@ export const PRESET_LABS: PresetLab[] = [
     onSolve: (engine) => engine.execCommand('h', 'ping 203.0.113.10 -s 1400 -c 1'),
   },
 ];
-
-export const BREAK_IT_CHALLENGES: PresetLab[] = [
-  {
-    id: 'break-1-gateway',
-    number: 1,
-    title: '🔧 Break-It: Broken Default Gateway',
-    category: 'Break-It Challenge',
-    description: 'Host 1 cannot reach the Internet Web Server. A junior admin misconfigured the network interface. Diagnose the fault with CLI or inspector, correct it, and restore connectivity!',
-    goals: [
-      'Observe ping 203.0.113.10 failing on Host 1',
-      'Inspect Host 1 interface and identify the invalid gateway',
-      'Fix the Gateway to 192.168.1.1 and verify successful ping',
-    ],
-    hints: [
-      'Check Host 1 interface gateway with `ifconfig` or the Properties Inspector',
-      'The gateway is set to 192.168.1.254, but Router IP is 192.168.1.1',
-    ],
-    solutionSummary: 'Host 1 gateway corrected from 192.168.1.254 to 192.168.1.1. Packets can now traverse the border router.',
-    devices: [
-      dev('h1', 'Host 1 (Faulty)', 'host', 140, 220, '192.168.1.10', {
-        interfaces: [createDefaultInterface('eth0', 'eth0', '192.168.1.10', '255.255.255.0', '192.168.1.254', 'h1')],
-      }),
-      dev('r1', 'Border Router', 'router', 480, 220, '192.168.1.1', {
-        interfaces: [
-          createDefaultInterface('eth0', 'lan0', '192.168.1.1', '255.255.255.0', undefined, 'r1'),
-          createDefaultInterface('eth1', 'wan0', '198.51.100.1', '255.255.255.0', undefined, 'r2'),
-        ],
-      }),
-      dev('srv', 'Internet Web Server', 'web_server', 820, 220, '203.0.113.10', {
-        interfaces: [createDefaultInterface('eth0', 'eth0', '203.0.113.10', '255.255.255.0', '198.51.100.1', 's1')],
-      }),
-    ],
-    links: [lnk('l1', 'h1', 'r1'), lnk('l2', 'r1', 'srv')],
-    onSolve: (engine) => engine.execCommand('h1', 'ping 203.0.113.10 -c 2'),
-  },
-  {
-    id: 'break-2-acl',
-    number: 2,
-    title: '🔧 Break-It: Accidental Firewall Port Drop',
-    category: 'Break-It Challenge',
-    description: 'Clients can ping the Web Server, but HTTP connections to port 80 are timing out. The router firewall has a blocking ACL rule! Find and remove the block.',
-    goals: [
-      'Observe that ICMP ping succeeds but HTTP port 80 fails',
-      'Inspect Firewall ACL rules on the Firewall Router',
-      'Remove or modify the DENY TCP 80 rule to restore web traffic',
-    ],
-    hints: [
-      'Click on Firewall Router in Pro mode to view Firewall ACL Rules',
-      'Delete the rule blocking TCP port 80 or change action to ALLOW',
-    ],
-    solutionSummary: 'Removed blocking DENY rule on port 80. HTTP web traffic flow restored.',
-    devices: [
-      dev('client', 'Client PC', 'host', 140, 220, '192.168.1.50', {
-        interfaces: [createDefaultInterface('eth0', 'eth0', '192.168.1.50', '255.255.255.0', '192.168.1.1', 'c1')],
-      }),
-      dev('fw', 'Firewall Router', 'firewall', 480, 220, '192.168.1.1', {
-        firewallRules: [
-          { id: 'fw-block-80', action: 'deny', direction: 'both', protocol: 'TCP', srcIp: 'any', dstIp: 'any', dstPort: 80 },
-        ],
-      }),
-      dev('web', 'Company Web Server', 'web_server', 820, 220, '192.168.1.100'),
-    ],
-    links: [lnk('l1', 'client', 'fw'), lnk('l2', 'fw', 'web')],
-    onSolve: (engine) => engine.execCommand('client', 'ping 192.168.1.100 -c 1'),
-  },
-  {
-    id: 'break-3-mask',
-    number: 3,
-    title: '🔧 Break-It: Subnet Mask Isolation',
-    category: 'Break-It Challenge',
-    description: 'Host A (192.168.1.10) and Host B (192.168.1.75) are connected to the same switch, but Host B is isolated due to an incorrect subnet mask. Align the masks!',
-    goals: [
-      'Test `ping 192.168.1.75` from Host A',
-      'Identify why Host B considers Host A outside its subnet',
-      'Correct Host B subnet mask from 255.255.255.240 (/28) to 255.255.255.0 (/24)',
-    ],
-    hints: [
-      'Host B mask 255.255.255.240 limits its subnet to 192.168.1.64 - 192.168.1.79',
-      'Align Host B subnet mask to 255.255.255.0',
-    ],
-    solutionSummary: 'Subnet mask adjusted to /24. Both hosts are now in the same broadcast domain and ARP succeeds.',
-    devices: [
-      dev('ha', 'Host A', 'host', 140, 220, '192.168.1.10', {
-        interfaces: [createDefaultInterface('eth0', 'eth0', '192.168.1.10', '255.255.255.0', undefined, 'a1')],
-      }),
-      dev('sw', 'Workgroup Switch', 'switch', 480, 220, '0.0.0.0'),
-      dev('hb', 'Host B (Isolated)', 'host', 820, 220, '192.168.1.75', {
-        interfaces: [createDefaultInterface('eth0', 'eth0', '192.168.1.75', '255.255.255.240', undefined, 'b1')],
-      }),
-    ],
-    links: [lnk('l1', 'ha', 'sw'), lnk('l2', 'sw', 'hb')],
-    onSolve: (engine) => engine.execCommand('ha', 'ping 192.168.1.75 -c 2'),
-  },
-  {
-    id: 'break-4-dns',
-    number: 4,
-    title: '🔧 Break-It: Dead DNS Resolver',
-    category: 'Break-It Challenge',
-    description: 'Workstation user cannot browse "example.com". Ping to raw IP 203.0.113.10 works, but domain name resolution fails. Diagnose the DNS client settings and point to the active DNS server (8.8.8.8)!',
-    goals: [
-      'Observe DNS queries timing out on Workstation',
-      'Inspect Workstation DNS settings or interfaces',
-      'Change DNS server IP from dead 192.168.1.250 to 8.8.8.8 and verify resolution',
-    ],
-    hints: [
-      'The local workstation has an invalid DNS server configured (192.168.1.250)',
-      'The active recursive DNS server in the topology is 8.8.8.8',
-    ],
-    solutionSummary: 'DNS server address updated to 8.8.8.8. Domain lookups and web navigation restored.',
-    devices: [
-      dev('client', 'Workstation', 'host', 140, 220, '192.168.1.15', {
-        interfaces: [createDefaultInterface('eth0', 'eth0', '192.168.1.15', '255.255.255.0', '192.168.1.1', 'c1')],
-        dnsServer: '192.168.1.250',
-      }),
-      dev('router', 'Default Gateway', 'router', 420, 220, '192.168.1.1', {
-        interfaces: [
-          createDefaultInterface('eth0', 'lan0', '192.168.1.1', '255.255.255.0', undefined, 'r1'),
-          createDefaultInterface('eth1', 'wan0', '198.51.100.1', '255.255.255.0', undefined, 'r2'),
-        ],
-      }),
-      dev('dns', 'Public DNS Server', 'dns_server', 720, 160, '8.8.8.8'),
-      dev('web', 'Web Server (example.com)', 'web_server', 720, 290, '203.0.113.10'),
-    ],
-    links: [lnk('l1', 'client', 'router'), lnk('l2', 'router', 'dns'), lnk('l3', 'router', 'web')],
-    onSolve: (engine) => engine.execCommand('client', 'ping 8.8.8.8 -c 1'),
-  },
-  {
-    id: 'break-5-link',
-    number: 5,
-    title: '🔧 Break-It: Severed Core Uplink',
-    category: 'Break-It Challenge',
-    description: 'The entire Finance department has lost connectivity to the Core Datacenter. A physical link between the Department Switch and the Core Router is down (administratively disabled). Re-enable the cable to restore service!',
-    goals: [
-      'Identify the severed link marked with red hazard styling on the canvas',
-      'Click the severed cable to open Link Properties',
-      'Toggle the link State to "Up" (Active) and verify ping from Host to Datacenter',
-    ],
-    hints: [
-      'Look for the dashed red cable between Department Switch and Core Router',
-      'Click on the link and check "Cable Up / Connected" in the Properties Inspector',
-    ],
-    solutionSummary: 'Core uplink restored to Active (Up). Spanning tree unblocks and department traffic flows.',
-    devices: [
-      dev('pc', 'Finance Host', 'host', 140, 220, '10.0.1.10', {
-        interfaces: [createDefaultInterface('eth0', 'eth0', '10.0.1.10', '255.255.255.0', '10.0.1.1', 'f1')],
-      }),
-      dev('sw', 'Dept Switch', 'switch', 380, 220, '0.0.0.0'),
-      dev('router', 'Core Router', 'router', 620, 220, '10.0.1.1', {
-        interfaces: [
-          createDefaultInterface('eth0', 'lan0', '10.0.1.1', '255.255.255.0', undefined, 'cr1'),
-          createDefaultInterface('eth1', 'wan0', '172.16.0.1', '255.255.255.0', undefined, 'cr2'),
-        ],
-      }),
-      dev('srv', 'Datacenter Server', 'server_rack', 860, 220, '172.16.0.50'),
-    ],
-    links: [
-      lnk('l1', 'pc', 'sw'),
-      lnk('l2', 'sw', 'router', { up: false }),
-      lnk('l3', 'router', 'srv'),
-    ],
-    onSolve: (engine) => engine.execCommand('pc', 'ping 172.16.0.50 -c 2'),
-  },
-];
-
-export const ALL_SIM_LABS: PresetLab[] = [...PRESET_LABS, ...BREAK_IT_CHALLENGES];
-

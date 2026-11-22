@@ -1,23 +1,17 @@
+import { Gloss } from '../common/Gloss';
+import { inlineSvgStyles, resolveCssVars } from '../../lib/resolveCssVars';
+import { useWheelZoom } from '../../lib/useWheelZoom';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Camera, Download, Info, Maximize2, ZoomIn, ZoomOut } from 'lucide-react';
+import { Camera, Clapperboard, Download, Info, Maximize2, Volume2, VolumeX, ZoomIn, ZoomOut } from 'lucide-react';
+import { useSpeech } from '../../lib/useSpeech';
 import type { CapturedPacket } from '../../engine/types';
 import type { ProtocolLinkDef, ProtocolNodeDef, ProtocolStepDef } from '../../protocols/types';
 import { triggerDownload } from '../../lib/pcapWriter';
-import {
-  clientDeltaToSvg,
-  clientPointToSvg,
-  computeFitViewport,
-  computeZoomAtAnchor,
-  SVG_MAX_ZOOM,
-  SVG_MIN_ZOOM,
-  wheelDeltaToZoomFactor,
-} from '../../lib/svgViewport';
 import { useAppStore } from '../../store/useAppStore';
 import { IsometricHardwareArt } from '../icons/IsometricHardwareLibrary';
 import { LEGEND_ITEMS, PACKET_COLORS } from './colors';
-import { AnnotatedCaption } from '../common/AnnotatedCaption';
-import { TextToSpeechButton } from '../common/TextToSpeechButton';
+import { tc } from '../../i18n/content';
 
 interface NetworkDiagramProps {
   protocolName: string;
@@ -42,92 +36,143 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
   packetProgress,
   onInspectPacket,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const speech = useSpeech(i18n.language);
   const { settings, isPlaying, experienceLevel, theme } = useAppStore();
   const svgRef = useRef<SVGSVGElement>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [selectedPopoverPkt, setSelectedPopoverPkt] = useState<CapturedPacket | null>(null);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
-  const viewportRef = useRef({ zoom: 1, pan: { x: 0, y: 0 } });
-  viewportRef.current = { zoom, pan };
-  const pinchRef = useRef<{ dist: number; anchorSvg: { x: number; y: number } } | null>(null);
-  const touchPanRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
   const [panning, setPanning] = useState<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
 
   const vbW = 1000 / zoom;
   const vbH = 500 / zoom;
 
-  const applyViewport = (nextZoom: number, nextPan: { x: number; y: number }) => {
-    viewportRef.current = { zoom: nextZoom, pan: nextPan };
+  const zoomAtPoint = (nextZoomRaw: number, anchorX: number, anchorY: number) => {
+    const nextZoom = Math.max(0.6, Math.min(2.4, Number(nextZoomRaw.toFixed(2))));
+    const nextW = 1000 / nextZoom;
+    const nextH = 500 / nextZoom;
+    const relX = (anchorX - pan.x) / vbW;
+    const relY = (anchorY - pan.y) / vbH;
     setZoom(nextZoom);
-    setPan(nextPan);
+    setPan({
+      x: anchorX - relX * nextW,
+      y: anchorY - relY * nextH,
+    });
   };
 
-  const zoomAtPoint = (nextZoomRaw: number, anchorX: number, anchorY: number) => {
-    const vp = viewportRef.current;
-    const next = computeZoomAtAnchor({
-      currentZoom: vp.zoom,
-      currentPan: vp.pan,
-      nextZoomRaw,
-      anchorX,
-      anchorY,
-      baseWidth: 1000,
-      baseHeight: 500,
-      minZoom: SVG_MIN_ZOOM,
-      maxZoom: SVG_MAX_ZOOM,
-    });
-    applyViewport(next.zoom, next.pan);
-  };
+  useWheelZoom(svgRef, (factor, clientX, clientY) => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const anchorX = pan.x + ((clientX - rect.left) / rect.width) * vbW;
+    const anchorY = pan.y + ((clientY - rect.top) / rect.height) * vbH;
+    stopCamera();
+    zoomAtPoint(zoom * factor, anchorX, anchorY);
+  });
 
   const resetZoom = () => {
-    applyViewport(1, { x: 0, y: 0 });
+    stopCamera();
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
   };
 
   const fitView = () => {
-    const next = computeFitViewport(
-      nodes.map((n) => ({ x: n.x, y: n.y })),
-      1000,
-      500,
-      { x: 110, y: 90 },
-      0.5,
-      1.8
-    );
-    applyViewport(next.zoom, next.pan);
+    stopCamera();
+    if (nodes.length === 0) {
+      resetZoom();
+      return;
+    }
+    const minX = Math.min(...nodes.map((n) => n.x)) - 110;
+    const maxX = Math.max(...nodes.map((n) => n.x)) + 110;
+    const minY = Math.min(...nodes.map((n) => n.y)) - 85;
+    const maxY = Math.max(...nodes.map((n) => n.y)) + 95;
+    const spanX = Math.max(360, maxX - minX);
+    const spanY = Math.max(200, maxY - minY);
+    const nextZoom = Math.max(0.6, Math.min(1.8, Math.min(1000 / spanX, 500 / spanY)));
+    setZoom(Number(nextZoom.toFixed(2)));
+    setPan({
+      x: minX + spanX / 2 - 500 / nextZoom,
+      y: minY + spanY / 2 - 250 / nextZoom,
+    });
   };
 
-  useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    const onNativeWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const vp = viewportRef.current;
-      const curW = 1000 / vp.zoom;
-      const curH = 500 / vp.zoom;
-      const anchor = clientPointToSvg(svg, e.clientX, e.clientY, vp.pan.x, vp.pan.y, curW, curH);
-      const factor = wheelDeltaToZoomFactor(e.deltaY, e.deltaMode);
-      const next = computeZoomAtAnchor({
-        currentZoom: vp.zoom,
-        currentPan: vp.pan,
-        nextZoomRaw: vp.zoom * factor,
-        anchorX: anchor.x,
-        anchorY: anchor.y,
-        baseWidth: 1000,
-        baseHeight: 500,
-        minZoom: SVG_MIN_ZOOM,
-        maxZoom: SVG_MAX_ZOOM,
-      });
-      viewportRef.current = next;
-      setZoom(next.zoom);
-      setPan(next.pan);
+  // Step camera: glides to the devices involved in the current step. Any manual zoom/pan switches it off.
+  const [cameraOn, setCameraOn] = useState(true);
+  const viewRef = useRef({ zoom: 1, panX: 0, panY: 0 });
+  viewRef.current = { zoom, panX: pan.x, panY: pan.y };
+  const animRef = useRef<number | null>(null);
+
+  const glideTo = (toZoom: number, toX: number, toY: number) => {
+    if (animRef.current !== null) cancelAnimationFrame(animRef.current);
+    const from = { ...viewRef.current };
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    if (reduce || typeof requestAnimationFrame === 'undefined') {
+      setZoom(toZoom);
+      setPan({ x: toX, y: toY });
+      return;
+    }
+    const start = performance.now();
+    const dur = 520;
+    const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+    const tick = (now: number) => {
+      const k = ease(Math.min(1, (now - start) / dur));
+      setZoom(from.zoom + (toZoom - from.zoom) * k);
+      setPan({ x: from.panX + (toX - from.panX) * k, y: from.panY + (toY - from.panY) * k });
+      animRef.current = k < 1 ? requestAnimationFrame(tick) : null;
     };
-    svg.addEventListener('wheel', onNativeWheel, { passive: false });
-    return () => svg.removeEventListener('wheel', onNativeWheel);
+    animRef.current = requestAnimationFrame(tick);
+  };
+
+  const stopCamera = () => {
+    if (animRef.current !== null) cancelAnimationFrame(animRef.current);
+    animRef.current = null;
+    setCameraOn(false);
+  };
+
+  useEffect(() => () => {
+    if (animRef.current !== null) cancelAnimationFrame(animRef.current);
   }, []);
+
+  // Aim at the two devices of the packet in flight (or the step's devices, or everything when there are none).
+  const livePacket = packets[currentPacketIndex] ?? null;
+  const focusKey = `${currentStepIndex}|${livePacket ? [livePacket.fromDeviceId, livePacket.toDeviceId].sort().join('~') : ''}|${nodes.map((n) => n.id).join(',')}`;
+  useEffect(() => {
+    if (!cameraOn || nodes.length === 0) return;
+    const ids = new Set<string>();
+    if (livePacket) {
+      ids.add(livePacket.fromDeviceId);
+      ids.add(livePacket.toDeviceId);
+    } else {
+      for (const p of packets) {
+        if ((p.stepIndex ?? 0) === currentStepIndex) {
+          ids.add(p.fromDeviceId);
+          ids.add(p.toDeviceId);
+        }
+      }
+    }
+    const focus = nodes.filter((n) => ids.has(n.id));
+    const set = focus.length > 0 ? focus : nodes;
+    const minX = Math.min(...set.map((n) => n.x)) - 150;
+    const maxX = Math.max(...set.map((n) => n.x)) + 150;
+    const minY = Math.min(...set.map((n) => n.y)) - 120;
+    const maxY = Math.max(...set.map((n) => n.y)) + 130;
+    const spanX = Math.max(300, maxX - minX);
+    const spanY = Math.max(190, maxY - minY);
+    const z = Number(Math.max(0.7, Math.min(1.9, Math.min(1000 / spanX, 500 / spanY))).toFixed(3));
+    glideTo(z, minX + spanX / 2 - 500 / z, minY + spanY / 2 - 250 / z);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusKey, cameraOn]);
 
   const activePacket = packets[currentPacketIndex] ?? null;
   const currentStep = steps[currentStepIndex];
+  const captionText = currentStep ? `${tc(currentStep.title)}. ${tc(currentStep.caption)}` : '';
+  const { stop: stopSpeech } = speech;
+  // A new step or language makes the spoken caption stale, so silence it.
+  React.useEffect(() => {
+    stopSpeech();
+  }, [currentStepIndex, i18n.language, stopSpeech]);
 
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
   const srcNode = activePacket ? nodeMap.get(activePacket.fromDeviceId) : undefined;
@@ -156,7 +201,7 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
   const exportSvg = () => {
     if (!svgRef.current) return;
     const serializer = new XMLSerializer();
-    const raw = serializer.serializeToString(svgRef.current);
+    const raw = resolveCssVars(serializer.serializeToString(inlineSvgStyles(svgRef.current)));
     const blob = new Blob([raw], { type: 'image/svg+xml;charset=utf-8' });
     triggerDownload(blob, `${protocolName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-diagram.svg`);
   };
@@ -164,7 +209,7 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
   const exportPng = () => {
     if (!svgRef.current) return;
     const serializer = new XMLSerializer();
-    const raw = serializer.serializeToString(svgRef.current);
+    const raw = resolveCssVars(serializer.serializeToString(inlineSvgStyles(svgRef.current)));
     const img = new Image();
     const svgBlob = new Blob([raw], { type: 'image/svg+xml;charset=utf-8' });
     const url = URL.createObjectURL(svgBlob);
@@ -174,7 +219,7 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
       canvas.height = 800;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        ctx.fillStyle = theme === 'dark' ? '#08111e' : '#f6f8fb';
+        ctx.fillStyle = theme === 'dark' ? '#14161d' : '#f7f5f0';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         canvas.toBlob((pngBlob) => {
@@ -190,50 +235,65 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
 
   const hoveredNode = hoveredNodeId ? nodeMap.get(hoveredNodeId) : undefined;
   const activeColor = activePacket
-    ? theme === 'dark'
-      ? PACKET_COLORS[activePacket.colorCategory]?.darkHex || PACKET_COLORS[activePacket.colorCategory]?.hex || '#38bdf8'
-      : PACKET_COLORS[activePacket.colorCategory]?.hex || '#0284c7'
-    : (theme === 'dark' ? '#38bdf8' : '#0284c7');
+    ? PACKET_COLORS[activePacket.colorCategory]?.hex || 'var(--pkt-tcp)'
+    : 'var(--pkt-tcp)';
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-[var(--bg-canvas)] blueprint-grid">
       {/* Top Floating Caption + Zoom/Export Strip */}
-      <div className="shrink-0 relative z-20 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 py-1.5 shadow-2xs">
-        <div className="min-w-0 flex items-center gap-2 text-xs">
-          <span className="font-mono font-bold text-[var(--accent-primary)] uppercase shrink-0">
+      <div className="@container shrink-0 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-4 py-2.5">
+        <div className="min-w-0 flex-1 basis-full text-sm leading-snug @3xl:basis-0" aria-live="polite">
+          <span className="font-semibold text-[var(--accent-primary)]">
             {t('playback.step')} {currentStepIndex + 1}
+            {currentStep ? ` · ${tc(currentStep.title)}` : ''}
           </span>
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-[var(--text-primary)] font-medium truncate">
-              {currentStep ? (
-                <>
-                  <span className="font-semibold">{currentStep.title}</span> —{' '}
-                  <AnnotatedCaption text={currentStep.caption} />
-                </>
-              ) : (
-                protocolName
-              )}
-            </span>
-            {currentStep && (
-              <TextToSpeechButton text={`${currentStep.title}. ${currentStep.caption}`} />
-            )}
-          </div>
+          <span className="block text-[var(--text-primary)]">
+            {currentStep ? <Gloss text={tc(currentStep.caption)} /> : protocolName}
+          </span>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
+          {speech.supported && currentStep && (
+            <button
+              type="button"
+              onClick={() => (speech.speaking ? speech.stop() : speech.speak(captionText))}
+              aria-pressed={speech.speaking}
+              title={speech.voiceOk ? t('explore.readAloud') : t('explore.noVoice')}
+              aria-label={speech.speaking ? t('explore.stopReading') : t('explore.readAloud')}
+              className={`flex h-8 items-center gap-1.5 rounded-md border px-2 text-[11px] font-semibold ${
+                speech.speaking
+                  ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
+                  : 'border-[var(--border-hairline)] bg-[var(--bg-inset)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+              } ${speech.voiceOk ? '' : 'opacity-60'}`}
+            >
+              {speech.speaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              <span className="hidden sm:inline">{speech.speaking ? t('explore.stopReading') : t('explore.readAloud')}</span>
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setCameraOn((on) => !on)}
+            aria-pressed={cameraOn}
+            title={t('explore.cameraHint')}
+            className={`flex h-8 items-center gap-1.5 rounded-md border px-2 text-[11px] font-semibold ${
+              cameraOn
+                ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
+                : 'border-[var(--border-hairline)] bg-[var(--bg-inset)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+            }`}
+          >
+            <Clapperboard className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{t('explore.camera')}</span>
+          </button>
           {/* Zoom Controls */}
           <div className="inline-flex items-center rounded-md border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-0.5">
             <button
               type="button"
               onClick={() => {
-                const vp = viewportRef.current;
-                const w = 1000 / vp.zoom;
-                const h = 500 / vp.zoom;
-                zoomAtPoint(vp.zoom - 0.15, vp.pan.x + w / 2, vp.pan.y + h / 2);
+                stopCamera();
+                zoomAtPoint(zoom - 0.15, pan.x + vbW / 2, pan.y + vbH / 2);
               }}
-              disabled={zoom <= SVG_MIN_ZOOM + 0.001}
               title={t('explore.zoomOut')}
-              aria-label="Zoom Out"
-              className="flex h-6 w-6 items-center justify-center rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] disabled:opacity-35"
+              aria-label={tc('Zoom Out')}
+              className="flex h-6 w-6 items-center justify-center rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
@@ -241,23 +301,20 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
               type="button"
               onClick={resetZoom}
               title={t('explore.resetZoom')}
-              aria-label="Reset Zoom"
-              className="px-1.5 font-mono text-[10.5px] font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] tabular-nums"
+              aria-label={tc('Reset Zoom')}
+              className="px-1.5 font-mono text-[11px] font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] tabular-nums"
             >
               {Math.round(zoom * 100)}%
             </button>
             <button
               type="button"
               onClick={() => {
-                const vp = viewportRef.current;
-                const w = 1000 / vp.zoom;
-                const h = 500 / vp.zoom;
-                zoomAtPoint(vp.zoom + 0.15, vp.pan.x + w / 2, vp.pan.y + h / 2);
+                stopCamera();
+                zoomAtPoint(zoom + 0.15, pan.x + vbW / 2, pan.y + vbH / 2);
               }}
-              disabled={zoom >= SVG_MAX_ZOOM - 0.001}
               title={t('explore.zoomIn')}
-              aria-label="Zoom In"
-              className="flex h-6 w-6 items-center justify-center rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] disabled:opacity-35"
+              aria-label={tc('Zoom In')}
+              className="flex h-6 w-6 items-center justify-center rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
@@ -265,8 +322,8 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
               type="button"
               onClick={fitView}
               title={t('explore.fitDiagram')}
-              aria-label="Fit Diagram to View"
-              className="flex h-6 items-center gap-1 rounded px-1.5 text-[10.5px] font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
+              aria-label={tc('Fit Diagram to View')}
+              className="flex h-6 items-center gap-1 rounded px-1.5 text-[11px] font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
             >
               <Maximize2 className="w-3 h-3" />
               <span className="hidden sm:inline">{t('explore.fitDiagram')}</span>
@@ -279,7 +336,7 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
                 type="button"
                 onClick={exportSvg}
                 title={t('explore.downloadSvg')}
-                className="flex items-center gap-1 rounded-md border border-[var(--border-hairline)] px-2 py-1 text-[11px] font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
+                className="flex items-center gap-1 rounded-md border border-[var(--border-hairline)] px-2 py-1 text-xs font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
               >
                 <Download className="w-3 h-3" />
                 <span>{t('explore.downloadSvg')}</span>
@@ -288,7 +345,7 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
                 type="button"
                 onClick={exportPng}
                 title={t('explore.downloadPng')}
-                className="flex items-center gap-1 rounded-md border border-[var(--border-hairline)] px-2 py-1 text-[11px] font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
+                className="flex items-center gap-1 rounded-md border border-[var(--border-hairline)] px-2 py-1 text-xs font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
               >
                 <Camera className="w-3 h-3" />
                 <span>{t('explore.downloadPng')}</span>
@@ -299,98 +356,33 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
       </div>
 
       {/* Responsive SVG Canvas */}
-      <div className="relative z-0 flex-1 min-h-[240px] w-full flex items-center justify-center overflow-hidden">
+      <div className="relative flex-1 min-h-[240px] w-full flex items-center justify-center overflow-hidden">
         <svg
           ref={svgRef}
           viewBox={`${pan.x} ${pan.y} ${vbW} ${vbH}`}
-          onTouchStart={(e) => {
-            if (e.touches.length === 2 && svgRef.current) {
-              const t1 = e.touches[0];
-              const t2 = e.touches[1];
-              const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-              const midX = (t1.clientX + t2.clientX) / 2;
-              const midY = (t1.clientY + t2.clientY) / 2;
-              const vp = viewportRef.current;
-              const anchorSvg = clientPointToSvg(svgRef.current, midX, midY, vp.pan.x, vp.pan.y, 1000 / vp.zoom, 500 / vp.zoom);
-              pinchRef.current = { dist, anchorSvg };
-              touchPanRef.current = null;
-            } else if (e.touches.length === 1 && e.target === svgRef.current) {
-              const t0 = e.touches[0];
-              touchPanRef.current = {
-                startX: t0.clientX,
-                startY: t0.clientY,
-                origX: viewportRef.current.pan.x,
-                origY: viewportRef.current.pan.y,
-              };
-            }
-          }}
-          onTouchMove={(e) => {
-            if (e.touches.length === 2 && pinchRef.current && svgRef.current) {
-              const t1 = e.touches[0];
-              const t2 = e.touches[1];
-              const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-              if (pinchRef.current.dist > 0) {
-                const factor = dist / pinchRef.current.dist;
-                pinchRef.current.dist = dist;
-                const vp = viewportRef.current;
-                const next = computeZoomAtAnchor({
-                  currentZoom: vp.zoom,
-                  currentPan: vp.pan,
-                  nextZoomRaw: vp.zoom * factor,
-                  anchorX: pinchRef.current.anchorSvg.x,
-                  anchorY: pinchRef.current.anchorSvg.y,
-                  baseWidth: 1000,
-                  baseHeight: 500,
-                  minZoom: SVG_MIN_ZOOM,
-                  maxZoom: SVG_MAX_ZOOM,
-                });
-                applyViewport(next.zoom, next.pan);
-              }
-            } else if (e.touches.length === 1 && touchPanRef.current && svgRef.current) {
-              const t0 = e.touches[0];
-              const vp = viewportRef.current;
-              const { dx, dy } = clientDeltaToSvg(
-                svgRef.current,
-                t0.clientX - touchPanRef.current.startX,
-                t0.clientY - touchPanRef.current.startY,
-                1000 / vp.zoom,
-                500 / vp.zoom
-              );
-              applyViewport(vp.zoom, { x: touchPanRef.current.origX - dx, y: touchPanRef.current.origY - dy });
-            }
-          }}
-          onTouchEnd={(e) => {
-            if (e.touches.length < 2) pinchRef.current = null;
-            if (e.touches.length === 0) touchPanRef.current = null;
-          }}
           onMouseDown={(e) => {
             if (e.target === svgRef.current) {
-              setPanning({
-                startX: e.clientX,
-                startY: e.clientY,
-                origX: viewportRef.current.pan.x,
-                origY: viewportRef.current.pan.y,
-              });
+              stopCamera();
+              setPanning({ startX: e.clientX, startY: e.clientY, origX: pan.x, origY: pan.y });
             }
           }}
           onMouseMove={(e) => {
             if (!panning || !svgRef.current) return;
-            const { dx, dy } = clientDeltaToSvg(
-              svgRef.current,
-              e.clientX - panning.startX,
-              e.clientY - panning.startY,
-              vbW,
-              vbH
-            );
-            applyViewport(viewportRef.current.zoom, { x: panning.origX - dx, y: panning.origY - dy });
+            const rect = svgRef.current.getBoundingClientRect();
+            const dx = ((e.clientX - panning.startX) / rect.width) * vbW;
+            const dy = ((e.clientY - panning.startY) / rect.height) * vbH;
+            setPan({ x: panning.origX - dx, y: panning.origY - dy });
           }}
           onMouseUp={() => setPanning(null)}
           onMouseLeave={() => setPanning(null)}
-          className="h-full max-h-full w-full select-none touch-none cursor-grab active:cursor-grabbing"
+          className="h-full max-h-full w-full select-none cursor-grab active:cursor-grabbing"
           role="img"
           aria-label={`${protocolName} network topology animation diagram`}
         >
           <defs>
+            <marker id="linkArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="context-stroke" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+            </marker>
             <filter id="packetGlow" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur stdDeviation="4" result="blur" />
               <feMerge>
@@ -400,30 +392,45 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
             </filter>
           </defs>
 
-          {/* Dashed Link Lines */}
+          {/* Links: dashed with arrowheads; the active one flows in the packet's direction */}
           {links.map((l) => {
             const a = nodeMap.get(l.sourceId);
             const b = nodeMap.get(l.targetId);
             if (!a || !b) return null;
             const active = isActiveLink(l);
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            const len = Math.hypot(dx, dy) || 1;
+            const trim = len > 150 ? 50 : 0;
+            const ux = dx / len;
+            const uy = dy / len;
+            const x1 = a.x + ux * trim;
+            const y1 = a.y + uy * trim;
+            const x2 = b.x - ux * trim;
+            const y2 = b.y - uy * trim;
+            const reversed = active && activePacket ? activePacket.fromDeviceId === l.targetId : false;
             return (
               <g key={l.id}>
                 <line
-                  x1={a.x}
-                  y1={a.y}
-                  x2={b.x}
-                  y2={b.y}
+                  x1={x1}
+                  y1={y1}
+                  x2={x2}
+                  y2={y2}
                   stroke={active ? activeColor : 'var(--link-stroke)'}
-                  strokeWidth={active ? 3 : 1.75}
-                  strokeDasharray={active ? undefined : '6 5'}
-                  strokeOpacity={active ? 0.95 : 0.72}
+                  strokeWidth={active ? 2.6 : 1.5}
+                  strokeLinecap="round"
+                  strokeDasharray={active ? undefined : '5 6'}
+                  strokeOpacity={active ? 1 : 0.8}
+                  className={active ? `link-flow${reversed ? ' link-flow-rev' : ''}` : undefined}
+                  markerStart={trim ? 'url(#linkArrow)' : undefined}
+                  markerEnd={trim ? 'url(#linkArrow)' : undefined}
                 />
                 {l.label && (
                   <text
                     x={(a.x + b.x) / 2}
                     y={(a.y + b.y) / 2 - 8}
                     textAnchor="middle"
-                    className="fill-[var(--text-muted)] text-[10px] font-mono"
+                    className="fill-[var(--text-muted)] text-[11px] font-mono"
                   >
                     {l.label}
                   </text>
@@ -446,18 +453,14 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
                 className="cursor-pointer"
               >
                 {isSenderOrReceiver && (
-                  <circle
-                    cx={0}
-                    cy={0}
-                    r={38}
-                    fill="none"
-                    stroke={activeColor}
-                    strokeWidth={1.75}
-                    strokeOpacity={0.55}
-                    strokeDasharray="4 3"
-                  />
+                  <>
+                    <circle className="node-ring" cx={0} cy={0} r={50} fill="none" stroke={activeColor} strokeWidth={1.6} strokeOpacity={0.75} strokeDasharray="5 5" />
+                    {activePacket?.toDeviceId === node.id && (
+                      <circle className="node-pulse" cx={0} cy={0} r={46} fill="none" stroke={activeColor} strokeWidth={2} />
+                    )}
+                  </>
                 )}
-                <g transform="translate(-31, -33) scale(0.97)" filter={isSenderOrReceiver ? 'url(#packetGlow)' : undefined}>
+                <g transform="translate(-40, -56) scale(1.25)" filter={isSenderOrReceiver ? 'url(#packetGlow)' : undefined}>
                   <IsometricHardwareArt
                     role={node.role}
                     active={Boolean(isSenderOrReceiver)}
@@ -466,26 +469,26 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
                 </g>
                 <text
                   x={0}
-                  y={42}
+                  y={52}
                   textAnchor="middle"
-                  className="fill-[var(--text-primary)] text-[12px] font-semibold"
+                  className="fill-[var(--text-primary)] font-mono text-[13px] font-bold"
                 >
-                  {node.label}
+                  {tc(node.label)}
                 </text>
                 <text
                   x={0}
-                  y={56}
+                  y={67}
                   textAnchor="middle"
-                  className="fill-[var(--accent-primary)] text-[10.5px] font-mono"
+                  className="fill-[var(--text-secondary)] text-[11.5px] font-mono"
                 >
                   {node.ip}
                 </text>
                 {settings.showMacAddresses && node.mac && (
                   <text
                     x={0}
-                    y={69}
+                    y={80}
                     textAnchor="middle"
-                    className="fill-[var(--text-muted)] text-[9.5px] font-mono"
+                    className="fill-[var(--text-muted)] text-[11px] font-mono"
                   >
                     {node.mac}
                   </text>
@@ -513,12 +516,13 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
               />
               {activePacket.dropped ? (
                 <g transform={`translate(${pktPos.x}, ${pktPos.y})`}>
-                  <circle r={11 * settings.packetScale} fill="#ef4444" fillOpacity={0.25} stroke="#ef4444" strokeWidth={2} />
-                  <path d="M-5 -5 L5 5 M5 -5 L-5 5" stroke="#ef4444" strokeWidth={2.5} strokeLinecap="round" />
+                  <circle r={11 * settings.packetScale} fill="var(--pkt-error)" fillOpacity={0.25} stroke="var(--pkt-error)" strokeWidth={2} />
+                  <path d="M-5 -5 L5 5 M5 -5 L-5 5" stroke="var(--pkt-error)" strokeWidth={2.5} strokeLinecap="round" />
                 </g>
               ) : (
                 <g transform={`translate(${pktPos.x}, ${pktPos.y})`}>
-                  <circle r={8 * settings.packetScale} fill={activeColor} stroke="#ffffff" strokeWidth={1.5} />
+                  <circle className="node-pulse" r={9 * settings.packetScale} fill="none" stroke={activeColor} strokeWidth={1.6} />
+                  <circle r={7 * settings.packetScale} fill={activeColor} stroke="#ffffff" strokeWidth={1.5} />
                 </g>
               )}
               <g transform={`translate(${pktPos.x}, ${pktPos.y - 22})`}>
@@ -536,7 +540,7 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
                   x={0}
                   y={2}
                   textAnchor="middle"
-                  className="fill-[var(--text-primary)] text-[10px] font-mono font-semibold"
+                  className="fill-[var(--text-primary)] text-[11px] font-mono font-semibold"
                 >
                   {activePacket.protocol} · {activePacket.sizeBytes}B
                 </text>
@@ -549,10 +553,10 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
         {hoveredNode && (
           <div
             role="status"
-            className="pointer-events-none absolute top-3 start-3 z-10 max-w-xs rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)] p-3 text-xs shadow-xl backdrop-blur-md"
+            className="pointer-events-none absolute top-3 start-3 z-10 max-w-xs rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)]/95 p-3 text-xs shadow-xl backdrop-blur-md"
           >
             <div className="font-semibold text-[var(--text-primary)]">{hoveredNode.label}</div>
-            <div className="mt-1 space-y-0.5 font-mono text-[11px] text-[var(--text-secondary)]">
+            <div className="mt-1 space-y-0.5 font-mono text-xs text-[var(--text-secondary)]">
               <div>Role: {hoveredNode.role.replace('_', ' ')}</div>
               <div>IP: {hoveredNode.ip}</div>
               {hoveredNode.mac && <div>MAC: {hoveredNode.mac}</div>}
@@ -580,7 +584,7 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
                 ✕
               </button>
             </div>
-            <p className="mt-1 font-mono text-[11px] text-[var(--text-secondary)] break-words">
+            <p className="mt-1 font-mono text-xs text-[var(--text-secondary)] break-words">
               {selectedPopoverPkt.srcIp} → {selectedPopoverPkt.dstIp} ({selectedPopoverPkt.sizeBytes} bytes)
             </p>
             <p className="mt-1 text-[var(--text-primary)]">{selectedPopoverPkt.info}</p>
@@ -590,7 +594,7 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
                 onInspectPacket(selectedPopoverPkt.id);
                 setSelectedPopoverPkt(null);
               }}
-              className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-lg bg-[var(--accent-cta)] py-1.5 font-semibold text-white hover:bg-[var(--accent-cta-hover)]"
+              className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-lg bg-[var(--accent-cta)] py-1.5 font-semibold text-[var(--on-accent)] hover:bg-[var(--accent-cta-hover)]"
             >
               <Info className="w-3.5 h-3.5" />
               <span>{t('explore.packetInspector')}</span>
@@ -600,7 +604,7 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
       </div>
 
       {/* Packet Color Legend Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--border-hairline)] bg-[var(--bg-surface)]/85 px-4 py-1.5 text-[11px]">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--border-hairline)] bg-[var(--bg-surface)]/85 px-4 py-1.5 text-xs">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
           {LEGEND_ITEMS.map((item) => (
             <span key={item.key} className="flex items-center gap-1.5 font-mono text-[var(--text-secondary)]">
@@ -613,7 +617,7 @@ export const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
             </span>
           ))}
         </div>
-        <span className="hidden lg:inline text-[11px] text-[var(--text-muted)]">
+        <span className="hidden lg:inline text-xs text-[var(--text-muted)]">
           {t('explore.clickPacketHint')}
         </span>
       </div>

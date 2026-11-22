@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowDown, ArrowUp, CheckCircle2, RotateCcw, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { tc } from '../../i18n/content';
 
 interface OrderChallenge {
   id: string;
@@ -111,25 +112,25 @@ export const GamesView: React.FC = () => {
   return (
     <div className="grid gap-5 lg:grid-cols-2">
       {/* Order the Packets Game */}
-      <section className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-5 space-y-4">
+      <section className="hud-panel p-4 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 className="font-display text-lg font-bold text-[var(--text-primary)]">
+            <h2 className="font-display text-base font-bold text-[var(--text-primary)]">
               {t('learn.orderGame')}
             </h2>
-            <p className="mt-0.5 text-[13px] text-[var(--text-secondary)]">
-              Arrange the protocol messages into chronological wire order.
+            <p className="text-xs text-[var(--text-muted)]">
+              {tc('Arrange the protocol messages into chronological wire order.')}
             </p>
           </div>
           <select
-            aria-label="Choose packet ordering challenge"
+            aria-label={tc('Choose packet ordering challenge')}
             value={challengeIdx}
             onChange={(e) => selectChallenge(Number(e.target.value))}
-            className="h-9 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-3 text-[13px] font-medium text-[var(--text-primary)]"
+            className="h-8 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-2.5 text-xs text-[var(--text-primary)]"
           >
             {ORDER_CHALLENGES.map((c, idx) => (
               <option key={c.id} value={idx}>
-                {c.title}
+                {tc(c.title)}
               </option>
             ))}
           </select>
@@ -142,7 +143,7 @@ export const GamesView: React.FC = () => {
             return (
               <div
                 key={item}
-                className={`flex items-center justify-between gap-2 rounded-lg border px-3.5 py-2.5 text-[13px] font-mono ${
+                className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-xs font-mono ${
                   isCorrectPos
                     ? 'border-[var(--tone-success)] bg-[var(--tone-success)]/12 text-[var(--tone-success)] font-semibold'
                     : isWrongPos
@@ -159,8 +160,8 @@ export const GamesView: React.FC = () => {
                     type="button"
                     onClick={() => moveItem(idx, -1)}
                     disabled={idx === 0}
-                    aria-label="Move up"
-                    className="rounded-md border border-[var(--border-hairline)] p-1.5 hover:text-[var(--accent-primary)] disabled:opacity-30"
+                    aria-label={tc('Move up')}
+                    className="rounded border border-[var(--border-hairline)] p-1 hover:text-[var(--accent-primary)] disabled:opacity-30"
                   >
                     <ArrowUp className="w-3.5 h-3.5" />
                   </button>
@@ -168,8 +169,8 @@ export const GamesView: React.FC = () => {
                     type="button"
                     onClick={() => moveItem(idx, 1)}
                     disabled={idx === items.length - 1}
-                    aria-label="Move down"
-                    className="rounded-md border border-[var(--border-hairline)] p-1.5 hover:text-[var(--accent-primary)] disabled:opacity-30"
+                    aria-label={tc('Move down')}
+                    className="rounded border border-[var(--border-hairline)] p-1 hover:text-[var(--accent-primary)] disabled:opacity-30"
                   >
                     <ArrowDown className="w-3.5 h-3.5" />
                   </button>
@@ -183,14 +184,14 @@ export const GamesView: React.FC = () => {
           <button
             type="button"
             onClick={() => selectChallenge(challengeIdx)}
-            className="flex h-9 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] px-3 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+            className="flex h-8 items-center gap-1 rounded-lg border border-[var(--border-hairline)] px-3 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           >
             <RotateCcw className="w-3.5 h-3.5" /> Reshuffle
           </button>
           <button
             type="button"
             onClick={() => setCheckedOrder(true)}
-            className="flex h-9 items-center gap-1.5 rounded-lg bg-[var(--accent-cta)] px-4 text-[13px] font-semibold text-white hover:bg-[var(--accent-cta-hover)] transition-colors"
+            className="flex h-8 items-center gap-1.5 rounded-lg bg-[var(--accent-cta)] px-3.5 text-xs font-semibold text-[var(--on-accent)] hover:bg-[var(--accent-cta-hover)] transition-colors"
           >
             <Sparkles className="w-3.5 h-3.5" /> Check Sequence
           </button>
@@ -198,7 +199,7 @@ export const GamesView: React.FC = () => {
 
         {checkedOrder && (
           <div
-            className={`rounded-lg border px-3.5 py-2.5 text-[13px] font-semibold ${
+            className={`rounded-lg border px-3 py-2 text-xs font-semibold ${
               allOrderCorrect
                 ? 'border-[var(--tone-success)]/50 bg-[var(--tone-success)]/12 text-[var(--tone-success)]'
                 : 'border-[var(--tone-warning)]/50 bg-[var(--tone-warning)]/12 text-[var(--tone-warning)]'
@@ -212,14 +213,14 @@ export const GamesView: React.FC = () => {
       </section>
 
       {/* Match the Port Game */}
-      <section className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-5 space-y-4">
+      <section className="hud-panel p-4 space-y-4">
         <div className="flex items-center justify-between gap-2">
           <div>
-            <h2 className="font-display text-lg font-bold text-[var(--text-primary)]">
+            <h2 className="font-display text-base font-bold text-[var(--text-primary)]">
               {t('learn.portGame')} ({matchedPorts.length}/{PORT_PAIRS.length})
             </h2>
-            <p className="mt-0.5 text-[13px] text-[var(--text-secondary)]">
-              Click a port number on the left, then click its protocol on the right.
+            <p className="text-xs text-[var(--text-muted)]">
+              {tc('Click a port number on the left, then click its protocol on the right.')}
             </p>
           </div>
           <button
@@ -228,13 +229,13 @@ export const GamesView: React.FC = () => {
               setMatchedPorts([]);
               setSelectedPort(null);
             }}
-            className="flex h-9 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] px-3 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+            className="flex h-8 items-center gap-1 rounded-lg border border-[var(--border-hairline)] px-2.5 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           >
             <RotateCcw className="w-3.5 h-3.5" /> {t('playback.reset')}
           </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 text-[13px]">
+        <div className="grid grid-cols-2 gap-3 text-xs">
           <div className="space-y-1.5 max-h-80 overflow-y-auto">
             {PORT_PAIRS.map((p) => {
               const matched = matchedPorts.includes(p.port);
@@ -245,7 +246,7 @@ export const GamesView: React.FC = () => {
                   type="button"
                   disabled={matched}
                   onClick={() => setSelectedPort(p.port)}
-                  className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 font-mono transition-colors ${
+                  className={`flex w-full items-center justify-between rounded-lg border px-3 py-1.5 font-mono transition-colors ${
                     matched
                       ? 'border-[var(--tone-success)]/40 bg-[var(--tone-success)]/10 text-[var(--tone-success)] opacity-75'
                       : active
@@ -254,7 +255,7 @@ export const GamesView: React.FC = () => {
                   }`}
                 >
                   <span>Port {p.port}</span>
-                  {matched && <CheckCircle2 className="w-4 h-4" />}
+                  {matched && <CheckCircle2 className="w-3.5 h-3.5" />}
                 </button>
               );
             })}
@@ -270,7 +271,7 @@ export const GamesView: React.FC = () => {
                   type="button"
                   disabled={matched || !selectedPort}
                   onClick={() => handleServicePick(p.service)}
-                  className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-start transition-colors ${
+                  className={`flex w-full items-center justify-between rounded-lg border px-3 py-1.5 text-start transition-colors ${
                     matched
                       ? 'border-[var(--tone-success)]/40 bg-[var(--tone-success)]/10 text-[var(--tone-success)] opacity-75'
                       : isWrong

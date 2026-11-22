@@ -1,21 +1,12 @@
 {
   "name": "netpulse",
+  "description": "NetPulse: interactive internet protocol animations, a packet inspector and a Packet Tracer-style network simulator that runs in the browser.",
   "private": true,
-  "version": "2.4.0",
-  "description": "Interactive network protocol visualizer and discrete-event network simulator",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/geevarghesekthomas84-sys/NetPulse.git"
-  },
-  "bugs": {
-    "url": "https://github.com/geevarghesekthomas84-sys/NetPulse/issues"
-  },
-  "homepage": "https://netpulse.itgg.space",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
-    "build:docs": "node scripts/build-docs.mjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
@@ -38,11 +29,12 @@
     "react-dom": "^19.0.1",
     "react-i18next": "^18.0.1",
     "vite": "^8.3.0",
-    "vite-plugin-pwa": "^1.1.0",
+    "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.1.0",
     "zustand": "^5.1.0"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
     "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",

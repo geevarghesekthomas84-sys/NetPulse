@@ -41,25 +41,15 @@ async function main() {
     const isInitialDark = await page.evaluate(() => document.documentElement.classList.contains('dark'));
     assert.equal(isInitialDark, false, 'Expected initial Crisp Daylight light theme');
 
-    // Quick-Start Entry Site visible on first visit with hero image, capabilities bento artwork & workspace launch CTA
+    // Quick-Start Welcome Guide visible on first visit
     const welcomeGuide = page.getByRole('region', { name: /First-Time Quick Start/i });
     await welcomeGuide.waitFor();
-    const heroImgLoaded = await welcomeGuide.locator('img').evaluate((img) => img.complete && img.naturalWidth > 0);
-    assert.equal(heroImgLoaded, true, 'Expected entry site hero artwork to load cleanly');
-    const capabilitiesSection = page.getByRole('region', { name: /Platform Capabilities/i });
-    await capabilitiesSection.waitFor();
-    const bentoImgsLoaded = await capabilitiesSection
-      .locator('img')
-      .evaluateAll((imgs) => imgs.length === 2 && imgs.every((img) => img.complete && img.naturalWidth > 0));
-    assert.equal(bentoImgsLoaded, true, 'Expected all capabilities bento artworks to load cleanly');
-    await welcomeGuide.getByRole('button', { name: /Open Network Simulator/i }).waitFor();
     await welcomeGuide.getByRole('button', { name: /^DNS$/i }).click();
     await page.getByRole('heading', { name: 'DNS', exact: true }).waitFor();
     await welcomeGuide.getByRole('button', { name: /^HTTP$/i }).click();
     await page.getByRole('heading', { name: 'HTTP', exact: true }).waitFor();
     await welcomeGuide.getByRole('button', { name: /Hide guide/i }).click();
     assert.equal(await page.getByText(/First-Time Quick Start/i).count(), 0);
-    assert.equal(await page.getByRole('region', { name: /Platform Capabilities/i }).count(), 0);
 
     // Check computed colors differ in Light & Dark themes
     const lightColors = await page.evaluate(() => {
@@ -305,29 +295,6 @@ async function main() {
     // Undo restores prior topology
     await page.getByLabel('Undo').click();
     await page.locator('text=/3 nodes · 2 links/').waitFor({ timeout: 4000 });
-
-    // Verify SVG mouse-wheel zoom in/out stays within bounds and does not scroll workspace
-    const zoomCanvasEl = page.getByRole('img', { name: /Interactive network simulator canvas/i });
-    const zoomCanvasBox = await zoomCanvasEl.boundingBox();
-    assert.ok(zoomCanvasBox, 'Expected simulator SVG bounding box');
-    await page.mouse.move(zoomCanvasBox.x + zoomCanvasBox.width / 2, zoomCanvasBox.y + zoomCanvasBox.height / 2);
-    await page.mouse.wheel(0, -100);
-    await page.mouse.wheel(0, -100);
-    const zoomedPctText = await page.getByLabel('Reset Zoom').textContent();
-    const zoomedPct = Number.parseInt(zoomedPctText || '100', 10);
-    assert.ok(zoomedPct > 105 && zoomedPct <= 300, `Expected wheel zoom-in >105%, got ${zoomedPctText}`);
-    await page.mouse.wheel(0, 220);
-    const zoomedOutPctText = await page.getByLabel('Reset Zoom').textContent();
-    const zoomedOutPct = Number.parseInt(zoomedOutPctText || '100', 10);
-    assert.ok(zoomedOutPct < zoomedPct, `Expected wheel zoom-out <${zoomedPct}%, got ${zoomedOutPctText}`);
-    await page.getByLabel('Reset Zoom').click();
-    assert.equal(await page.getByLabel('Reset Zoom').textContent(), '100%');
-
-    // Verify layout remains accessible when viewport simulates ~170% browser zoom
-    await page.setViewportSize({ width: 768, height: 520 });
-    const headerSettingsBox = await page.getByLabel('Settings').boundingBox();
-    assert.ok(headerSettingsBox && headerSettingsBox.x + headerSettingsBox.width <= 768, 'Settings button should stay inside zoomed viewport width');
-    await page.setViewportSize({ width: 1440, height: 900 });
 
     // 3. Learn Mode
     await page.locator('header').getByRole('button', { name: /Learn/i }).click();

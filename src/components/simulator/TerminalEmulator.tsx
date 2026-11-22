@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Terminal } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { SimDevice } from '../../engine/types';
+import { tc } from '../../i18n/content';
 
 interface TerminalLine {
   id: string;
@@ -14,29 +15,36 @@ interface TerminalEmulatorProps {
   activeDeviceId: string | null;
   onSelectDevice: (id: string) => void;
   onExecute: (deviceId: string, command: string) => string;
+  /** Current prompt, e.g. `Router(config-if)#` (changes as the CLI moves between modes). */
   getPrompt?: (deviceId: string) => string;
+  /** True for routers/switches/firewalls, which speak the IOS-style CLI. */
+  isIos?: (deviceId: string) => boolean;
+  /** Tab completion; returns the completed line or null. */
+  onComplete?: (deviceId: string, line: string) => string | null;
   externalLogTrigger?: { deviceId: string; cmd: string; output: string } | null;
 }
 
-const QUICK_CISCO_CMDS = [
+const IOS_QUICK_CMDS = [
   'enable',
-  'show ip int brief',
-  'conf t',
-  'show ip route',
+  'configure terminal',
+  'show ip interface brief',
   'show running-config',
-  'show version',
-  'write memory',
+  'show ip route',
+  'show vlan brief',
+  'show cdp neighbors',
+  '?',
 ];
 
-const QUICK_HOST_CMDS = [
-  'ipconfig /all',
-  'ipconfig /renew',
-  'ping 192.168.1.1 -c 2',
-  'traceroute 192.168.1.1',
+const QUICK_CMDS = [
+  'help',
+  'ipconfig',
+  'ping 203.0.113.10 -c 2',
+  'traceroute 203.0.113.10',
   'nslookup example.com',
-  'curl http://192.168.1.100 -v',
+  'curl http://203.0.113.10 -v',
   'arp -a',
-  'netstat -an',
+  'show ip route',
+  'nmap 203.0.113.10',
 ];
 
 export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
@@ -45,20 +53,15 @@ export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
   onSelectDevice,
   onExecute,
   getPrompt,
+  isIos,
+  onComplete,
   externalLogTrigger,
 }) => {
   const { t } = useTranslation();
   const targetDevice = devices.find((d) => d.id === activeDeviceId) ?? devices[0] ?? null;
-  const isCisco =
-    targetDevice &&
-    (targetDevice.role === 'router' ||
-      targetDevice.role === 'switch' ||
-      targetDevice.role === 'firewall' ||
-      targetDevice.role === 'nat_gateway');
-
-  const prompt =
-    getPrompt && targetDevice ? getPrompt(targetDevice.id) : `${targetDevice?.name ?? 'host'}$`;
-
+  const ios = targetDevice ? Boolean(isIos?.(targetDevice.id)) : false;
+  const prompt = targetDevice ? getPrompt?.(targetDevice.id) ?? `${targetDevice.name}$` : 'host$';
+  const quick = ios ? IOS_QUICK_CMDS : QUICK_CMDS;
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<string[]>([]);
   const [histIdx, setHistIdx] = useState(-1);
@@ -96,11 +99,11 @@ export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
       setInput('');
       return;
     }
-    const currentPrompt = prompt;
+    const shownPrompt = prompt;
     const output = onExecute(targetDevice.id, cmd);
     setLines((prev) => [
       ...prev,
-      { id: `c-${Date.now()}-${Math.random()}`, kind: 'cmd', text: `${currentPrompt} ${cmd}` },
+      { id: `c-${Date.now()}-${Math.random()}`, kind: 'cmd', text: `${shownPrompt} ${cmd}` },
       ...(output ? [{ id: `o-${Date.now()}-${Math.random()}`, kind: 'out' as const, text: output }] : []),
     ]);
     setHistory((prev) => [cmd, ...prev.slice(0, 30)]);
@@ -128,6 +131,11 @@ export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
       }
     } else if (e.key === 'Tab') {
       e.preventDefault();
+      if (ios && targetDevice) {
+        const done = onComplete?.(targetDevice.id, input);
+        if (done) setInput(done);
+        return;
+      }
       const cmds = ['ping ', 'traceroute ', 'nslookup ', 'curl ', 'ipconfig', 'arp -a', 'netstat -an', 'nmap ', 'tcpdump', 'show ip route', 'show mac', 'show running-config'];
       const match = cmds.find((c) => c.startsWith(input.trim().toLowerCase()));
       if (match) setInput(match);
@@ -136,20 +144,20 @@ export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
 
   return (
     <section
-      aria-label="Device CLI Terminal"
+      aria-label={tc('Device CLI Terminal')}
       className="flex h-full min-h-0 flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] overflow-hidden"
     >
       {/* Terminal Header */}
-      <div className="shrink-0 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--terminal-border)] bg-[var(--terminal-header)] px-3.5 py-2">
-        <div className="flex items-center gap-2 text-[13px] font-display font-bold text-[var(--accent-primary)]">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--terminal-border)] bg-[var(--terminal-header)] px-3 py-2">
+        <div className="flex items-center gap-2 text-xs font-mono font-semibold text-[var(--accent-primary)]">
           <Terminal className="w-4 h-4" />
           <span>{t('simulator.deviceCliTitle')}</span>
         </div>
         <select
-          aria-label="Target CLI device"
+          aria-label={tc('Target CLI device')}
           value={targetDevice?.id ?? ''}
           onChange={(e) => onSelectDevice(e.target.value)}
-          className="h-8 rounded-lg border border-[var(--terminal-border)] bg-[var(--bg-surface)] px-3 font-mono text-xs font-semibold text-[var(--text-primary)]"
+          className="rounded border border-[var(--terminal-border)] bg-[var(--bg-surface)] px-2.5 py-1 font-mono text-xs text-[var(--text-primary)]"
         >
           {devices.map((d) => (
             <option key={d.id} value={d.id}>
@@ -160,13 +168,13 @@ export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
       </div>
 
       {/* Quick Command Chips */}
-      <div className="shrink-0 flex flex-wrap gap-1.5 border-b border-[var(--terminal-border)] bg-[var(--bg-inset)] px-3.5 py-2">
-        {(isCisco ? QUICK_CISCO_CMDS : QUICK_HOST_CMDS).map((q) => (
+      <div className="flex flex-wrap gap-1.5 border-b border-[var(--terminal-border)] bg-[var(--bg-inset)] px-3 py-1.5">
+        {quick.map((q) => (
           <button
             key={q}
             type="button"
             onClick={() => runCmd(q)}
-            className="rounded-md border border-[var(--terminal-border)] bg-[var(--bg-surface)] px-2.5 py-1 font-mono text-xs font-semibold text-[var(--accent-primary)] hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary-soft)] transition-colors"
+            className="rounded border border-[var(--terminal-border)] bg-[var(--bg-surface)] px-2 py-0.5 font-mono text-[11px] font-medium text-[var(--accent-primary)] hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary-soft)] transition-colors"
           >
             {q}
           </button>
@@ -174,7 +182,7 @@ export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
       </div>
 
       {/* Output Log */}
-      <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto p-3.5 font-mono text-[13px] leading-relaxed space-y-2">
+      <div ref={scrollRef} className="h-56 overflow-y-auto p-3 font-mono text-xs leading-relaxed space-y-1.5">
         {lines.map((line) => (
           <pre
             key={line.id}
@@ -193,7 +201,7 @@ export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
           e.preventDefault();
           runCmd(input);
         }}
-        className="shrink-0 flex items-center gap-2 border-t border-[var(--terminal-border)] bg-[var(--terminal-header)] px-3.5 py-2.5 font-mono text-[13px]"
+        className="flex items-center gap-2 border-t border-[var(--terminal-border)] bg-[var(--terminal-header)] px-3 py-2 font-mono text-xs"
       >
         <span className="text-[var(--accent-primary)] font-bold shrink-0">{prompt}</span>
         <input
@@ -202,7 +210,7 @@ export const TerminalEmulator: React.FC<TerminalEmulatorProps> = ({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={t('simulator.cliPlaceholder')}
-          aria-label="CLI command input"
+          aria-label={tc('CLI command input')}
           className="flex-1 bg-transparent text-[var(--terminal-text)] placeholder:text-[var(--terminal-muted)] focus:outline-none"
         />
       </form>

@@ -6,15 +6,7 @@ import './index.css';
 import App from './App.tsx';
 
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-  if (import.meta.env.DEV) {
-    void navigator.serviceWorker.getRegistrations().then((regs) => {
-      for (const reg of regs) {
-        void reg.unregister();
-      }
-    });
-  } else {
-    registerSW({ immediate: true });
-  }
+  registerSW({ immediate: true });
 }
 
 createRoot(document.getElementById('root')!).render(

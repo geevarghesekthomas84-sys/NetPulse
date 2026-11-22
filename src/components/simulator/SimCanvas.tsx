@@ -1,44 +1,16 @@
+import { useWheelZoom } from '../../lib/useWheelZoom';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Cable,
-  Camera,
-  Check,
-  Download,
-  LayoutGrid,
-  Mail,
-  Maximize2,
-  MessageSquarePlus,
-  Plus,
-  Radio,
-  Redo2,
-  Scissors,
-  Table2,
-  Trash2,
-  Undo2,
-  X,
-  Zap,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+import { Cable, Camera, Check, Download, LayoutGrid, Maximize2, MessageSquarePlus, Plus, Radio, Redo2, Scissors, Table2, Trash2, Undo2, X, Zap, ZoomIn, ZoomOut, Mail, Clapperboard } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { CapturedPacket, DeviceRole, LinkMedium, SimDevice, SimLink } from '../../engine/types';
 import { exportTopologyPng, prepareSvgForExport } from '../../lib/exportTopologyPng';
 import { triggerDownload } from '../../lib/pcapWriter';
 import { computeAnimatedPacketPosition, resolvePacketCurveGeometry } from '../../lib/simPlayback';
-import { playCableConnectSound, playCableDisconnectSound, playPacketBlip } from '../../lib/sound';
-import {
-  clientDeltaToSvg,
-  clientPointToSvg,
-  computeFitViewport,
-  computeZoomAtAnchor,
-  SVG_MAX_ZOOM,
-  SVG_MIN_ZOOM,
-  svgPointToContainerPercent,
-  wheelDeltaToZoomFactor,
-} from '../../lib/svgViewport';
 import { useAppStore } from '../../store/useAppStore';
 import { formatPortLabel, IsometricHardwareArt } from '../icons/IsometricHardwareLibrary';
 import { PACKET_COLORS } from '../explore/colors';
+import { NodeTable } from './NodeTable';
+import { tc } from '../../i18n/content';
 
 export interface CanvasAnnotation {
   id: string;
@@ -67,6 +39,10 @@ interface SimCanvasProps {
   canRedo: boolean;
   annotations: CanvasAnnotation[];
   onToggleConnectMode: (next?: boolean) => void;
+  /** "Add PDU" mode: click a source device, then a destination, to send a test packet. */
+  pduMode?: boolean;
+  pduSourceName?: string | null;
+  onTogglePduMode?: () => void;
   onChangeMedium: (medium: LinkMedium) => void;
   onSelectDevice: (id: string | null) => void;
   onSelectLink: (id: string | null) => void;
@@ -94,11 +70,6 @@ interface SimCanvasProps {
     exportSvg: () => void;
     fitView?: () => void;
   } | null>;
-  onOpenDeviceModal?: (device: SimDevice) => void;
-  isAddingSimplePdu?: boolean;
-  pduSourceId?: string | null;
-  onSelectSimplePduEndpoint?: (deviceId: string) => void;
-  onCancelSimplePdu?: () => void;
 }
 
 const MULTI_PORT_ROLES = new Set<DeviceRole>([
@@ -154,6 +125,9 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
   canRedo,
   annotations,
   onToggleConnectMode,
+  pduMode = false,
+  pduSourceName = null,
+  onTogglePduMode,
   onChangeMedium,
   onSelectDevice,
   onSelectLink,
@@ -177,11 +151,6 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
   stepDurationMs = 720,
   animationTick = 0,
   exportActionsRef,
-  onOpenDeviceModal,
-  isAddingSimplePdu = false,
-  pduSourceId = null,
-  onSelectSimplePduEndpoint,
-  onCancelSimplePdu,
 }) => {
   const { t } = useTranslation();
   const { theme, settings } = useAppStore();
@@ -189,14 +158,6 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
-  const viewportRef = useRef({ zoom: 1, pan: { x: 0, y: 0 } });
-  viewportRef.current = { zoom, pan };
-  const pinchRef = useRef<{
-    dist: number;
-    anchorSvg: { x: number; y: number };
-    lastMidClient: { x: number; y: number };
-  } | null>(null);
-  const touchPanRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [panning, setPanning] = useState<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
   const [hoveredDeviceId, setHoveredDeviceId] = useState<string | null>(null);
@@ -233,16 +194,6 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
     x: number;
     y: number;
   } | null>(null);
-
-  // Escape cancels Simple PDU mode
-  useEffect(() => {
-    if (!isAddingSimplePdu) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onCancelSimplePdu?.();
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [isAddingSimplePdu, onCancelSimplePdu]);
 
   const devMap = useMemo(() => new Map(devices.map((d) => [d.id, d])), [devices]);
   const recentPackets = useMemo(() => {
@@ -434,20 +385,17 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
   const vbW = 1000 / zoom;
   const vbH = 520 / zoom;
 
-  const applyViewport = (nextZoom: number, nextPan: { x: number; y: number }) => {
-    viewportRef.current = { zoom: nextZoom, pan: nextPan };
-    setZoom(nextZoom);
-    setPan(nextPan);
-  };
-
   const clientToSvgCoords = (clientX: number, clientY: number, snapGrid = true) => {
-    const vp = viewportRef.current;
-    const curW = 1000 / vp.zoom;
-    const curH = 520 / vp.zoom;
-    const pt = clientPointToSvg(svgRef.current, clientX, clientY, vp.pan.x, vp.pan.y, curW, curH);
+    const svg = svgRef.current;
+    if (!svg) return { x: 400, y: 240 };
+    const rect = svg.getBoundingClientRect();
+    const relX = (clientX - rect.left) / rect.width;
+    const relY = (clientY - rect.top) / rect.height;
+    const rawX = pan.x + relX * vbW;
+    const rawY = pan.y + relY * vbH;
     return snapGrid
-      ? { x: Math.round(pt.x / 10) * 10, y: Math.round(pt.y / 10) * 10 }
-      : pt;
+      ? { x: Math.round(rawX / 10) * 10, y: Math.round(rawY / 10) * 10 }
+      : { x: rawX, y: rawY };
   };
 
   const getDevicePortCoords = (dev: SimDevice, ifaceKey: string) => {
@@ -544,9 +492,6 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
       setActiveWire(null);
       return;
     }
-    if (settings.soundEffects) {
-      playCableConnectSound();
-    }
     onConnectPorts({
       sourceDeviceId: activeWire.sourceDeviceId,
       sourceIface: activeWire.sourceIface,
@@ -587,9 +532,6 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
           activeWireRef.current = null;
           setActiveWire(null);
           setPortPicker(null);
-          if (settings.soundEffects) {
-            playCableConnectSound();
-          }
           onConnectPorts({
             sourceDeviceId: current.sourceDeviceId,
             sourceIface: current.sourceIface,
@@ -626,15 +568,10 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
       const coords = clientToSvgCoords(e.clientX, e.clientY, true);
       onMoveDevice(draggingId, Math.max(40, Math.min(960, coords.x)), Math.max(40, Math.min(480, coords.y)));
     } else if (panning && svgRef.current) {
-      const { dx, dy } = clientDeltaToSvg(
-        svgRef.current,
-        e.clientX - panning.startX,
-        e.clientY - panning.startY,
-        vbW,
-        vbH
-      );
-      const nextPan = { x: panning.origX - dx, y: panning.origY - dy };
-      applyViewport(viewportRef.current.zoom, nextPan);
+      const rect = svgRef.current.getBoundingClientRect();
+      const dx = ((e.clientX - panning.startX) / rect.width) * vbW;
+      const dy = ((e.clientY - panning.startY) / rect.height) * vbH;
+      setPan({ x: panning.origX - dx, y: panning.origY - dy });
     }
   };
 
@@ -647,80 +584,135 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
   };
 
   const zoomAtPoint = (nextZoomRaw: number, anchorX: number, anchorY: number) => {
-    const vp = viewportRef.current;
-    const next = computeZoomAtAnchor({
-      currentZoom: vp.zoom,
-      currentPan: vp.pan,
-      nextZoomRaw,
-      anchorX,
-      anchorY,
-      baseWidth: 1000,
-      baseHeight: 520,
-      minZoom: SVG_MIN_ZOOM,
-      maxZoom: SVG_MAX_ZOOM,
+    const nextZoom = Math.max(0.55, Math.min(2.4, Number(nextZoomRaw.toFixed(2))));
+    const nextW = 1000 / nextZoom;
+    const nextH = 520 / nextZoom;
+    const relX = (anchorX - pan.x) / vbW;
+    const relY = (anchorY - pan.y) / vbH;
+    setZoom(nextZoom);
+    setPan({
+      x: anchorX - relX * nextW,
+      y: anchorY - relY * nextH,
     });
-    applyViewport(next.zoom, next.pan);
   };
 
+  useWheelZoom(svgRef, (factor, clientX, clientY) => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const anchorX = pan.x + ((clientX - rect.left) / rect.width) * vbW;
+    const anchorY = pan.y + ((clientY - rect.top) / rect.height) * vbH;
+    stopCamera();
+    zoomAtPoint(zoom * factor, anchorX, anchorY);
+  });
+
   const resetZoom = () => {
-    applyViewport(1, { x: 0, y: 0 });
+    stopCamera();
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
   };
 
   const handleFitView = () => {
-    const next = computeFitViewport(
-      devices.map((d) => ({ x: d.x, y: d.y })),
-      1000,
-      520,
-      { x: 95, y: 90 },
-      0.45,
-      1.45
-    );
-    applyViewport(next.zoom, next.pan);
+    stopCamera();
+    if (devices.length === 0) {
+      setZoom(1);
+      setPan({ x: 0, y: 0 });
+      return;
+    }
+    const minX = Math.min(...devices.map((d) => d.x)) - 90;
+    const maxX = Math.max(...devices.map((d) => d.x)) + 90;
+    const minY = Math.min(...devices.map((d) => d.y)) - 80;
+    const maxY = Math.max(...devices.map((d) => d.y)) + 95;
+    const spanX = Math.max(320, maxX - minX);
+    const spanY = Math.max(200, maxY - minY);
+    const nextZoom = Math.max(0.65, Math.min(1.4, Math.min(1000 / spanX, 520 / spanY)));
+    setZoom(Number(nextZoom.toFixed(2)));
+    setPan({
+      x: Math.max(-100, minX + spanX / 2 - 500 / nextZoom),
+      y: Math.max(-80, minY + spanY / 2 - 260 / nextZoom),
+    });
   };
 
-  useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    const onNativeWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const vp = viewportRef.current;
-      const curW = 1000 / vp.zoom;
-      const curH = 520 / vp.zoom;
-      const anchor = clientPointToSvg(svg, e.clientX, e.clientY, vp.pan.x, vp.pan.y, curW, curH);
-      const factor = wheelDeltaToZoomFactor(e.deltaY, e.deltaMode);
-      const next = computeZoomAtAnchor({
-        currentZoom: vp.zoom,
-        currentPan: vp.pan,
-        nextZoomRaw: vp.zoom * factor,
-        anchorX: anchor.x,
-        anchorY: anchor.y,
-        baseWidth: 1000,
-        baseHeight: 520,
-        minZoom: SVG_MIN_ZOOM,
-        maxZoom: SVG_MAX_ZOOM,
-      });
-      viewportRef.current = next;
-      setZoom(next.zoom);
-      setPan(next.pan);
+  // Follow camera: while packets are playing or being stepped, glide to the devices they travel between.
+  // Editing stays untouched (nothing moves when idle) and any manual zoom or pan switches it off.
+  const [cameraOn, setCameraOn] = useState(true);
+  const viewRef = useRef({ zoom: 1, panX: 0, panY: 0 });
+  viewRef.current = { zoom, panX: pan.x, panY: pan.y };
+  const animRef = useRef<number | null>(null);
+
+  const glideTo = (toZoom: number, toX: number, toY: number) => {
+    if (animRef.current !== null) cancelAnimationFrame(animRef.current);
+    const from = { ...viewRef.current };
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    if (reduce || typeof requestAnimationFrame === 'undefined') {
+      setZoom(toZoom);
+      setPan({ x: toX, y: toY });
+      return;
+    }
+    const start = performance.now();
+    const dur = 520;
+    const ease = (v: number) => 1 - Math.pow(1 - v, 3);
+    const tick = (now: number) => {
+      const k = ease(Math.min(1, (now - start) / dur));
+      setZoom(from.zoom + (toZoom - from.zoom) * k);
+      setPan({ x: from.panX + (toX - from.panX) * k, y: from.panY + (toY - from.panY) * k });
+      animRef.current = k < 1 ? requestAnimationFrame(tick) : null;
     };
-    svg.addEventListener('wheel', onNativeWheel, { passive: false });
-    return () => svg.removeEventListener('wheel', onNativeWheel);
-  }, []);
+    animRef.current = requestAnimationFrame(tick);
+  };
+
+  const stopCamera = () => {
+    if (animRef.current !== null) cancelAnimationFrame(animRef.current);
+    animRef.current = null;
+    setCameraOn(false);
+  };
+
+  useEffect(
+    () => () => {
+      if (animRef.current !== null) cancelAnimationFrame(animRef.current);
+    },
+    []
+  );
+
+  const cameraActive = cameraOn && Boolean(focusPacket) && (simPlaying || Boolean(activePacketId));
+  const cameraIds = (() => {
+    if (!focusPacket) return '';
+    // One hop when stepping; the whole route while live traffic flows.
+    const ids = activePacketId
+      ? [focusPacket.fromDeviceId, focusPacket.toDeviceId]
+      : focusPacket.flowPathNodeIds && focusPacket.flowPathNodeIds.length >= 2
+      ? focusPacket.flowPathNodeIds
+      : [focusPacket.fromDeviceId, focusPacket.toDeviceId];
+    return Array.from(new Set(ids)).sort().join('~');
+  })();
+  useEffect(() => {
+    if (!cameraActive || !cameraIds) return;
+    const set = devices.filter((d) => cameraIds.split('~').includes(d.id));
+    if (set.length === 0) return;
+    const minX = Math.min(...set.map((d) => d.x)) - 150;
+    const maxX = Math.max(...set.map((d) => d.x)) + 150;
+    const minY = Math.min(...set.map((d) => d.y)) - 120;
+    const maxY = Math.max(...set.map((d) => d.y)) + 130;
+    const spanX = Math.max(300, maxX - minX);
+    const spanY = Math.max(190, maxY - minY);
+    const z = Number(Math.max(0.7, Math.min(1.8, Math.min(1000 / spanX, 520 / spanY))).toFixed(3));
+    glideTo(z, minX + spanX / 2 - 500 / z, minY + spanY / 2 - 260 / z);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cameraActive, cameraIds]);
 
   const exportSvg = () => {
     if (!svgRef.current) return;
     const raw = prepareSvgForExport(svgRef.current, theme);
-    triggerDownload(new Blob([raw], { type: 'image/svg+xml;charset=utf-8' }), 'gg-simulator-topology.svg');
+    triggerDownload(new Blob([raw], { type: 'image/svg+xml;charset=utf-8' }), 'netpulse-simulator-topology.svg');
   };
 
   const exportPng = async () => {
     if (!svgRef.current) return null;
-    const caption = topologyTitle ? `gg · ${topologyTitle}` : 'gg Network Topology';
+    const caption = topologyTitle ? `NetPulse · ${topologyTitle}` : 'NetPulse Network Topology';
     const blob = await exportTopologyPng({
       svgElement: svgRef.current,
       theme,
-      filename: 'gg-simulator-topology.png',
+      filename: 'netpulse-simulator-topology.png',
       caption,
     });
     if (blob) {
@@ -748,109 +740,117 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative flex-1 min-h-[260px] flex flex-col bg-[var(--bg-canvas)] blueprint-grid overflow-hidden"
+      className="hud-panel relative flex-1 min-h-[260px] flex flex-col blueprint-grid overflow-hidden"
     >
-      {/* Top Studio Canvas HUD Bar */}
-      <div className="shrink-0 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)]/95 backdrop-blur-sm px-3 py-2 z-10">
-        {/* Left: Edit, Viewport & Cabling Tools */}
-        <div className="flex flex-wrap items-center gap-1.5 min-w-0">
-          <div className="inline-flex items-center rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-0.5">
-            <button
-              type="button"
-              onClick={onUndo}
-              disabled={!canUndo}
-              title="Undo (Ctrl+Z)"
-              aria-label="Undo"
-              className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] disabled:opacity-35 transition-colors"
-            >
-              <Undo2 className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={onRedo}
-              disabled={!canRedo}
-              title="Redo (Ctrl+Y)"
-              aria-label="Redo"
-              className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] disabled:opacity-35 transition-colors"
-            >
-              <Redo2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
+      {/* Floating Canvas HUD Bar (Top) */}
+      <div className="@container shrink-0 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)]/92 backdrop-blur-sm px-3 py-1.5 z-10">
+        {/* Left: Edit & Viewport Tools */}
+        <div className="flex flex-wrap items-center gap-1">
+          <button
+            type="button"
+            onClick={onUndo}
+            disabled={!canUndo}
+            title={tc('Undo (Ctrl+Z)')}
+            aria-label={tc('Undo')}
+            className="flex h-7 w-7 items-center justify-center rounded border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-35"
+          >
+            <Undo2 className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={onRedo}
+            disabled={!canRedo}
+            title={tc('Redo (Ctrl+Y)')}
+            aria-label={tc('Redo')}
+            className="flex h-7 w-7 items-center justify-center rounded border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-35"
+          >
+            <Redo2 className="w-3.5 h-3.5" />
+          </button>
 
-          <div className="inline-flex items-center rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-0.5">
+          <span className="mx-1 h-4 w-px bg-[var(--border-hairline)]" aria-hidden="true" />
+
+          <div className="inline-flex items-center rounded border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-0.5">
             <button
               type="button"
               onClick={() => {
-                const vp = viewportRef.current;
-                const w = 1000 / vp.zoom;
-                const h = 520 / vp.zoom;
-                zoomAtPoint(vp.zoom - 0.15, vp.pan.x + w / 2, vp.pan.y + h / 2);
+                stopCamera();
+                zoomAtPoint(zoom - 0.15, pan.x + vbW / 2, pan.y + vbH / 2);
               }}
-              disabled={zoom <= SVG_MIN_ZOOM + 0.001}
-              title="Zoom Out"
-              aria-label="Zoom Out"
-              className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] disabled:opacity-35 transition-colors"
+              title={tc('Zoom Out')}
+              aria-label={tc('Zoom Out')}
+              className="flex h-6 w-6 items-center justify-center rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
               onClick={resetZoom}
-              title="Reset Zoom (100%)"
-              aria-label="Reset Zoom"
-              className="px-2 font-mono text-xs font-semibold text-[var(--text-primary)] hover:text-[var(--accent-primary)] tabular-nums"
+              title={tc('Reset Zoom (100%)')}
+              aria-label={tc('Reset Zoom')}
+              className="px-1.5 font-mono text-[11px] font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] tabular-nums"
             >
               {Math.round(zoom * 100)}%
             </button>
             <button
               type="button"
               onClick={() => {
-                const vp = viewportRef.current;
-                const w = 1000 / vp.zoom;
-                const h = 520 / vp.zoom;
-                zoomAtPoint(vp.zoom + 0.15, vp.pan.x + w / 2, vp.pan.y + h / 2);
+                stopCamera();
+                zoomAtPoint(zoom + 0.15, pan.x + vbW / 2, pan.y + vbH / 2);
               }}
-              disabled={zoom >= SVG_MAX_ZOOM - 0.001}
-              title="Zoom In"
-              aria-label="Zoom In"
-              className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] disabled:opacity-35 transition-colors"
+              title={tc('Zoom In')}
+              aria-label={tc('Zoom In')}
+              className="flex h-6 w-6 items-center justify-center rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
           </div>
-
+          <button
+            type="button"
+            onClick={() => setCameraOn((on) => !on)}
+            aria-pressed={cameraOn}
+            title={t('explore.cameraHint')}
+            aria-label={t('explore.camera')}
+            className={`flex h-7 items-center gap-1 rounded border px-2 text-xs whitespace-nowrap shrink-0 ${
+              cameraOn
+                ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] font-semibold text-[var(--accent-primary)]'
+                : 'border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+            }`}
+          >
+            <Clapperboard className="w-3 h-3" />
+            <span className="hidden @3xl:inline">{t('explore.camera')}</span>
+          </button>
           <button
             type="button"
             onClick={handleFitView}
-            title={t('simulator.fitTopology')}
-            aria-label="Fit Topology"
-            className="flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-canvas)] px-2.5 text-xs font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors whitespace-nowrap shrink-0"
+            title={tc('Fit Topology')}
+            aria-label={tc('Fit Topology')}
+            className="flex h-7 items-center gap-1 rounded border border-[var(--border-hairline)] px-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
           >
-            <Maximize2 className="w-3.5 h-3.5" />
-            <span className="hidden 2xl:inline">{t('simulator.fitTopology')}</span>
+            <Maximize2 className="w-3 h-3" />
+            <span className="hidden @3xl:inline">{t('simulator.fitTopology')}</span>
           </button>
           <button
             type="button"
             onClick={onAutoLayout}
             title={t('simulator.autoLayout')}
             aria-label={t('simulator.autoLayout')}
-            className="flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-canvas)] px-2.5 text-xs font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors whitespace-nowrap shrink-0"
+            className="flex h-7 items-center gap-1 rounded border border-[var(--border-hairline)] px-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
           >
-            <LayoutGrid className="w-3.5 h-3.5" />
-            <span className="hidden 2xl:inline">{t('simulator.autoLayout')}</span>
+            <LayoutGrid className="w-3 h-3" />
+            <span className="hidden @3xl:inline">{t('simulator.autoLayout')}</span>
           </button>
           <button
             type="button"
             onClick={() => setNoteInputOpen(!noteInputOpen)}
             title={t('simulator.addNote')}
             aria-label={t('simulator.addNote')}
-            className="flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-canvas)] px-2.5 text-xs font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors whitespace-nowrap shrink-0"
+            className="flex h-7 items-center gap-1 rounded border border-[var(--border-hairline)] px-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
           >
-            <MessageSquarePlus className="w-3.5 h-3.5" />
-            <span className="hidden 2xl:inline">{t('simulator.addNote')}</span>
+            <MessageSquarePlus className="w-3 h-3" />
+            <span className="hidden @3xl:inline">{t('simulator.addNote')}</span>
           </button>
 
-          <span className="mx-0.5 h-4 w-px bg-[var(--border-hairline)]" aria-hidden="true" />
+          <span className="mx-1 h-4 w-px bg-[var(--border-hairline)]" aria-hidden="true" />
 
           {/* Quick Cable Connect Tool + Medium Selector right on Canvas HUD */}
           <button
@@ -861,21 +861,45 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
               onToggleConnectMode(!connectMode);
             }}
             aria-pressed={connectMode}
-            title="Connect Cable (Shortcut: C)"
-            className={`flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 ${
+            title={tc('Connect Cable (Shortcut: C)')}
+            aria-label={connectMode ? t('simulator.cancelConnect') : t('simulator.connectCable')}
+            className={`flex h-7 items-center gap-1.5 rounded border px-2.5 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 ${
               connectMode
-                ? 'border-[var(--accent-cta)] bg-[var(--accent-cta)] text-white shadow-sm'
-                : 'border-[var(--border-hairline)] bg-[var(--bg-canvas)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]/60'
+                ? 'border-[var(--accent-cta)] bg-[var(--accent-cta)] text-[var(--on-accent)] shadow-sm'
+                : 'border-[var(--border-hairline)] bg-[var(--bg-inset)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]/60'
             }`}
           >
             <Cable className="w-3.5 h-3.5" />
-            <span>{connectMode ? t('simulator.cancelConnect') : t('simulator.connectCable')}</span>
+            <span className="hidden @xl:inline">{connectMode ? t('simulator.cancelConnect') : t('simulator.connectCable')}</span>
           </button>
+
+          {onTogglePduMode && (
+            <button
+              type="button"
+              onClick={() => {
+                setActiveWire(null);
+                setPortPicker(null);
+                onToggleConnectMode(false);
+                onTogglePduMode();
+              }}
+              aria-pressed={pduMode}
+              title={t('pdu.addTooltip')}
+              aria-label={pduMode ? t('pdu.cancel') : t('pdu.add')}
+              className={`flex h-7 items-center gap-1.5 rounded border px-2.5 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 ${
+                pduMode
+                  ? 'border-[var(--accent-cta)] bg-[var(--accent-cta)] text-[var(--on-accent)] shadow-sm'
+                  : 'border-[var(--border-hairline)] bg-[var(--bg-inset)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]/60'
+              }`}
+            >
+              <Mail className="w-3.5 h-3.5" />
+              <span className="hidden @xl:inline">{pduMode ? t('pdu.cancel') : t('pdu.add')}</span>
+            </button>
+          )}
 
           <div
             role="group"
-            aria-label="Cable Medium"
-            className="hidden 2xl:flex items-center rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-0.5"
+            aria-label={tc('Cable Medium')}
+            className="hidden @4xl:flex items-center rounded border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-0.5"
           >
             {(['ethernet', 'fiber', 'serial', 'wireless'] as LinkMedium[]).map((med) => {
               const m = MEDIUM_META[med];
@@ -886,10 +910,10 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                   type="button"
                   onClick={() => onChangeMedium(med)}
                   title={`${m.label} (${m.speed}bps)`}
-                  className={`flex h-7 items-center gap-1.5 rounded-md px-2 text-xs font-mono transition-colors whitespace-nowrap shrink-0 ${
+                  className={`flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-mono transition-colors whitespace-nowrap shrink-0 ${
                     active
                       ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] font-semibold shadow-xs'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                   }`}
                 >
                   <span
@@ -907,17 +931,18 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
             <button
               type="button"
               onClick={onDeleteSelected}
-              className="flex h-8 items-center gap-1 rounded-lg border border-[var(--tone-danger)]/45 bg-[var(--tone-danger)]/10 px-2.5 text-xs font-semibold text-[var(--tone-danger)] hover:bg-[var(--tone-danger)]/20 transition-colors whitespace-nowrap shrink-0"
+              aria-label={t('simulator.deleteSelected')}
+              className="flex h-7 items-center gap-1 rounded border border-[var(--tone-danger)]/45 bg-[var(--tone-danger)]/10 px-2 text-xs font-medium text-[var(--tone-danger)] hover:bg-[var(--tone-danger)]/20 whitespace-nowrap shrink-0"
             >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>{t('simulator.deleteSelected')}</span>
+              <Trash2 className="w-3 h-3" />
+              <span className="hidden @xl:inline">{t('simulator.deleteSelected')}</span>
             </button>
           )}
         </div>
 
         {/* Right: Topology Count + SVG/PNG Export */}
         <div className="flex items-center gap-1.5 shrink-0">
-          <span className="font-mono text-xs font-medium text-[var(--text-secondary)] tabular-nums me-1">
+          <span className="hidden @4xl:inline font-mono text-xs text-[var(--text-muted)] tabular-nums me-1">
             {devices.length} {t('simulator.nodes')} · {links.length} {t('simulator.links')}
           </span>
           <button
@@ -925,23 +950,23 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
             onClick={exportSvg}
             title={t('simulator.exportSvg')}
             aria-label={t('simulator.exportSvg')}
-            className="flex h-8 items-center gap-1 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-canvas)] px-2.5 text-xs font-mono font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors whitespace-nowrap shrink-0"
+            className="flex h-7 items-center gap-1 rounded border border-[var(--border-hairline)] px-2 text-xs font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
           >
-            <Download className="w-3.5 h-3.5" /> SVG
+            <Download className="w-3 h-3" /> <span className="hidden @4xl:inline">SVG</span>
           </button>
           <button
             type="button"
             onClick={() => void exportPng()}
             title={t('simulator.exportPngTooltip')}
             aria-label={t('simulator.exportPng')}
-            className={`flex h-8 items-center gap-1 rounded-lg border px-2.5 text-xs font-mono font-semibold whitespace-nowrap shrink-0 transition-colors ${
+            className={`flex h-7 items-center gap-1 rounded border px-2 text-xs font-mono whitespace-nowrap shrink-0 transition-colors ${
               exportedPng
                 ? 'border-[var(--tone-success)] bg-[var(--tone-success)]/12 text-[var(--tone-success)]'
-                : 'border-[var(--border-hairline)] bg-[var(--bg-canvas)] text-[var(--text-secondary)] hover:border-[var(--accent-primary)] hover:text-[var(--text-primary)]'
+                : 'border-[var(--border-hairline)] text-[var(--text-secondary)] hover:border-[var(--accent-primary)] hover:text-[var(--text-primary)]'
             }`}
           >
-            {exportedPng ? <Check className="w-3.5 h-3.5" /> : <Camera className="w-3.5 h-3.5" />}
-            <span>{exportedPng ? t('simulator.exportedPng') : 'PNG'}</span>
+            {exportedPng ? <Check className="w-3 h-3" /> : <Camera className="w-3 h-3" />}
+            <span className="hidden @4xl:inline">{exportedPng ? t('simulator.exportedPng') : 'PNG'}</span>
           </button>
         </div>
       </div>
@@ -963,11 +988,11 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
             type="text"
             value={noteDraft}
             onChange={(e) => setNoteDraft(e.target.value)}
-            placeholder="Add topology annotation (e.g. 'DMZ 203.0.113.0/24')..."
+            placeholder={tc('Add topology annotation (e.g. \'DMZ 203.0.113.0/24\')...')}
             className="flex-1 rounded border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-2.5 py-1 text-xs text-[var(--text-primary)]"
           />
-          <button type="submit" className="rounded bg-[var(--accent-cta)] hover:bg-[var(--accent-cta-hover)] px-3 py-1 text-xs font-semibold text-white">
-            Add
+          <button type="submit" className="rounded bg-[var(--accent-cta)] hover:bg-[var(--accent-cta-hover)] px-3 py-1 text-xs font-semibold text-[var(--on-accent)]">
+            {tc('Add')}
           </button>
         </form>
       )}
@@ -978,95 +1003,17 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
-          const role = e.dataTransfer.getData('application/gg-device-role') as DeviceRole;
+          const role = e.dataTransfer.getData('application/netpulse-device-role') as DeviceRole;
           if (role) {
             const coords = clientToSvgCoords(e.clientX, e.clientY, true);
             onDropNewDevice(role, coords.x, coords.y);
           }
         }}
       >
-        {/* Simple PDU Mode Banner */}
-        {isAddingSimplePdu && (
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2.5 rounded-full border border-amber-500/50 bg-amber-950/90 text-amber-200 px-4 py-1.5 shadow-xl backdrop-blur-md text-xs font-semibold animate-in slide-in-from-top-2">
-            <Mail className="w-4 h-4 text-amber-400 animate-pulse" />
-            <span>
-              {pduSourceId
-                ? 'Step 2: Click the Destination device to send Simple PDU (Ping)'
-                : 'Step 1: Click the Source device for the Simple PDU'}
-            </span>
-            <button
-              type="button"
-              onClick={onCancelSimplePdu}
-              className="ml-2 rounded-full bg-amber-800/80 hover:bg-amber-700 px-2 py-0.5 text-[11px] text-white"
-            >
-              Cancel (Esc)
-            </button>
-          </div>
-        )}
         <svg
           ref={svgRef}
           viewBox={`${pan.x} ${pan.y} ${vbW} ${vbH}`}
           data-animation-tick={animationTick}
-          onTouchStart={(e) => {
-            if (e.touches.length === 2 && svgRef.current) {
-              const t1 = e.touches[0];
-              const t2 = e.touches[1];
-              const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-              const midX = (t1.clientX + t2.clientX) / 2;
-              const midY = (t1.clientY + t2.clientY) / 2;
-              const vp = viewportRef.current;
-              const anchorSvg = clientPointToSvg(svgRef.current, midX, midY, vp.pan.x, vp.pan.y, 1000 / vp.zoom, 520 / vp.zoom);
-              pinchRef.current = { dist, anchorSvg, lastMidClient: { x: midX, y: midY } };
-              touchPanRef.current = null;
-            } else if (e.touches.length === 1 && e.target === svgRef.current) {
-              const t0 = e.touches[0];
-              touchPanRef.current = {
-                startX: t0.clientX,
-                startY: t0.clientY,
-                origX: viewportRef.current.pan.x,
-                origY: viewportRef.current.pan.y,
-              };
-            }
-          }}
-          onTouchMove={(e) => {
-            if (e.touches.length === 2 && pinchRef.current && svgRef.current) {
-              const t1 = e.touches[0];
-              const t2 = e.touches[1];
-              const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-              if (pinchRef.current.dist > 0) {
-                const factor = dist / pinchRef.current.dist;
-                pinchRef.current.dist = dist;
-                const vp = viewportRef.current;
-                const next = computeZoomAtAnchor({
-                  currentZoom: vp.zoom,
-                  currentPan: vp.pan,
-                  nextZoomRaw: vp.zoom * factor,
-                  anchorX: pinchRef.current.anchorSvg.x,
-                  anchorY: pinchRef.current.anchorSvg.y,
-                  baseWidth: 1000,
-                  baseHeight: 520,
-                  minZoom: SVG_MIN_ZOOM,
-                  maxZoom: SVG_MAX_ZOOM,
-                });
-                applyViewport(next.zoom, next.pan);
-              }
-            } else if (e.touches.length === 1 && touchPanRef.current && svgRef.current) {
-              const t0 = e.touches[0];
-              const vp = viewportRef.current;
-              const { dx, dy } = clientDeltaToSvg(
-                svgRef.current,
-                t0.clientX - touchPanRef.current.startX,
-                t0.clientY - touchPanRef.current.startY,
-                1000 / vp.zoom,
-                520 / vp.zoom
-              );
-              applyViewport(vp.zoom, { x: touchPanRef.current.origX - dx, y: touchPanRef.current.origY - dy });
-            }
-          }}
-          onTouchEnd={(e) => {
-            if (e.touches.length < 2) pinchRef.current = null;
-            if (e.touches.length === 0) touchPanRef.current = null;
-          }}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
@@ -1080,30 +1027,19 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
               }
               onSelectDevice(null);
               onSelectLink(null);
-              setPanning({
-                startX: e.clientX,
-                startY: e.clientY,
-                origX: viewportRef.current.pan.x,
-                origY: viewportRef.current.pan.y,
-              });
+              stopCamera();
+              setPanning({ startX: e.clientX, startY: e.clientY, origX: pan.x, origY: pan.y });
             }
           }}
-          className={`h-full w-full select-none touch-none ${
+          className={`h-full w-full select-none ${
             activeWire || connectMode ? 'cursor-crosshair' : 'cursor-grab active:cursor-grabbing'
           }`}
           role="img"
-          aria-label="Interactive network simulator canvas"
+          aria-label={tc('Interactive network simulator canvas')}
         >
           <defs>
             <filter id="simWireGlow" x="-30%" y="-30%" width="160%" height="160%">
               <feGaussianBlur stdDeviation="2.5" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-            <filter id="simPhotonGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="2" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
@@ -1143,27 +1079,6 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
               curveOffset === 0
                 ? `M ${a.x} ${a.y} L ${b.x} ${b.y}`
                 : `M ${a.x} ${a.y} Q ${mx} ${my} ${b.x} ${b.y}`;
-
-            // Live throughput / packet traffic saturation metrics along this link
-            const activePktsOnLink = recentPackets.filter(
-              (p) =>
-                p.linkId === l.id ||
-                (p.fromDeviceId === a.id && p.toDeviceId === b.id) ||
-                (p.fromDeviceId === b.id && p.toDeviceId === a.id)
-            );
-            const activeCount = activePktsOnLink.length;
-            const bandwidthMbps = l.bandwidthMbps ?? 100;
-            const saturationRatio = Math.min(1, activeCount / 3);
-            const isCongested = saturationRatio >= 0.7;
-
-            // Dynamic energy stream color based on traffic load
-            const streamColor = isCongested
-              ? '#ef4444'
-              : saturationRatio > 0.35
-              ? '#f59e0b'
-              : isStepActiveLink
-              ? 'var(--accent-teal)'
-              : 'var(--accent-primary)';
 
             // RJ45/SFP connector boots & LED dot positions near endpoints (approx 44px out from center)
             const bootDist = Math.min(44, len * 0.35);
@@ -1224,19 +1139,41 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                   strokeLinecap="round"
                 />
 
-                {/* Animated traffic energy stream with dynamic saturation color */}
-                {l.up && (isStepActiveLink || isMultiHopLink || activeCount > 0) && (
-                  <path
-                    d={pathD}
-                    fill="none"
-                    stroke={streamColor}
-                    strokeWidth={isCongested ? 4 : isStepActiveLink ? 3.5 : 2.5}
-                    strokeOpacity={isStepActiveLink || isCongested ? 0.9 : 0.65}
-                    strokeDasharray={isCongested ? '4 3' : '6 6'}
-                    strokeDashoffset={dashOffset}
-                    strokeLinecap="round"
-                  />
-                )}
+                {/* Animated traffic stream on the active hop or multi-hop flow, flowing the way the packet travels */}
+                {l.up && (isStepActiveLink || isMultiHopLink) && (() => {
+                  const path = focusPacket?.flowPathNodeIds;
+                  const ia = path ? path.indexOf(l.sourceId) : -1;
+                  const ib = path ? path.indexOf(l.targetId) : -1;
+                  const reversed =
+                    isStepActiveLink && focusPacket
+                      ? focusPacket.fromDeviceId === l.targetId
+                      : ia >= 0 && ib >= 0 && ib < ia;
+                  const color = isStepActiveLink ? 'var(--accent-teal)' : 'var(--accent-primary)';
+                  const angle = (Math.atan2(dy, dx) * 180) / Math.PI + (reversed ? 180 : 0);
+                  return (
+                    <>
+                      <path
+                        d={pathD}
+                        fill="none"
+                        stroke={color}
+                        strokeWidth={isStepActiveLink ? 3.5 : 2.5}
+                        strokeOpacity={isStepActiveLink ? 0.9 : 0.6}
+                        strokeLinecap="round"
+                        className={settings.animationsEnabled ? `link-flow${reversed ? ' link-flow-rev' : ''}` : undefined}
+                        strokeDasharray={settings.animationsEnabled ? undefined : '6 6'}
+                      />
+                      {/* direction chevron at the middle of the cable */}
+                      <path
+                        d="M-6 -5 L6 0 L-6 5 Z"
+                        fill={color}
+                        stroke="var(--wire-base)"
+                        strokeWidth={1}
+                        strokeLinejoin="round"
+                        transform={`translate(${mx}, ${my}) rotate(${angle})`}
+                      />
+                    </>
+                  );
+                })()}
 
                 {/* Physical Link LEDs near both ends */}
                 {len > 90 && (
@@ -1260,68 +1197,39 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                   </>
                 )}
 
-                {/* Midpoint port/medium & live bandwidth utilization pill */}
-                {l.up && (selected || hovered || activeCount > 0) && (
+                {/* Midpoint port/medium pill when selected or hovered */}
+                {(selected || hovered) && l.up && (
                   <g transform={`translate(${mx}, ${my})`}>
                     <rect
-                      x={-54}
-                      y={activeCount > 0 ? -13 : -10}
-                      width={108}
-                      height={activeCount > 0 ? 25 : 18}
-                      rx={4.5}
+                      x={-48}
+                      y={-11}
+                      width={96}
+                      height={18}
+                      rx={4}
                       fill="var(--bg-surface)"
-                      stroke={streamColor}
-                      strokeWidth={1.1}
-                      className="shadow-xs"
+                      stroke={stroke}
+                      strokeWidth={1}
                     />
                     <text
                       x={0}
-                      y={activeCount > 0 ? -2 : 1.5}
+                      y={1.5}
                       textAnchor="middle"
                       className="fill-[var(--text-primary)] text-[8.5px] font-mono font-semibold"
                     >
                       {l.sourceIface} ↔ {l.targetIface}
                     </text>
-                    {activeCount > 0 && (
-                      <text
-                        x={0}
-                        y={8}
-                        textAnchor="middle"
-                        fill={streamColor}
-                        className="text-[7.5px] font-mono font-bold"
-                      >
-                        ⚡ {bandwidthMbps} Mbps · {Math.round(saturationRatio * 100)}% load
-                      </text>
-                    )}
                   </g>
                 )}
 
-                {/* Severed / Disconnected Wire Sparks & Hazard FX */}
                 {!l.up && (
                   <g transform={`translate(${mx}, ${my})`}>
-                    <circle r={13} fill="#ef4444" fillOpacity={0.15} stroke="#ef4444" strokeWidth={1} strokeDasharray="3 2" />
-                    {/* Electrical severing spark bursts */}
-                    <path
-                      d="M -9 -7 L -2 0 L 2 -6 L 4 2 L 9 -1 M -5 5 L 0 2 L 4 7"
-                      stroke="#f59e0b"
-                      strokeWidth={1.4}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      fill="none"
-                    />
-                    <circle r={8.5} fill="#450a0a" stroke="#ef4444" strokeWidth={1.5} />
-                    <path d="M-3.5 -3.5 L3.5 3.5 M3.5 -3.5 L-3.5 3.5" stroke="#ffffff" strokeWidth={1.8} strokeLinecap="round" />
-                    <g transform="translate(0, 16)">
-                      <rect x={-36} y={-8} width={72} height={16} rx={4} fill="#450a0a" stroke="#ef4444" strokeWidth={1} />
-                      <text x={0} y={3} textAnchor="middle" className="fill-[#fca5a5] text-[8px] font-mono font-bold tracking-wider">
-                        LINK DOWN
-                      </text>
-                    </g>
+                    <circle r={9.5} fill="#450a0a" stroke="#ef4444" strokeWidth={1.6} />
+                    <path d="M-4 -4 L4 4 M4 -4 L-4 4" stroke="#ef4444" strokeWidth={2} strokeLinecap="round" />
                   </g>
                 )}
 
                 {l.lossPercent > 0 && l.up && (
-                  <text x={mx} y={my - 16} textAnchor="middle" className="fill-amber-400 text-[9.5px] font-mono font-semibold">
+                  <text x={mx} y={my - 14} textAnchor="middle" className="fill-amber-400 text-[11px] font-mono font-semibold">
                     {l.lossPercent}% loss
                   </text>
                 )}
@@ -1361,7 +1269,7 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                         />
                         <g transform={`translate(${activeWire.snapTarget.x}, ${activeWire.snapTarget.y - 22})`}>
                           <rect x={-64} y={-11} width={128} height={19} rx={4} fill="var(--bg-surface)" stroke={med.color} strokeWidth={1} />
-                          <text x={0} y={2} textAnchor="middle" className="fill-[var(--text-primary)] text-[9px] font-mono font-semibold">
+                          <text x={0} y={2} textAnchor="middle" className="fill-[var(--text-primary)] text-[11px] font-mono font-semibold">
                             {activeWire.sourceIface} → {devMap.get(activeWire.snapTarget.deviceId)?.name}:{activeWire.snapTarget.iface}
                           </text>
                         </g>
@@ -1392,41 +1300,13 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
             const curveGeom = resolvePacketCurveGeometry(a, b, matchedLink, curveOff, devMap, pkt.curvedPath);
             const { x: px, y: py } = computeAnimatedPacketPosition(a, b, tPos, curveGeom.control);
 
-            const color = pkt.dropped ? '#ef4444' : PACKET_COLORS[pkt.colorCategory]?.hex || '#38bdf8';
+            const color = pkt.dropped ? 'var(--pkt-error)' : PACKET_COLORS[pkt.colorCategory]?.hex || 'var(--pkt-tcp)';
             const labelText =
               isFocus && activePacketStateNote
                 ? `#${pkt.no} ${pkt.protocol} · ${activePacketStateNote}`
                 : isFocus
                 ? `#${pkt.no} ${pkt.protocol}`
                 : pkt.protocol;
-
-            // Compute proximity to device endpoints to prevent node badge / inspect table collisions
-            const distToA = Math.hypot(px - a.x, py - a.y);
-            const distToB = Math.hypot(px - b.x, py - b.y);
-            const isNearNode = distToA < 60 || distToB < 60;
-            const badgeOffsetY = isNearNode ? (labelText.length > 16 ? -72 : -68) : -24;
-
-            // Compute tangent angle along linear or curved vector for directional cyber capsule
-            const angleRad = curveGeom.control
-              ? Math.atan2(
-                  2 * (1 - tPos) * (curveGeom.control.y - a.y) + 2 * tPos * (b.y - curveGeom.control.y),
-                  2 * (1 - tPos) * (curveGeom.control.x - a.x) + 2 * tPos * (b.x - curveGeom.control.x)
-                )
-              : Math.atan2(b.y - a.y, b.x - a.x);
-            const angleDeg = (angleRad * 180) / Math.PI;
-
-            // Lead-packet hierarchy: Only show protocol text on lead packet of a link train to prevent horizontal label clumping.
-            // When an active focus packet is present, suppress background trailing packet labels to maintain a clean HUD.
-            const isLeadOnLink =
-              !focusPacketId &&
-              !recentPackets.some((other, oIdx) => {
-                if (oIdx >= idx) return false;
-                const samePair =
-                  (other.fromDeviceId === pkt.fromDeviceId && other.toDeviceId === pkt.toDeviceId) ||
-                  (other.fromDeviceId === pkt.toDeviceId && other.toDeviceId === pkt.fromDeviceId);
-                const sameLink = Boolean(other.linkId && pkt.linkId && other.linkId === pkt.linkId);
-                return samePair || sameLink;
-              });
 
             return (
               <React.Fragment key={pkt.id}>
@@ -1467,106 +1347,41 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                   opacity={focusPacketId && !isFocus ? 0.42 : 1}
                   className="cursor-pointer"
                 >
-                  {/* Focus Pulsing Beacon Ring */}
                   {isFocus && (
                     <circle
-                      r={simPlaying ? 13 + Math.sin(travelProgress * Math.PI) * 3 : 13}
+                      r={simPlaying ? 12 + Math.sin(travelProgress * Math.PI) * 3 : 12}
                       fill={color}
-                      fillOpacity={0.16}
+                      fillOpacity={0.22}
                       stroke={color}
-                      strokeWidth={1.4}
-                      strokeDasharray="4 2"
+                      strokeWidth={1.6}
+                      strokeDasharray="3 2"
                     />
                   )}
-
-                  {/* Directional Cyber Photon Capsule with Motion Chevrons */}
-                  <g transform={`rotate(${angleDeg})`}>
-                    {/* Motion Speed Trail */}
-                    {simPlaying && settings.animationsEnabled && (
-                      <g opacity={0.65}>
-                        <line x1={-15} y1={0} x2={-7} y2={0} stroke={color} strokeWidth={2.4} strokeLinecap="round" strokeOpacity={0.4} />
-                        <line x1={-24} y1={0} x2={-17} y2={0} stroke={color} strokeWidth={1.4} strokeLinecap="round" strokeOpacity={0.22} />
-                      </g>
-                    )}
-                    {/* Outer Capsule / Photon Body */}
-                    <rect
-                      x={isFocus ? -10 : -7}
-                      y={isFocus ? -5.5 : -4}
-                      width={isFocus ? 20 : 14}
-                      height={isFocus ? 11 : 8}
-                      rx={isFocus ? 5.5 : 4}
-                      fill={color}
-                      stroke="#ffffff"
-                      strokeWidth={isFocus ? 1.6 : 1.2}
-                      filter="url(#simPhotonGlow)"
-                    />
-                    {/* Forward Motion Chevrons indicating travel direction */}
-                    <path
-                      d={isFocus ? "M-2.5 -3.2 L1.5 0 L-2.5 3.2 M2 -3.2 L6 0 L2 3.2" : "M-1.5 -2.2 L1.5 0 L-1.5 2.2"}
-                      stroke="#ffffff"
-                      strokeWidth={1.2}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      fill="none"
-                    />
-                  </g>
-
-                  {/* Dropped Warning Indicator */}
+                  <circle r={isFocus ? 7.5 : 5.5} fill={color} stroke="#ffffff" strokeWidth={1.5} />
                   {pkt.dropped && travelProgress >= 0.45 && (
-                    <g>
-                      <circle r={11} fill="#ef4444" fillOpacity={0.25} stroke="#ef4444" strokeWidth={1.4} />
-                      <path d="M-3.5 -3.5 L3.5 3.5 M3.5 -3.5 L-3.5 3.5" stroke="#ffffff" strokeWidth={1.8} strokeLinecap="round" />
-                    </g>
+                    <path d="M-3.5 -3.5 L3.5 3.5 M3.5 -3.5 L-3.5 3.5" stroke="#ffffff" strokeWidth={1.6} strokeLinecap="round" />
                   )}
-
-                  {/* Anti-Collision Elevated Packet Badge with Callout Anchor */}
                   {isFocus ? (
-                    <g transform={`translate(0, ${badgeOffsetY})`}>
-                      {isNearNode && (
-                        <line
-                          x1={0}
-                          y1={12}
-                          x2={0}
-                          y2={Math.abs(badgeOffsetY) - 10}
-                          stroke={color}
-                          strokeWidth={1.2}
-                          strokeDasharray="2.5 2"
-                          strokeOpacity={0.7}
-                        />
-                      )}
+                    <g transform="translate(0, -18)">
                       <rect
-                        x={-(labelText.length * 3.1 + 12)}
+                        x={-(labelText.length * 3.1 + 10)}
                         y={-11}
-                        width={labelText.length * 6.2 + 24}
-                        height={20}
-                        rx={5}
+                        width={labelText.length * 6.2 + 20}
+                        height={18}
+                        rx={4}
                         fill="var(--bg-surface)"
                         stroke={color}
-                        strokeWidth={1.4}
+                        strokeWidth={1.2}
                       />
-                      <circle cx={-(labelText.length * 3.1 + 3)} cy={-0.5} r={2.8} fill={color} />
-                      <text x={3} y={2.2} textAnchor="middle" className="fill-[var(--text-primary)] text-[8.5px] font-mono font-bold">
+                      <text x={0} y={1.5} textAnchor="middle" className="fill-[var(--text-primary)] text-[8.5px] font-mono font-bold">
                         {labelText}
                       </text>
                     </g>
-                  ) : isLeadOnLink ? (
-                    <g transform="translate(0, -14)">
-                      <rect
-                        x={-(pkt.protocol.length * 2.8 + 6)}
-                        y={-8}
-                        width={pkt.protocol.length * 5.6 + 12}
-                        height={15}
-                        rx={3.5}
-                        fill="var(--bg-surface)"
-                        stroke={color}
-                        strokeWidth={0.9}
-                        strokeOpacity={0.8}
-                      />
-                      <text x={0} y={2.5} textAnchor="middle" className="fill-[var(--text-primary)] text-[8px] font-mono font-bold">
-                        {pkt.protocol}
-                      </text>
-                    </g>
-                  ) : null}
+                  ) : (
+                    <text x={0} y={-10} textAnchor="middle" className="fill-[var(--text-primary)] text-[11px] font-mono font-bold">
+                      {pkt.protocol}
+                    </text>
+                  )}
                 </g>
               </React.Fragment>
             );
@@ -1583,7 +1398,7 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
               }}
               className="cursor-pointer"
             >
-              <title>Click annotation to remove</title>
+              <title>{tc('Click annotation to remove')}</title>
               <rect
                 x={-8}
                 y={-14}
@@ -1593,7 +1408,7 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                 fill="var(--bg-surface)"
                 stroke="var(--border-strong)"
               />
-              <text x={0} y={0} className="fill-[var(--tone-warning)] text-[10.5px] font-mono">
+              <text x={0} y={0} className="fill-[var(--tone-warning)] text-[11px] font-mono">
                 {ann.text}
               </text>
             </g>
@@ -1618,17 +1433,8 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                 transform={`translate(${dev.x}, ${dev.y})`}
                 onMouseEnter={() => setHoveredDeviceId(dev.id)}
                 onMouseLeave={() => setHoveredDeviceId((curr) => (curr === dev.id ? null : curr))}
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  onOpenDeviceModal?.(dev);
-                }}
                 onMouseDown={(e) => {
                   e.stopPropagation();
-                  if (isAddingSimplePdu) {
-                    onSelectSimplePduEndpoint?.(dev.id);
-                    return;
-                  }
-
                   // If completing a click-mode wire by clicking target device body
                   if (activeWire && activeWire.sourceDeviceId !== dev.id) {
                     const freeIfaces = dev.interfaces.filter((i) => !portConnectionMap.has(`${dev.id}:${i.name}`));
@@ -1662,34 +1468,10 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                   setPortPicker(null);
                   setDraggingId(dev.id);
                 }}
-                className={isAddingSimplePdu ? 'cursor-crosshair' : 'cursor-pointer'}
+                className="cursor-pointer"
               >
                 {/* Generous invisible hit pad so hovering perimeter port handles never flickers */}
                 <circle cx={0} cy={0} r={54} fill="transparent" />
-
-                {/* Packet Tracer Simple PDU Source Marker */}
-                {pduSourceId === dev.id && (
-                  <g transform="translate(0, -46)">
-                    <rect
-                      x={-42}
-                      y={-12}
-                      width={84}
-                      height={20}
-                      rx={6}
-                      fill="#f59e0b"
-                      stroke="#ffffff"
-                      strokeWidth={1.5}
-                    />
-                    <text
-                      x={0}
-                      y={2}
-                      textAnchor="middle"
-                      className="fill-black font-sans text-[10px] font-extrabold uppercase tracking-wider"
-                    >
-                      PDU Source
-                    </text>
-                  </g>
-                )}
 
                 {(isSelected || isWireSource || isSnapTarget) && (
                   <circle
@@ -1703,7 +1485,7 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                   />
                 )}
 
-                <g transform="translate(-31, -33) scale(0.97)" filter={isSelected && dev.poweredOn ? 'url(#simWireGlow)' : undefined}>
+                <g transform="translate(-37, -51) scale(1.15)" filter={isSelected && dev.poweredOn ? 'url(#simWireGlow)' : undefined}>
                   <IsometricHardwareArt
                     role={dev.role}
                     active={isSelected || isSnapTarget}
@@ -1788,23 +1570,23 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                           />
                           {(() => {
                             const labelText = formatPortLabel(iface.name);
-                            const badgeW = Math.max(28, labelText.length * 6 + 10);
+                            const badgeW = Math.max(24, labelText.length * 5.2 + 8);
                             const anchorX = offset.dx < 0 ? -9 : offset.dx > 0 ? 9 : 0;
                             const rectX =
                               offset.dx < 0 ? anchorX - badgeW : offset.dx > 0 ? anchorX : -badgeW / 2;
-                            const rectY = offset.dy < -30 ? -19 : -7.5;
+                            const rectY = offset.dy < -30 ? -18 : -6.5;
                             const textX = rectX + badgeW / 2;
-                            const textY = rectY + 10.6;
+                            const textY = rectY + 9.2;
                             return (
                               <g className="pointer-events-none">
                                 <rect
                                   x={rectX}
                                   y={rectY}
                                   width={badgeW}
-                                  height={15}
-                                  rx={3.5}
+                                  height={13}
+                                  rx={3}
                                   fill="var(--bg-surface)"
-                                  fillOpacity={0.96}
+                                  fillOpacity={0.94}
                                   stroke={
                                     isThisSnap
                                       ? '#38bdf8'
@@ -1816,13 +1598,13 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                                         : '#ef4444'
                                       : 'var(--border-strong)'
                                   }
-                                  strokeWidth={isThisSnap || isSourcePort ? 1.2 : 0.85}
+                                  strokeWidth={isThisSnap || isSourcePort ? 1.1 : 0.75}
                                 />
                                 <text
                                   x={textX}
                                   y={textY}
                                   textAnchor="middle"
-                                  className={`text-[9.5px] font-mono font-bold ${
+                                  className={`text-[8px] font-mono font-bold ${
                                     isThisSnap
                                       ? 'fill-[var(--accent-primary)]'
                                       : isSourcePort
@@ -1845,10 +1627,10 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                     {MULTI_PORT_ROLES.has(dev.role) && dev.interfaces.length < 6 && (() => {
                       const pos = PORT_OFFSETS[dev.interfaces.length % PORT_OFFSETS.length];
                       const nextLabel = `+${formatPortLabel(nextPortName)}`;
-                      const badgeW = Math.max(32, nextLabel.length * 6 + 10);
+                      const badgeW = Math.max(28, nextLabel.length * 5.2 + 8);
                       const anchorX = pos.dx < 0 ? -9 : pos.dx > 0 ? 9 : 0;
                       const rectX = pos.dx < 0 ? anchorX - badgeW : pos.dx > 0 ? anchorX : -badgeW / 2;
-                      const rectY = pos.dy < -30 ? -19 : -7.5;
+                      const rectY = pos.dy < -30 ? -18 : -6.5;
                       const snappedHere = isSnapTarget && activeWire?.snapTarget?.iface === nextPortName;
                       return (
                         <g
@@ -1887,19 +1669,19 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                               x={rectX}
                               y={rectY}
                               width={badgeW}
-                              height={15}
-                              rx={3.5}
+                              height={13}
+                              rx={3}
                               fill="var(--bg-surface)"
-                              fillOpacity={0.96}
+                              fillOpacity={0.94}
                               stroke={snappedHere ? 'var(--accent-primary)' : 'var(--border-strong)'}
-                              strokeWidth={0.85}
+                              strokeWidth={0.75}
                               strokeDasharray="2 1"
                             />
                             <text
                               x={rectX + badgeW / 2}
-                              y={rectY + 10.6}
+                              y={rectY + 9.2}
                               textAnchor="middle"
-                              className="fill-[var(--accent-primary)] text-[9.5px] font-mono font-bold"
+                              className="fill-[var(--accent-primary)] text-[8px] font-mono font-bold"
                             >
                               {nextLabel}
                             </text>
@@ -1912,18 +1694,18 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
 
                 <text
                   x={0}
-                  y={44}
+                  y={48}
                   textAnchor="middle"
-                  className="fill-[var(--text-primary)] font-display text-[13px] font-bold"
+                  className="fill-[var(--text-primary)] font-mono text-[12.5px] font-bold"
                 >
                   {dev.name}
                 </text>
                 {primaryIp && primaryIp !== '0.0.0.0' && (
                   <text
                     x={0}
-                    y={59}
+                    y={62}
                     textAnchor="middle"
-                    className="fill-[var(--accent-primary)] text-[11.5px] font-mono font-semibold"
+                    className="fill-[var(--text-secondary)] text-[11.5px] font-mono"
                   >
                     {primaryIp}
                   </text>
@@ -1939,7 +1721,7 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                     <g
                       data-multihop-node={dev.id}
                       data-hop-index={hopIndex}
-                      transform="translate(-32, -36)"
+                      transform="translate(-30, -34)"
                       className="pointer-events-none"
                     >
                       <circle
@@ -1952,7 +1734,7 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                         x={0}
                         y={3.2}
                         textAnchor="middle"
-                        className="fill-white text-[9px] font-mono font-bold tabular-nums"
+                        className="fill-white text-[11px] font-mono font-bold tabular-nums"
                       >
                         {hopIndex}
                       </text>
@@ -1967,7 +1749,7 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                     tabIndex={0}
                     aria-label={t('simulator.inspectTables', { device: dev.name })}
                     data-inspect-tables={dev.id}
-                    transform="translate(32, -36)"
+                    transform="translate(30, -34)"
                     onMouseDown={(e) => {
                       e.stopPropagation();
                       onSelectDevice(dev.id);
@@ -2013,12 +1795,26 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
           })}
         </svg>
 
-        {/* Bottom-Start Subtle Cabling Guide or Active Wiring Banner */}
-        <div className="pointer-events-none absolute bottom-2.5 start-3 z-10 flex items-center gap-2 max-w-[calc(100%-260px)]">
-          {connectMode || activeWire ? (
+        {/* Bottom-Left Subtle Cabling Guide or Active Wiring Banner */}
+        <div className="pointer-events-none absolute bottom-2.5 start-3 flex max-w-[calc(55%-0.75rem)] items-center gap-2">
+          {pduMode ? (
             <div className="pointer-events-auto flex items-center gap-2 rounded-lg border border-[var(--accent-primary)]/60 bg-[var(--bg-surface)]/95 px-3 py-1.5 text-xs shadow-lg backdrop-blur-md">
-              <Cable className="w-3.5 h-3.5 text-[var(--accent-primary)] shrink-0" />
-              <span className="font-medium text-[var(--text-primary)] truncate">
+              <Mail className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
+              <span className="font-medium text-[var(--text-primary)]">
+                {pduSourceName ? t('pdu.pickDestination', { source: pduSourceName }) : t('pdu.pickSource')}
+              </span>
+              <button
+                type="button"
+                onClick={() => onTogglePduMode?.()}
+                className="rounded px-1.5 py-0.5 text-xs font-mono text-[var(--text-muted)] hover:bg-[var(--bg-inset)] hover:text-[var(--text-primary)]"
+              >
+                Esc
+              </button>
+            </div>
+          ) : connectMode || activeWire ? (
+            <div className="pointer-events-auto flex items-center gap-2 rounded-lg border border-[var(--accent-primary)]/60 bg-[var(--bg-surface)]/95 px-3 py-1.5 text-xs shadow-lg backdrop-blur-md">
+              <Cable className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
+              <span className="font-medium text-[var(--text-primary)]">
                 {activeWire
                   ? activeWire.snapTarget
                     ? `${devMap.get(activeWire.sourceDeviceId)?.name}:${activeWire.sourceIface} → ${devMap.get(activeWire.snapTarget.deviceId)?.name}:${activeWire.snapTarget.iface}`
@@ -2032,15 +1828,15 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                   setPortPicker(null);
                   onToggleConnectMode(false);
                 }}
-                className="rounded-md px-1.5 py-0.5 text-[11px] font-mono text-[var(--text-muted)] hover:bg-[var(--bg-inset)] hover:text-[var(--text-primary)]"
+                className="rounded px-1.5 py-0.5 text-xs font-mono text-[var(--text-muted)] hover:bg-[var(--bg-inset)] hover:text-[var(--text-primary)]"
               >
                 Esc
               </button>
             </div>
           ) : activeLinkObj ? (
             <div className="pointer-events-auto flex items-center gap-2.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)]/95 px-3 py-1.5 text-xs shadow-lg backdrop-blur-md">
-              <Radio className="w-3.5 h-3.5 text-[var(--tone-success)] shrink-0" />
-              <span className="font-mono text-[11px] text-[var(--text-primary)] tabular-nums truncate">
+              <Radio className="w-3.5 h-3.5 text-[var(--tone-success)]" />
+              <span className="font-mono text-xs text-[var(--text-primary)]">
                 {devMap.get(activeLinkObj.sourceId)?.name}:{activeLinkObj.sourceIface} ↔{' '}
                 {devMap.get(activeLinkObj.targetId)?.name}:{activeLinkObj.targetIface} ·{' '}
                 {MEDIUM_META[activeLinkObj.medium].label} · {activeLinkObj.bandwidthMbps}M · {activeLinkObj.delayMs}ms
@@ -2048,13 +1844,8 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
               {selectedLinkId === activeLinkObj.id && (
                 <button
                   type="button"
-                  onClick={() => {
-                    if (settings.soundEffects) {
-                      playCableDisconnectSound();
-                    }
-                    onToggleLinkUp(activeLinkObj.id);
-                  }}
-                  className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-[10.5px] font-mono font-semibold shrink-0 ${
+                  onClick={() => onToggleLinkUp(activeLinkObj.id)}
+                  className={`flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-mono font-semibold ${
                     activeLinkObj.up
                       ? 'bg-[var(--tone-danger)]/15 text-[var(--tone-danger)] hover:bg-[var(--tone-danger)]/25'
                       : 'bg-[var(--tone-success)]/15 text-[var(--tone-success)] hover:bg-[var(--tone-success)]/25'
@@ -2066,45 +1857,43 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
               )}
             </div>
           ) : (
-            <div className="hidden sm:block rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-surface)]/95 px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] backdrop-blur-xs truncate">
+            <div className="rounded-md border border-[var(--border-hairline)] bg-[var(--bg-surface)]/90 px-2.5 py-1 text-xs text-[var(--text-muted)] backdrop-blur-xs">
               {t('simulator.canvasTip')}
             </div>
           )}
         </div>
 
         {/* Anchored Port Picker Popover */}
-        {portPicker && pickerDevice && (() => {
-          const pos = svgPointToContainerPercent(svgRef.current, portPicker.x, portPicker.y, pan.x, pan.y, vbW, vbH);
-          return (
+        {portPicker && pickerDevice && (
           <div
             role="dialog"
             aria-label={`Select port on ${pickerDevice.name}`}
             style={{
-              left: `${Math.min(72, Math.max(6, pos.leftPct))}%`,
-              top: `${Math.min(62, Math.max(8, pos.topPct))}%`,
+              left: `${Math.min(72, Math.max(10, ((portPicker.x - pan.x) / vbW) * 100))}%`,
+              top: `${Math.min(62, Math.max(12, ((portPicker.y - pan.y) / vbH) * 100))}%`,
             }}
-            className="absolute z-30 w-72 rounded-xl border border-[var(--border-strong)] bg-[var(--bg-surface)]/98 p-3.5 text-xs shadow-2xl backdrop-blur-md"
+            className="absolute z-30 w-64 rounded-xl border border-[var(--border-strong)] bg-[var(--bg-surface)]/98 p-2.5 text-xs shadow-2xl backdrop-blur-md"
           >
-            <div className="flex items-center justify-between border-b border-[var(--border-hairline)] pb-2 mb-2.5">
+            <div className="flex items-center justify-between border-b border-[var(--border-hairline)] pb-1.5 mb-2">
               <div className="min-w-0">
-                <div className="font-display text-sm font-bold text-[var(--text-primary)] truncate">
+                <div className="font-semibold text-[var(--text-primary)] truncate">
                   {portPicker.step === 'source' ? t('simulator.selectPortSource') : t('simulator.selectPortTarget')}
                 </div>
-                <div className="font-mono text-xs text-[var(--accent-primary)] truncate">
+                <div className="font-mono text-[11px] text-[var(--accent-primary)] truncate">
                   {pickerDevice.name} · {MEDIUM_META[linkMedium].label}
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setPortPicker(null)}
-                aria-label="Close port picker"
-                className="rounded-md p-1 text-[var(--text-muted)] hover:bg-[var(--bg-inset)] hover:text-[var(--text-primary)]"
+                aria-label={tc('Close port picker')}
+                className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            <div className="space-y-1.5 max-h-48 overflow-y-auto">
+            <div className="space-y-1 max-h-44 overflow-y-auto">
               {pickerDevice.interfaces.map((iface) => {
                 const conn = portConnectionMap.get(`${pickerDevice.id}:${iface.name}`);
                 const portPos = getDevicePortCoords(pickerDevice, iface.name);
@@ -2119,22 +1908,22 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                         completeWire(pickerDevice.id, iface.name);
                       }
                     }}
-                    className="flex w-full items-center justify-between gap-2 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-canvas)] px-3 py-2 text-start hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary-soft)] transition-colors"
+                    className="flex w-full items-center justify-between gap-2 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)]/70 px-2.5 py-1.5 text-start hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary-soft)] transition-colors"
                   >
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2 font-mono text-[13px] font-semibold text-[var(--text-primary)]">
+                      <div className="flex items-center gap-1.5 font-mono font-semibold text-[var(--text-primary)]">
                         <span
-                          className={`inline-block h-3 w-1 rounded-xs ${
+                          className={`inline-block h-2 w-2 rounded-full ${
                             conn ? (conn.link.up ? 'bg-emerald-500' : 'bg-red-500') : 'bg-[var(--accent-primary)]'
                           }`}
                         />
                         <span>{iface.name}</span>
                       </div>
-                      <div className="truncate font-mono text-xs text-[var(--text-secondary)] tabular-nums">
+                      <div className="truncate font-mono text-[11px] text-[var(--text-muted)]">
                         {conn ? `${conn.peerName}:${conn.peerIface}` : iface.ip || 'Unassigned'}
                       </div>
                     </div>
-                    <span className="text-xs font-mono font-semibold text-[var(--accent-primary)] shrink-0">
+                    <span className="text-[11px] font-mono text-[var(--accent-primary)] shrink-0">
                       {conn ? t('simulator.rewire') : t('simulator.usePort')}
                     </span>
                   </button>
@@ -2153,66 +1942,54 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                     completeWire(pickerDevice.id, freshName);
                   }
                 }}
-                className="flex w-full items-center justify-between gap-2 rounded-lg border border-dashed border-[var(--accent-primary)]/50 bg-[var(--accent-primary-soft)] px-3 py-2 font-mono text-xs font-semibold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20 transition-colors"
+                className="flex w-full items-center justify-between gap-2 rounded-lg border border-dashed border-[var(--accent-primary)]/50 bg-[var(--accent-primary-soft)] px-2.5 py-1.5 font-mono text-xs font-semibold text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20 transition-colors"
               >
                 <span className="flex items-center gap-1.5">
                   <Plus className="w-3.5 h-3.5" />
                   <span>{t('simulator.addAndWire')} {getNextFreePortName(pickerDevice)}</span>
                 </span>
-                <Check className="w-3.5 h-3.5" />
+                <Check className="w-3 h-3" />
               </button>
             </div>
           </div>
-          );
-        })()}
+        )}
 
         {/* Anchored Node Table Inspector Popover (ARP · Routing · NAT · MAC) */}
-        {inspectedTableDevice && !portPicker && (() => {
-          const pos = svgPointToContainerPercent(
-            svgRef.current,
-            inspectedTableDevice.x,
-            inspectedTableDevice.y,
-            pan.x,
-            pan.y,
-            vbW,
-            vbH
-          );
-          return (
+        {inspectedTableDevice && !portPicker && (
           <div
             role="dialog"
             aria-label={t('simulator.nodeTablesTitle', { device: inspectedTableDevice.name })}
             data-testid="node-tables-popover"
             style={{
-              left: `${Math.min(56, Math.max(4, pos.leftPct + 4))}%`,
-              top: `${Math.min(44, Math.max(6, pos.topPct - 8))}%`,
+              left: `${Math.min(58, Math.max(8, ((inspectedTableDevice.x - pan.x) / vbW) * 100 + 4))}%`,
+              top: `${Math.min(46, Math.max(8, ((inspectedTableDevice.y - pan.y) / vbH) * 100 - 8))}%`,
             }}
-            className="absolute z-30 w-92 max-w-[92%] rounded-xl border border-[var(--border-strong)] bg-[var(--bg-surface)]/98 p-3.5 text-xs shadow-2xl backdrop-blur-md"
+            className="absolute z-30 w-[26rem] max-w-[94%] overflow-hidden rounded-2xl border border-[var(--border-strong)] bg-[var(--bg-surface)] text-sm shadow-2xl"
           >
-            <div className="flex items-center justify-between border-b border-[var(--border-hairline)] pb-2 mb-2.5 gap-2">
+            <div className="flex items-start justify-between gap-3 px-4 pt-3.5 pb-3">
               <div className="min-w-0">
-                <div className="flex items-center gap-1.5 font-display text-sm font-bold text-[var(--text-primary)] truncate">
-                  <Table2 className="w-4 h-4 text-[var(--accent-primary)] shrink-0" />
+                <div className="flex items-center gap-2 font-display text-base font-bold text-[var(--text-primary)]">
+                  <Table2 className="h-4 w-4 shrink-0 text-[var(--accent-primary)]" />
                   <span className="truncate">{inspectedTableDevice.name}</span>
                 </div>
-                <div className="font-mono text-xs text-[var(--text-secondary)] truncate tabular-nums">
-                  {inspectedTableDevice.role} · {inspectedTableDevice.interfaces[0]?.ip || '0.0.0.0'}
+                <div className="mt-0.5 flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                  <span className="rounded-full bg-[var(--bg-inset)] px-2 py-0.5 font-medium capitalize text-[var(--text-secondary)]">
+                    {inspectedTableDevice.role.replace('_', ' ').toLowerCase()}
+                  </span>
+                  <span className="font-mono tabular-nums">{inspectedTableDevice.interfaces[0]?.ip || '0.0.0.0'}</span>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setInspectedTableNodeId(null)}
-                aria-label="Close node tables"
-                className="rounded-md p-1 text-[var(--text-muted)] hover:bg-[var(--bg-inset)] hover:text-[var(--text-primary)] shrink-0"
+                aria-label={tc('Close node tables')}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-inset)] hover:text-[var(--text-primary)]"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div
-              role="tablist"
-              aria-label="Device table types"
-              className="grid grid-cols-4 gap-1 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-0.5 mb-2.5"
-            >
+            <div role="tablist" aria-label={tc('Device table types')} className="flex gap-1 border-b border-[var(--border-hairline)] px-3">
               {(
                 [
                   { id: 'arp', label: t('simulator.arpTable'), count: inspectedTableDevice.arpCache.length },
@@ -2227,91 +2004,30 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                   role="tab"
                   aria-selected={activeTableTab === tab.id}
                   onClick={() => setActiveTableTab(tab.id)}
-                  className={`rounded-md px-1.5 py-1.5 font-mono text-xs font-semibold transition-colors whitespace-nowrap tabular-nums ${
+                  className={`-mb-px flex items-center gap-1.5 border-b-2 px-2.5 pb-2 pt-1 text-xs font-semibold transition-colors ${
                     activeTableTab === tab.id
-                      ? 'bg-[var(--bg-surface)] text-[var(--accent-primary)] shadow-xs'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      ? 'border-[var(--accent-primary)] text-[var(--accent-primary)]'
+                      : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                   }`}
                 >
-                  {tab.label} ({tab.count})
+                  {tab.label}
+                  <span
+                    className={`min-w-5 rounded-full px-1.5 text-center text-[11px] tabular-nums ${
+                      tab.count > 0 ? 'bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]' : 'bg-[var(--bg-inset)] text-[var(--text-muted)]'
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
                 </button>
               ))}
             </div>
 
-            <div className="max-h-44 overflow-y-auto rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-canvas)] p-2.5 font-mono text-xs tabular-nums divide-y divide-[var(--border-hairline)]">
-              {activeTableTab === 'arp' &&
-                (inspectedTableDevice.arpCache.length === 0 ? (
-                  <div className="py-1 text-[var(--text-muted)]">{t('simulator.emptyArp')}</div>
-                ) : (
-                  inspectedTableDevice.arpCache.map((a, idx) => (
-                    <div
-                      key={`${a.ip}-${idx}`}
-                      className="flex items-center justify-between gap-2 py-1.5 first:pt-0 last:pb-0"
-                    >
-                      <span className="text-[var(--text-primary)]">{a.ip}</span>
-                      <span className="text-[var(--text-secondary)]">{a.mac}</span>
-                    </div>
-                  ))
-                ))}
-
-              {activeTableTab === 'routing' &&
-                (inspectedTableDevice.routingTable.length === 0 ? (
-                  <div className="py-1 text-[var(--text-muted)]">{t('simulator.emptyRouting')}</div>
-                ) : (
-                  inspectedTableDevice.routingTable.map((r, idx) => (
-                    <div
-                      key={`${r.network}-${idx}`}
-                      className="flex items-center justify-between gap-2 py-1.5 first:pt-0 last:pb-0"
-                    >
-                      <span className="text-[var(--text-primary)] truncate">
-                        {r.network}/{r.mask}
-                      </span>
-                      <span className="text-[var(--text-secondary)] shrink-0">
-                        via {r.nextHop} · {r.iface}
-                      </span>
-                    </div>
-                  ))
-                ))}
-
-              {activeTableTab === 'nat' &&
-                (inspectedTableDevice.natTable.length === 0 ? (
-                  <div className="py-1 text-[var(--text-muted)]">{t('simulator.emptyNat')}</div>
-                ) : (
-                  inspectedTableDevice.natTable.map((n) => (
-                    <div
-                      key={n.id}
-                      className="flex items-center justify-between gap-2 py-1.5 first:pt-0 last:pb-0"
-                    >
-                      <span className="text-[var(--text-primary)]">
-                        {n.insideLocalIp}:{n.insideLocalPort}
-                      </span>
-                      <span className="text-[var(--tone-success)]">
-                        → {n.insideGlobalIp}:{n.insideGlobalPort}
-                      </span>
-                    </div>
-                  ))
-                ))}
-
-              {activeTableTab === 'mac' &&
-                (inspectedTableDevice.macTable.length === 0 ? (
-                  <div className="py-1 text-[var(--text-muted)]">{t('simulator.emptyMac')}</div>
-                ) : (
-                  inspectedTableDevice.macTable.map((m, idx) => (
-                    <div
-                      key={`${m.mac}-${idx}`}
-                      className="flex items-center justify-between gap-2 py-1.5 first:pt-0 last:pb-0"
-                    >
-                      <span className="text-[var(--text-primary)]">{m.mac}</span>
-                      <span className="text-[var(--text-secondary)]">
-                        V{m.vlan} · {m.portIfaceId}
-                      </span>
-                    </div>
-                  ))
-                ))}
+            <div className="max-h-52 overflow-y-auto">
+              <NodeTable device={inspectedTableDevice} tab={activeTableTab} />
             </div>
 
             {onOpenDockTables && (
-              <div className="mt-2.5 flex justify-end">
+              <div className="flex justify-end border-t border-[var(--border-hairline)] px-4 py-2.5">
                 <button
                   type="button"
                   onClick={() => {
@@ -2320,27 +2036,25 @@ export const SimCanvas: React.FC<SimCanvasProps> = ({
                   }}
                   className="text-xs font-semibold text-[var(--accent-primary)] hover:underline"
                 >
-                  {t('simulator.viewFullTables')}
+                  {t('simulator.viewFullTables')} →
                 </button>
               </div>
             )}
           </div>
-          );
-        })()}
+        )}
 
-        {/* Bottom-End Simulation Runtime Telemetry Plate (never overlaps cabling guide) */}
+        {/* Bottom-left Live / Idle Animation Status Pill */}
         {devices.length > 0 && (simPlaying || packets.length === 0) && (
           <div
             aria-live="polite"
-            className="pointer-events-none absolute bottom-2.5 end-3 z-10 inline-flex items-center gap-2 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-surface)]/95 px-3 py-1.5 text-xs font-mono font-medium text-[var(--text-primary)] shadow-sm backdrop-blur-sm tabular-nums"
+            className="pointer-events-none absolute bottom-2.5 end-3 z-10 max-w-[45%] inline-flex items-center gap-2 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface)]/92 px-3 py-1 text-xs font-mono text-[var(--text-secondary)] shadow-sm backdrop-blur-sm"
           >
             <span
-              className={`h-3 w-1 rounded-xs ${
-                simPlaying ? 'bg-emerald-500' : 'bg-[var(--accent-primary)]'
+              className={`h-2 w-2 rounded-full ${
+                simPlaying ? 'bg-emerald-500 animate-pulse' : 'bg-[var(--accent-primary)]'
               }`}
-              aria-hidden="true"
             />
-            <span>
+            <span className="truncate">
               {simPlaying
                 ? activeStepPacket
                   ? `Running · #${activeStepPacket.no} ${activeStepPacket.protocol}`

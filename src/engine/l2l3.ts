@@ -250,6 +250,18 @@ export function findOutInterface(device: SimDevice, nextHopIp: string) {
   );
 }
 
+/** True when `ip` falls inside one of the router's `network` statements (or it has none, meaning "everything"). */
+export function networkEnabled(dev: SimDevice, ip: string): boolean {
+  if (!dev.routingNetworks) return true;
+  const n = ipToInt(ip) >>> 0;
+  return dev.routingNetworks.some((entry) => {
+    const [net, pfx] = entry.split('/');
+    const prefix = Number(pfx);
+    const mask = prefix === 0 ? 0 : (0xffffffff << (32 - prefix)) >>> 0;
+    return ((n & mask) >>> 0) === ((ipToInt(net) & mask) >>> 0);
+  });
+}
+
 /**
  * Simple RIP/OSPF/BGP route propagation across connected routers.
  */
@@ -290,10 +302,15 @@ export function convergeRoutingTables(devices: SimDevice[], links: SimLink[]): v
       const b = routers.find((d) => d.id === link.targetId);
       if (!a || !b) continue;
       if (a.routingProtocol === 'none' && b.routingProtocol === 'none') continue;
+      const real = (p?: string) => p === 'rip' || p === 'ospf' || p === 'bgp';
+      // Two routers only become neighbours when they speak the same protocol.
+      if (real(a.routingProtocol) && real(b.routingProtocol) && a.routingProtocol !== b.routingProtocol) continue;
 
       const aIface = a.interfaces.find((i) => i.id === link.sourceIface);
       const bIface = b.interfaces.find((i) => i.id === link.targetIface);
       if (!aIface || !bIface || !aIface.ip || !bIface.ip) continue;
+      // A `network` statement must cover the interface on each side for the adjacency to form.
+      if (!networkEnabled(a, aIface.ip) || !networkEnabled(b, bIface.ip)) continue;
 
       const proto = a.routingProtocol && a.routingProtocol !== 'none' ? a.routingProtocol : b.routingProtocol || 'ospf';
       const linkCost = proto === 'ospf' ? Math.max(1, Math.round(100 / Math.max(1, link.bandwidthMbps))) : 1;
@@ -301,6 +318,11 @@ export function convergeRoutingTables(devices: SimDevice[], links: SimLink[]): v
       const share = (from: SimDevice, to: SimDevice, nextHopIp: string, outIfaceId: string) => {
         for (const rt of from.routingTable) {
           if (rt.network === '0.0.0.0') continue;
+          if (from.routingNetworks) {
+            // Without `redistribute`, static routes stay local; connected networks need a `network` statement.
+            if (rt.protocol === 'static') continue;
+            if (rt.protocol === 'connected' && !networkEnabled(from, rt.network)) continue;
+          }
           const candidateMetric = rt.metric + linkCost;
           if (proto === 'rip' && candidateMetric >= 16) continue;
           const asPath =

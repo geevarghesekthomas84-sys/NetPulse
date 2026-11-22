@@ -16,6 +16,8 @@ import {
 import type { ProtocolEntry, ScenarioOptions, ScenarioResult } from '../../protocols/types';
 import { encodeExploreHash } from '../../lib/deepLink';
 import { useAppStore } from '../../store/useAppStore';
+import { tc } from '../../i18n/content';
+import { Gloss } from '../common/Gloss';
 
 interface ProtocolOverviewProps {
   protocol: ProtocolEntry;
@@ -81,12 +83,12 @@ export const ProtocolOverview: React.FC<ProtocolOverviewProps> = ({ protocol, sc
             <span className="text-[var(--text-muted)]">·</span>
             <span className="text-[var(--text-muted)]">{protocol.category}</span>
             <span className="text-[var(--text-muted)]">·</span>
-            <span className="text-[var(--text-muted)]">{protocol.layer}</span>
+            <span className="text-[var(--text-muted)]">{tc(protocol.layer)}</span>
           </div>
           <h1 className="mt-1 font-display text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
             {protocol.name}{' '}
             <span className="font-normal text-base sm:text-lg text-[var(--text-secondary)]">
-              — {protocol.fullName}
+              — {tc(protocol.fullName)}
             </span>
           </h1>
         </div>
@@ -150,12 +152,12 @@ export const ProtocolOverview: React.FC<ProtocolOverviewProps> = ({ protocol, sc
       </div>
 
       {/* Plain-English or ELI5 Explanation */}
-      <p className="text-[15px] leading-relaxed text-[var(--text-secondary)]">
-        {eli5 ? protocol.eli5 : protocol.description}
+      <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+        <Gloss text={eli5 ? tc(protocol.eli5) : tc(protocol.description)} />
       </p>
 
       {/* Numbered Steps Strip */}
-      <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
         {protocol.steps.map((s, idx) => {
           const active = idx === currentStepIndex;
           return (
@@ -163,58 +165,58 @@ export const ProtocolOverview: React.FC<ProtocolOverviewProps> = ({ protocol, sc
               key={idx}
               type="button"
               onClick={() => selectProtocol(protocol.id, idx)}
-              className={`rounded-lg border p-3 text-start transition-colors ${
+              className={`rounded-lg border p-2.5 text-start transition-colors ${
                 active
                   ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--text-primary)]'
                   : 'border-[var(--border-hairline)] bg-[var(--bg-inset)]/60 text-[var(--text-secondary)] hover:border-[var(--accent-primary)]/40'
               }`}
             >
-              <div className="font-mono text-[11px] font-bold text-[var(--accent-primary)]">
+              <div className="font-mono text-[11px] font-bold text-[var(--accent-primary)] uppercase">
                 {t('playback.step')} {idx + 1} · L{s.osiLayer}
               </div>
-              <div className="mt-1 text-[13px] font-bold truncate">{s.title}</div>
-              <div className="mt-0.5 text-xs text-[var(--text-secondary)] truncate">{s.subtitle}</div>
+              <div className="mt-0.5 text-xs font-semibold truncate">{tc(s.title)}</div>
+              <div className="text-xs text-[var(--text-muted)] truncate">{tc(s.subtitle)}</div>
             </button>
           );
         })}
       </div>
 
       {/* Spec Grid */}
-      <div className="grid gap-3.5 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)]/70 p-4 text-[13px] sm:grid-cols-2 lg:grid-cols-3">
+      <div className="hud-panel grid gap-3 !bg-[var(--bg-inset)]/70 p-3.5 text-xs sm:grid-cols-2 lg:grid-cols-3">
         <div>
-          <div className="text-xs font-semibold text-[var(--text-secondary)]">
+          <div className="hud-title text-[11px] text-[var(--text-muted)]">
             {t('explore.osiLayers')}
           </div>
-          <div className="mt-0.5 font-semibold text-[var(--text-primary)]">{protocol.layer}</div>
+          <div className="mt-0.5 font-medium text-[var(--text-primary)]">{tc(protocol.layer)}</div>
         </div>
         <div>
-          <div className="text-xs font-semibold text-[var(--text-secondary)]">
+          <div className="hud-title text-[11px] text-[var(--text-muted)]">
             {t('explore.port')}
           </div>
-          <div className="mt-0.5 font-mono font-semibold text-[var(--text-primary)]">{protocol.defaultPort}</div>
+          <div className="mt-0.5 font-mono font-medium text-[var(--text-primary)]">{protocol.defaultPort}</div>
         </div>
         <div>
-          <div className="text-xs font-semibold text-[var(--text-secondary)]">
-            Transport
+          <div className="hud-title text-[11px] text-[var(--text-muted)]">
+            {tc('Transport')}
           </div>
-          <div className="mt-0.5 font-semibold text-[var(--text-primary)]">{protocol.transport}</div>
+          <div className="mt-0.5 font-medium text-[var(--text-primary)]">{tc(protocol.transport)}</div>
         </div>
         <div>
-          <div className="text-xs font-semibold text-[var(--text-secondary)]">
+          <div className="hud-title text-[11px] text-[var(--text-muted)]">
             {t('explore.realWorldNote')}
           </div>
-          <div className="mt-0.5 font-semibold text-[var(--text-primary)]">{protocol.dataFormat}</div>
+          <div className="mt-0.5 font-medium text-[var(--text-primary)]">{tc(protocol.dataFormat)}</div>
         </div>
         <div>
-          <div className="text-xs font-semibold text-[var(--text-secondary)]">
-            Methods
+          <div className="hud-title text-[11px] text-[var(--text-muted)]">
+            {tc('Methods')}
           </div>
           <div className="mt-0.5 font-mono text-xs text-[var(--text-primary)]">
             {protocol.methods.join(' · ')}
           </div>
         </div>
         <div>
-          <div className="text-xs font-semibold text-[var(--text-secondary)]">
+          <div className="hud-title text-[11px] text-[var(--text-muted)]">
             {t('explore.rfcsLabel')}
           </div>
           <div className="mt-0.5 flex flex-wrap gap-2">
@@ -228,7 +230,7 @@ export const ProtocolOverview: React.FC<ProtocolOverviewProps> = ({ protocol, sc
                 className="inline-flex items-center gap-1 font-mono text-[var(--accent-primary)] hover:underline"
               >
                 <span>{rfc.number}</span>
-                <ExternalLink className="w-3.5 h-3.5" />
+                <ExternalLink className="w-3 h-3" />
               </a>
             ))}
           </div>
@@ -241,9 +243,9 @@ export const ProtocolOverview: React.FC<ProtocolOverviewProps> = ({ protocol, sc
           <div className="mb-2 flex items-center justify-between text-xs">
             <span className="flex items-center gap-1.5 font-semibold text-[var(--text-primary)]">
               <Activity className="w-4 h-4 text-[var(--accent-teal)]" />
-              <span>TCP Congestion Window (cwnd vs ssthresh)</span>
+              <span>{tc('TCP Congestion Window (cwnd vs ssthresh)')}</span>
             </span>
-            <span className="font-mono text-[11px] text-[var(--text-muted)]">
+            <span className="font-mono text-xs text-[var(--text-muted)]">
               {cwndSeries.length} RTT rounds
             </span>
           </div>
@@ -261,19 +263,19 @@ export const ProtocolOverview: React.FC<ProtocolOverviewProps> = ({ protocol, sc
               return (
                 <>
                   <line x1="25" y1="112" x2="585" y2="112" stroke="var(--border-strong)" strokeWidth="1" />
-                  <polyline fill="none" stroke="#d97706" strokeWidth="1.5" strokeDasharray="4 3" points={ssPoints} />
-                  <polyline fill="none" stroke="#0891b2" strokeWidth="2.5" points={cwndPoints} />
+                  <polyline fill="none" stroke="var(--pkt-udp)" strokeWidth="1.5" strokeDasharray="4 3" points={ssPoints} />
+                  <polyline fill="none" stroke="var(--pkt-tcp)" strokeWidth="2.5" points={cwndPoints} />
                   {cwndSeries.map((d, i) => (
                     <circle
                       key={i}
                       cx={25 + i * stepX}
                       cy={toY(d.cwnd)}
                       r={d.event ? 4 : 2.5}
-                      fill={d.event?.includes('Drop') || d.event?.includes('RTO') ? '#dc2626' : '#0891b2'}
+                      fill={d.event?.includes('Drop') || d.event?.includes('RTO') ? 'var(--pkt-error)' : 'var(--pkt-tcp)'}
                     />
                   ))}
-                  <text x="30" y="15" className="fill-[var(--accent-teal)] text-[10px] font-mono">cwnd (MSS)</text>
-                  <text x="115" y="15" className="fill-[var(--tone-warning)] text-[10px] font-mono">ssthresh</text>
+                  <text x="30" y="15" className="fill-[var(--accent-teal)] text-[11px] font-mono">{tc('cwnd (MSS)')}</text>
+                  <text x="115" y="15" className="fill-[var(--tone-warning)] text-[11px] font-mono">ssthresh</text>
                 </>
               );
             })()}
@@ -293,7 +295,7 @@ export const ProtocolOverview: React.FC<ProtocolOverviewProps> = ({ protocol, sc
               <button
                 type="button"
                 onClick={resetWhatIf}
-                className="text-[11px] font-mono text-[var(--accent-primary)] hover:underline"
+                className="text-xs font-mono text-[var(--accent-primary)] hover:underline"
               >
                 {t('explore.whatIfReset')}
               </button>
@@ -308,7 +310,7 @@ export const ProtocolOverview: React.FC<ProtocolOverviewProps> = ({ protocol, sc
                   key={opt.id}
                   type="button"
                   onClick={() => toggleWhatIf(key)}
-                  title={opt.description}
+                  title={tc(opt.description)}
                   aria-pressed={active}
                   className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
                     active
@@ -316,7 +318,7 @@ export const ProtocolOverview: React.FC<ProtocolOverviewProps> = ({ protocol, sc
                       : 'border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                   }`}
                 >
-                  {opt.label}
+                  {tc(opt.label)}
                 </button>
               );
             })}
@@ -345,9 +347,9 @@ export const ProtocolOverview: React.FC<ProtocolOverviewProps> = ({ protocol, sc
           <div className="border-t border-[var(--border-hairline)] divide-y divide-[var(--border-hairline)] px-3.5">
             {protocol.securityNotes.map((note, idx) => (
               <div key={idx} className="py-2.5 text-xs space-y-1">
-                <div className="font-semibold text-[var(--tone-danger)]">{note.attack}</div>
-                <p className="text-[var(--text-secondary)]">{note.description}</p>
-                <p className="font-mono text-[11px] text-[var(--tone-success)]">Defense: {note.defense}</p>
+                <div className="font-semibold text-[var(--tone-danger)]">{tc(note.attack)}</div>
+                <p className="text-[var(--text-secondary)]">{tc(note.description)}</p>
+                <p className="font-mono text-xs text-[var(--tone-success)]">{tc('Defense')}: {tc(note.defense)}</p>
               </div>
             ))}
           </div>

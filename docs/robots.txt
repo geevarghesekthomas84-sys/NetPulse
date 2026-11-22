@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://netpulse.itgg.space/sitemap.xml

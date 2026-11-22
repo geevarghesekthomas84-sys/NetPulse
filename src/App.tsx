@@ -1,8 +1,10 @@
-import React, { Suspense, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AboutModal } from './components/common/AboutModal';
 import { CommandPalette } from './components/common/CommandPalette';
 import { Header } from './components/common/Header';
+import { LandingPage } from './components/landing/LandingPage';
+import { SideNav } from './components/common/SideNav';
 import { MobileTabBar } from './components/common/MobileTabBar';
 import { OnboardingTour } from './components/common/OnboardingTour';
 import { PacketInspector } from './components/common/PacketInspector';
@@ -10,18 +12,13 @@ import { ProtocolDrawer } from './components/common/ProtocolDrawer';
 import { OfflineIndicator } from './components/common/PWAInstallButton';
 import { SettingsModal } from './components/common/SettingsModal';
 import { ExploreWorkspace } from './components/explore/ExploreWorkspace';
+import { LearnWorkspace } from './components/learn/LearnWorkspace';
+import { SimulatorWorkspace } from './components/simulator/SimulatorWorkspace';
 import type { SimDevice, SimLink } from './engine/types';
 import { LANGUAGES } from './i18n';
 import { decodeExploreHash, decompressTopology } from './lib/deepLink';
 import { getProtocolById } from './protocols';
 import { useAppStore } from './store/useAppStore';
-
-const SimulatorWorkspace = React.lazy(() =>
-  import('./components/simulator/SimulatorWorkspace').then((m) => ({ default: m.SimulatorWorkspace }))
-);
-const LearnWorkspace = React.lazy(() =>
-  import('./components/learn/LearnWorkspace').then((m) => ({ default: m.LearnWorkspace }))
-);
 
 export default function App() {
   const { t } = useTranslation();
@@ -44,13 +41,15 @@ export default function App() {
     setAboutOpen,
     setTourOpen,
     reopenWelcome,
+    landingOpen,
+    setLandingOpen,
   } = useAppStore();
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
-      meta.setAttribute('content', theme === 'dark' ? '#08111e' : '#f6f8fb');
+      meta.setAttribute('content', theme === 'dark' ? '#14161d' : '#f7f5f0');
     }
   }, [theme]);
 
@@ -61,13 +60,13 @@ export default function App() {
   }, [language]);
 
   useEffect(() => {
-    const rawTarget = window.location.hash
-      ? window.location.hash
-      : window.location.search
-      ? window.location.search.slice(1)
-      : '';
-    if (!rawTarget) return;
-    const parsed = decodeExploreHash(rawTarget);
+    const hash = window.location.hash;
+    // A plain visit lands on the front page; shared links (#...) go straight into the app.
+    if (!hash) {
+      setLandingOpen(true);
+      return;
+    }
+    const parsed = decodeExploreHash(hash);
     if (parsed.theme) setTheme(parsed.theme);
     if (parsed.view) setExploreView(parsed.view);
     if (parsed.speed) setPlaybackSpeed(parsed.speed);
@@ -101,70 +100,30 @@ export default function App() {
     [inspectedPacketId, explorePackets]
   );
 
+  if (landingOpen) return <LandingPage />;
+
   return (
-    <div className="flex h-screen max-h-screen h-dvh w-full flex-col overflow-hidden bg-[var(--bg-canvas)] text-[var(--text-primary)]">
-      <Header />
-      <OfflineIndicator />
+    <div className="flex h-dvh min-h-[620px] min-w-[320px] w-full flex-col overflow-hidden bg-[var(--bg-canvas)] text-[var(--text-primary)]">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        <SideNav />
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          <Header />
+          <OfflineIndicator />
 
-      {/* Packet-Tracer Workbench Shell: Global Collapsible Sidebar + Central Full-Width Workspace */}
-      <div className="flex flex-1 min-h-0 w-full overflow-hidden pb-14 lg:pb-0">
-        <ProtocolDrawer />
+          {/* Workbench: protocol library drawer + the active workspace */}
+          <div className="flex min-h-0 w-full flex-1 overflow-hidden">
+            <ProtocolDrawer />
 
-        <main className="flex flex-1 min-w-0 min-h-[240px] flex-col overflow-hidden bg-[var(--bg-canvas)]">
-          <Suspense
-            fallback={
-              <div className="flex flex-1 items-center justify-center bg-[var(--bg-canvas)]">
-                <div className="flex flex-col items-center gap-2.5">
-                  <div className="h-7 w-7 animate-spin rounded-full border-2 border-[var(--accent-primary)]/30 border-t-[var(--accent-primary)]" />
-                  <span className="font-mono text-xs font-semibold text-[var(--text-secondary)]">Loading workspace...</span>
-                </div>
-              </div>
-            }
-          >
-            {mode === 'explore' && <ExploreWorkspace />}
-            {mode === 'simulator' && <SimulatorWorkspace />}
-            {mode === 'learn' && <LearnWorkspace />}
-          </Suspense>
-        </main>
+            <main className="flex min-h-[240px] min-w-0 flex-1 flex-col overflow-hidden bg-[var(--bg-canvas)]">
+              {mode === 'explore' && <ExploreWorkspace />}
+              {mode === 'simulator' && <SimulatorWorkspace />}
+              {mode === 'learn' && <LearnWorkspace />}
+            </main>
+          </div>
+        </div>
       </div>
 
-      <footer className="hidden lg:flex h-7 shrink-0 items-center justify-between border-t border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 text-[11px] font-medium text-[var(--text-secondary)] select-none">
-        <div className="flex items-center gap-2 truncate">
-          <span className="font-semibold text-[var(--text-primary)]">{t('brand')}</span>
-          <span className="text-[var(--text-muted)]">·</span>
-          <span>{t('credit')}</span>
-          <span className="text-[var(--text-muted)]">·</span>
-          <span className="truncate">{t('nav.footerTagline')}</span>
-        </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <button
-            type="button"
-            onClick={() => {
-              reopenWelcome();
-              setMode('explore');
-            }}
-            className="hover:text-[var(--accent-primary)] transition-colors"
-          >
-            {t('nav.quickGuide')}
-          </button>
-          <span className="text-[var(--text-muted)]">·</span>
-          <button
-            type="button"
-            onClick={() => setTourOpen(true)}
-            className="hover:text-[var(--accent-primary)] transition-colors"
-          >
-            {t('nav.guidedTour')}
-          </button>
-          <span className="text-[var(--text-muted)]">·</span>
-          <button
-            type="button"
-            onClick={() => setAboutOpen(true)}
-            className="hover:text-[var(--accent-primary)] transition-colors"
-          >
-            {t('nav.aboutPrivacy')}
-          </button>
-        </div>
-      </footer>
+      <MobileTabBar />
 
       {mode === 'explore' && (
         <PacketInspector
@@ -178,7 +137,6 @@ export default function App() {
       <SettingsModal />
       <AboutModal />
       <OnboardingTour />
-      <MobileTabBar />
     </div>
   );
 }

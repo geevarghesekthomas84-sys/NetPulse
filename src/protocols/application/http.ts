@@ -100,7 +100,7 @@ export const httpProtocol: ProtocolEntry = {
     },
   ],
   scenario: (opts = {}) => {
-    const rawReq = 'GET / HTTP/1.1\r\nHost: www.example.com\r\nUser-Agent: gg-browser/1.0\r\nAccept: text/html\r\nConnection: keep-alive\r\n\r\n';
+    const rawReq = 'GET / HTTP/1.1\r\nHost: www.example.com\r\nUser-Agent: np-browser/1.0\r\nAccept: text/html\r\nConnection: keep-alive\r\n\r\n';
     const rawRes = 'HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Length: 12800\r\nCache-Control: max-age=3600\r\n\r\n<!doctype html><html><head><link rel="stylesheet" href="/app.css"></head><body><h1>Example Domain</h1></body></html>';
 
     const templates = [

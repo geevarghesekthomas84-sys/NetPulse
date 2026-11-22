@@ -4,6 +4,7 @@ import { Pause, Play, Repeat, RotateCcw, SkipBack, SkipForward, FastForward } fr
 import type { CapturedPacket } from '../../engine/types';
 import type { ProtocolStepDef } from '../../protocols/types';
 import { useAppStore } from '../../store/useAppStore';
+import { tc } from '../../i18n/content';
 
 interface PlaybackBarProps {
   packets: CapturedPacket[];
@@ -221,7 +222,7 @@ export const PlaybackBar: React.FC<PlaybackBarProps> = ({ packets, steps, onProg
               onClick={() => setPlaybackSpeed(s)}
               className={`rounded-md px-2 py-1 text-xs font-mono transition-colors whitespace-nowrap shrink-0 ${
                 playbackSpeed === s
-                  ? 'bg-[var(--accent-cta)] text-white font-semibold'
+                  ? 'bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
@@ -237,7 +238,7 @@ export const PlaybackBar: React.FC<PlaybackBarProps> = ({ packets, steps, onProg
             onClick={handlePrev}
             disabled={safePacketIndex <= 0}
             aria-label={t('playback.prev')}
-            title="Previous Packet (Left Arrow)"
+            title={tc('Previous Packet (Left Arrow)')}
             className="flex h-9 items-center gap-1 rounded-lg border border-[var(--border-hairline)] px-2.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-40 whitespace-nowrap shrink-0"
           >
             <SkipBack className="w-3.5 h-3.5" />
@@ -254,8 +255,8 @@ export const PlaybackBar: React.FC<PlaybackBarProps> = ({ packets, steps, onProg
               setIsPlaying(!isPlaying);
             }}
             aria-label={isPlaying ? t('playback.pause') : t('playback.play')}
-            title="Play / Pause (Space)"
-            className="flex h-9 items-center gap-1.5 rounded-lg bg-[var(--accent-cta)] px-4 text-xs font-semibold text-white hover:bg-[var(--accent-cta-hover)] transition-colors shadow-sm whitespace-nowrap shrink-0"
+            title={tc('Play / Pause (Space)')}
+            className="flex h-9 items-center gap-1.5 rounded-lg bg-[var(--accent-cta)] px-4 text-xs font-semibold text-[var(--on-accent)] hover:bg-[var(--accent-cta-hover)] transition-colors shadow-sm whitespace-nowrap shrink-0"
           >
             {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
             <span>{isPlaying ? t('playback.pause') : t('playback.play')}</span>
@@ -266,7 +267,7 @@ export const PlaybackBar: React.FC<PlaybackBarProps> = ({ packets, steps, onProg
             onClick={handleNext}
             disabled={safePacketIndex >= totalPackets - 1}
             aria-label={t('playback.next')}
-            title="Next Packet (Right Arrow)"
+            title={tc('Next Packet (Right Arrow)')}
             className="flex h-9 items-center gap-1 rounded-lg border border-[var(--border-hairline)] px-2.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-40 whitespace-nowrap shrink-0"
           >
             <span className="hidden md:inline">{t('playback.next')}</span>
@@ -277,7 +278,7 @@ export const PlaybackBar: React.FC<PlaybackBarProps> = ({ packets, steps, onProg
             type="button"
             onClick={handleReset}
             aria-label={t('playback.reset')}
-            title="Reset (R)"
+            title={tc('Reset (R)')}
             className="flex h-9 items-center gap-1 rounded-lg border border-[var(--border-hairline)] px-2.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
           >
             <RotateCcw className="w-3.5 h-3.5" />

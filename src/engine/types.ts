@@ -65,6 +65,12 @@ export interface NetworkInterface {
   trunkVlans?: number[];
   isTrunk?: boolean;
   up: boolean;
+  /** CLI description text. */
+  description?: string;
+  /** CLI ip nat inside|outside. */
+  nat?: 'inside' | 'outside';
+  /** CLI ip helper-address: relay DHCP broadcasts heard on this interface to this server. */
+  helper?: string;
 }
 
 export interface RouteEntry {
@@ -171,6 +177,14 @@ export interface SimDevice {
   services: DeviceServiceConfig;
   openPorts: number[];
   cpuLoad: number;
+  /** VLAN names set with the CLI (vlan 10 / name Sales). */
+  vlanNames?: Record<number, string>;
+  /**
+   * Networks enabled for the routing protocol ("10.0.0.0/8"), from `network` statements.
+   * When set, only interfaces inside these networks form adjacencies and only these connected
+   * networks are advertised. Left undefined, every connected network takes part.
+   */
+  routingNetworks?: string[];
 }
 
 export interface SimLink {
@@ -434,20 +448,4 @@ export interface TopologyWarning {
   severity: 'error' | 'warning';
   deviceId?: string;
   message: string;
-}
-
-export interface CiscoCliSession {
-  mode: 'user' | 'privileged' | 'config' | 'config-if' | 'config-router';
-  ifaceName?: string;
-  routerProto?: string;
-}
-
-export interface SimplePduEntry {
-  id: string;
-  srcId: string;
-  dstId: string;
-  status: 'successful' | 'failed' | 'in_progress';
-  timeMs: number;
-  rttMs: number;
-  info: string;
 }

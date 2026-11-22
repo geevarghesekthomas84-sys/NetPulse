@@ -1,6 +1,6 @@
 {
-  "name": "NetPulse",
-  "description": "Interactive network protocol visualizer and discrete-event network simulator. Designed by Geevarghese K Thomas.",
+  "name": "gg",
+  "description": "Interactive network protocol visualizer and discrete-event network simulator. Designed by geevarghese.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

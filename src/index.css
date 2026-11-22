@@ -1,96 +1,168 @@
 @import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
 
-/* Crisp Daylight (Light Theme — 60-30-10 Precision Studio) */
-:root {
-  --bg-canvas: #f3f6fb;
-  --bg-surface: #ffffff;
-  --bg-elevated: #ecf1f8;
-  --bg-inset: #e6ecf5;
-  --text-primary: #091120;
-  --text-secondary: #1e293b;
-  --text-muted: #475569;
-  --border-hairline: #cdd8e6;
-  --border-strong: #8da2be;
-
-  /* Cobalt & Teal Accents (WCAG AA on Light Surfaces) */
-  --accent-primary: #1d4ed8;
-  --accent-cta: #1d4ed8;
-  --accent-cta-hover: #1e40af;
-  --accent-teal: #0f766e;
-  --accent-teal-soft: rgba(15, 118, 110, 0.12);
-  --accent-primary-soft: rgba(29, 78, 216, 0.1);
-  --accent-glow: rgba(15, 118, 110, 0.22);
-
-  /* Accessible Semantic Tones (Light Mode >= 4.5:1) */
-  --tone-info: #0369a1;
-  --tone-success: #047857;
-  --tone-warning: #b45309;
-  --tone-danger: #b91c1c;
-
-  /* CLI Terminal (Theme-Aware Daylight Console) */
-  --terminal-bg: #f8fafc;
-  --terminal-header: #e8eef6;
-  --terminal-border: #cbd5e1;
-  --terminal-text: #0f172a;
-  --terminal-muted: #475569;
-  --terminal-cmd: #0f766e;
-
-  /* Topology Blueprint Grid & SVG Tokens */
-  --grid-line: rgba(15, 23, 42, 0.045);
-  --grid-line-major: rgba(15, 23, 42, 0.09);
-  --node-stroke: #0f766e;
-  --node-fill: #f0fdfa;
-  --link-stroke: #64748b;
-  --hw-slate-light: #e2ecf6;
-  --hw-slate-dark: #c5d6ea;
-  --hw-screen: #0f2942;
+/* Tailwind's `font-mono` utility reads this token, so every mono label uses Iosevka. */
+@theme {
+  --font-mono: 'Iosevka', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-/* Deep Ocean Slate (Dark Theme — 60-30-10 Precision Studio) */
+/* Iosevka: the monospace used for diagrams, packet data and HUD headings (SIL Open Font License). */
+@font-face { font-family: 'Iosevka'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/iosevka-400.woff2') format('woff2'); }
+@font-face { font-family: 'Iosevka'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/iosevka-500.woff2') format('woff2'); }
+@font-face { font-family: 'Iosevka'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/iosevka-600.woff2') format('woff2'); }
+@font-face { font-family: 'Iosevka'; font-style: normal; font-weight: 700; font-display: swap; src: url('/fonts/iosevka-700.woff2') format('woff2'); }
+@font-face { font-family: 'Iosevka'; font-style: normal; font-weight: 800; font-display: swap; src: url('/fonts/iosevka-800.woff2') format('woff2'); }
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Color system. Every color the UI paints text with is a token defined in BOTH
+ * themes below, so switching themes can never leave text on a background it was
+ * not designed for. src/tests/unit/theme-contrast.test.ts enforces WCAG AA
+ * (>= 4.5:1) for each text token on each surface token in both themes.
+ */
+
+/* Morning Paper (light) — warm paper surfaces, ink text, indigo accent */
+:root {
+  color-scheme: light;
+
+  --bg-canvas: #f7f5f0;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f2efe8;
+  --bg-inset: #eeeae2;
+  --text-primary: #1d2130;
+  --text-secondary: #394150;
+  --text-muted: #555d6e;
+  --border-hairline: #ddd7cb;
+  --border-strong: #a9a08f;
+
+  --accent-primary: #4338ca;
+  --accent-cta: #4f46e5;
+  --accent-cta-hover: #4338ca;
+  --on-accent: #ffffff;
+  --on-teal: #ffffff;
+  --accent-teal: #0b6b61;
+  --accent-teal-soft: rgba(15, 118, 110, 0.12);
+  --accent-primary-soft: rgba(79, 70, 229, 0.1);
+  --accent-glow: rgba(79, 70, 229, 0.22);
+
+  --tone-info: #075985;
+  --tone-success: #046c4e;
+  --tone-warning: #92400e;
+  --tone-danger: #b01c1c;
+
+  --terminal-bg: #fbfaf7;
+  --terminal-header: #eeeae2;
+  --terminal-border: #ddd7cb;
+  --terminal-text: #1d2130;
+  --terminal-muted: #555d6e;
+  --terminal-cmd: #0b6b61;
+
+  --grid-line: rgba(29, 33, 48, 0.04);
+  --grid-line-major: rgba(29, 33, 48, 0.08);
+  --node-stroke: #4338ca;
+  --node-fill: #eef0ff;
+  --link-stroke: #6f7686;
+  --hw-slate-light: #e6e8f2;
+  --hw-slate-dark: #c9cde0;
+  --hw-screen: #1b1f3a;
+
+  --shadow-card: 0 1px 2px rgba(29, 33, 48, 0.05), 0 4px 14px rgba(29, 33, 48, 0.05);
+
+  /* Packet categories: --pkt-* for shapes and lines, --pkt-*-text for readable labels */
+  --pkt-dns: #7c4dbd;
+  --pkt-dns-text: #5b3a99;
+  --pkt-tcp: #2f7fa8;
+  --pkt-tcp-text: #1f5f84;
+  --pkt-tls: #2f8a6a;
+  --pkt-tls-text: #1f6b50;
+  --pkt-http-req: #c2692b;
+  --pkt-http-req-text: #9a4a14;
+  --pkt-http-res: #4a6fd0;
+  --pkt-http-res-text: #3452ad;
+  --pkt-udp: #a8842a;
+  --pkt-udp-text: #7d5f12;
+  --pkt-icmp: #c04a7e;
+  --pkt-icmp-text: #9b2f62;
+  --pkt-error: #c43d3d;
+  --pkt-error-text: #a12a2a;
+  --pkt-l2: #2a8c88;
+  --pkt-l2-text: #17696a;
+  --pkt-sec: #3f8f3f;
+  --pkt-sec-text: #2c6e2c;
+  --pkt-routing: #6a5acd;
+  --pkt-routing-text: #4a3dae;
+}
+
+/* Evening Ink (dark) — soft charcoal surfaces, warm white text, periwinkle accent */
 .dark {
-  --bg-canvas: #060d19;
-  --bg-surface: #0b1627;
-  --bg-elevated: #12223a;
-  --bg-inset: #08111f;
-  --text-primary: #f8fafc;
-  --text-secondary: #dce6f4;
-  --text-muted: #9fb2cb;
-  --border-hairline: #1f3452;
-  --border-strong: #395782;
+  color-scheme: dark;
 
-  /* Cobalt & Luminous Teal Accents (WCAG AA on Dark Surfaces) */
-  --accent-primary: #38bdf8;
-  --accent-cta: #0284c7;
-  --accent-cta-hover: #0369a1;
-  --accent-teal: #2dd4bf;
-  --accent-teal-soft: rgba(45, 212, 191, 0.14);
-  --accent-primary-soft: rgba(56, 189, 248, 0.14);
-  --accent-glow: rgba(45, 212, 191, 0.28);
+  --bg-canvas: #14161d;
+  --bg-surface: #1b1e28;
+  --bg-elevated: #252936;
+  --bg-inset: #171922;
+  --text-primary: #f2f3f7;
+  --text-secondary: #d0d4df;
+  --text-muted: #a6adbd;
+  --border-hairline: #2f3445;
+  --border-strong: #4b5169;
 
-  /* Accessible Semantic Tones (Dark Mode >= 4.5:1) */
-  --tone-info: #38bdf8;
-  --tone-success: #34d399;
-  --tone-warning: #fbbf24;
-  --tone-danger: #f87171;
+  --accent-primary: #a5b4fc;
+  --accent-cta: #4f46e5;
+  --accent-cta-hover: #5850ec;
+  --on-accent: #ffffff;
+  --on-teal: #06251f;
+  --accent-teal: #5eead4;
+  --accent-teal-soft: rgba(94, 234, 212, 0.13);
+  --accent-primary-soft: rgba(165, 180, 252, 0.14);
+  --accent-glow: rgba(129, 140, 248, 0.3);
 
-  /* CLI Terminal (Theme-Aware Ocean Slate Console) */
-  --terminal-bg: #050c17;
-  --terminal-header: #0e1b2e;
-  --terminal-border: #1e3352;
-  --terminal-text: #e2e8f0;
-  --terminal-muted: #9fb2cb;
-  --terminal-cmd: #2dd4bf;
+  --tone-info: #7dd3fc;
+  --tone-success: #6ee7b7;
+  --tone-warning: #fcd34d;
+  --tone-danger: #fca5a5;
 
-  /* Topology Blueprint Grid & SVG Tokens */
-  --grid-line: rgba(45, 212, 191, 0.045);
-  --grid-line-major: rgba(56, 189, 248, 0.09);
-  --node-stroke: #2dd4bf;
-  --node-fill: #0f2137;
-  --link-stroke: #56769e;
-  --hw-slate-light: #1e3352;
-  --hw-slate-dark: #0b1526;
-  --hw-screen: #051629;
+  --terminal-bg: #101218;
+  --terminal-header: #1b1e28;
+  --terminal-border: #2f3445;
+  --terminal-text: #e8eaf0;
+  --terminal-muted: #a6adbd;
+  --terminal-cmd: #5eead4;
+
+  --grid-line: rgba(165, 180, 252, 0.045);
+  --grid-line-major: rgba(165, 180, 252, 0.09);
+  --node-stroke: #a5b4fc;
+  --node-fill: #20243a;
+  --link-stroke: #7b84a0;
+  --hw-slate-light: #2f3552;
+  --hw-slate-dark: #171a2b;
+  --hw-screen: #0c0f20;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 18px rgba(0, 0, 0, 0.25);
+
+  /* Packet categories: --pkt-* for shapes and lines, --pkt-*-text for readable labels */
+  --pkt-dns: #b79cf2;
+  --pkt-dns-text: #cdb9f7;
+  --pkt-tcp: #6cc0e6;
+  --pkt-tcp-text: #9ad7f0;
+  --pkt-tls: #6fd1ad;
+  --pkt-tls-text: #9be3c7;
+  --pkt-http-req: #f0a36b;
+  --pkt-http-req-text: #f6c19b;
+  --pkt-http-res: #8aa6f2;
+  --pkt-http-res-text: #b0c3f7;
+  --pkt-udp: #e0c06a;
+  --pkt-udp-text: #ecd595;
+  --pkt-icmp: #ee8ab5;
+  --pkt-icmp-text: #f4b0cb;
+  --pkt-error: #f28b8b;
+  --pkt-error-text: #f7b3b3;
+  --pkt-l2: #5fd3cc;
+  --pkt-l2-text: #8fe3de;
+  --pkt-sec: #8ed18e;
+  --pkt-sec-text: #b4e2b4;
+  --pkt-routing: #a99df0;
+  --pkt-routing-text: #c6bef6;
 }
 
 @layer base {
@@ -100,39 +172,149 @@
     margin: 0;
   }
 
+  /* When the browser is zoomed in the layout viewport shrinks; let the page scroll
+     instead of clipping the workspace. */
   html {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    font-size: 16px;
-    background-color: var(--bg-canvas);
-    color: var(--text-primary);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    overflow: auto;
   }
 
-  .dark html, html.dark {
-    letter-spacing: 0.006em;
+  html {
+    font-family: 'DM Sans', 'Noto Sans Devanagari', 'Noto Sans Malayalam', 'Noto Sans Tamil',
+      'Noto Sans Arabic', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /*
+   * Theme switch is an instant swap. If text and background both animated
+   * (Tailwind's transition-colors does this on most controls), a light-to-dark
+   * text color and a dark-to-light background would cross at the midpoint and
+   * the text would vanish for a few frames. Suspending transitions while the
+   * tokens change keeps every frame at full contrast.
+   */
+  html.theme-switching,
+  html.theme-switching *,
+  html.theme-switching *::before,
+  html.theme-switching *::after {
+    transition: none !important;
+  }
+
+  /* Scripts with tall glyphs / stacked marks need more line height and no
+     letter-spacing or forced uppercase, which break shaping. */
+  :lang(hi), :lang(ml), :lang(ta), :lang(ar) {
+    line-height: 1.7;
+    letter-spacing: 0 !important;
+  }
+  :lang(hi) .uppercase, :lang(ml) .uppercase, :lang(ta) .uppercase, :lang(ar) .uppercase {
+    text-transform: none;
+  }
+  :lang(hi) .truncate, :lang(ml) .truncate, :lang(ta) .truncate {
+    line-height: 1.7;
+  }
+  :lang(ar) {
+    font-family: 'Noto Sans Arabic', 'DM Sans', system-ui, sans-serif;
+  }
+  :lang(hi) h1, :lang(hi) h2, :lang(hi) h3, :lang(hi) .font-display {
+    font-family: 'Noto Sans Devanagari', 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+  :lang(ml) h1, :lang(ml) h2, :lang(ml) h3, :lang(ml) .font-display {
+    font-family: 'Noto Sans Malayalam', 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+  :lang(ta) h1, :lang(ta) h2, :lang(ta) h3, :lang(ta) .font-display {
+    font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+  :lang(ar) h1, :lang(ar) h2, :lang(ar) h3, :lang(ar) .font-display {
+    font-family: 'Noto Sans Arabic', 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  /* Technical literals (IPs, ports, packet fields, CLI) always read left-to-right. */
+  [dir='rtl'] code, [dir='rtl'] pre, [dir='rtl'] .font-mono {
+    unicode-bidi: isolate;
+  }
+
+  option {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  ::selection {
+    background-color: var(--accent-cta);
+    color: var(--on-accent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
   }
 
   h1, h2, h3, .font-display {
-    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
-    letter-spacing: -0.015em;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    /* Long words in Tamil, Malayalam and Hindi have no spaces to wrap at; let them break instead of spilling out. */
+    overflow-wrap: anywhere;
   }
 
   code, pre, .font-mono {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: 'Iosevka', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
     font-variant-numeric: tabular-nums;
   }
 }
 
+/* Simulation stage: an isometric blueprint grid with a soft vignette (used by the Explore and Simulator canvases). */
 .blueprint-grid {
-  background-color: var(--bg-canvas);
+  --stage-bg: #f2f6fd;
+  --stage-line: rgba(31, 95, 224, 0.11);
+  --stage-vignette: rgba(18, 45, 110, 0.10);
+  --link-stroke: #5b7cc9;
+  background-color: var(--stage-bg);
   background-image:
-    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px),
-    linear-gradient(to right, var(--grid-line-major) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-line-major) 1px, transparent 1px);
-  background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+    radial-gradient(120% 95% at 50% 42%, transparent 52%, var(--stage-vignette) 100%),
+    repeating-linear-gradient(30deg, var(--stage-line) 0 1px, transparent 1px 30px),
+    repeating-linear-gradient(-30deg, var(--stage-line) 0 1px, transparent 1px 30px);
 }
+.dark .blueprint-grid {
+  --stage-bg: #0a1122;
+  --stage-line: rgba(96, 146, 255, 0.12);
+  --stage-vignette: rgba(0, 0, 0, 0.45);
+  --link-stroke: #6f93e6;
+}
+
+/* Wireframe device tokens (used by WireDevices.tsx; defined on the root so exported SVGs can resolve them). */
+:root { --wire: #2b57c7; --wire-rgb: 43, 87, 199; --wire-base: #f2f6fd; }
+.dark { --wire: #7aa5ff; --wire-rgb: 122, 165, 255; --wire-base: #0a1122; }
+
+/* Diagram motion: dashed flow along the active link, a slowly turning ring and a pulse on the devices in play. */
+@keyframes hw-dash { to { stroke-dashoffset: -28; } }
+@keyframes hw-spin { to { transform: rotate(360deg); } }
+@keyframes hw-pulse { 0% { opacity: 0.75; transform: scale(0.85); } 100% { opacity: 0; transform: scale(1.7); } }
+.link-flow { stroke-dasharray: 9 5; animation: hw-dash 0.9s linear infinite; }
+.link-flow-rev { animation-direction: reverse; }
+.node-ring { transform-box: fill-box; transform-origin: center; animation: hw-spin 10s linear infinite; }
+.node-pulse { transform-box: fill-box; transform-origin: center; animation: hw-pulse 1.5s ease-out infinite; }
+
+/* HUD chrome: framed panels with small corner brackets and uppercase monospace titles. */
+.hud-title {
+  font-family: 'Iosevka', ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+}
+.hud-panel {
+  position: relative;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-surface);
+}
+.hud-panel::before,
+.hud-panel::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  pointer-events: none;
+  border: 0 solid var(--accent-primary);
+}
+.hud-panel::before { top: -1px; inset-inline-start: -1px; border-top-width: 2px; border-inline-start-width: 2px; }
+.hud-panel::after { bottom: -1px; inset-inline-end: -1px; border-bottom-width: 2px; border-inline-end-width: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -153,18 +335,20 @@
   height: 0;
 }
 
-.thin-scrollbar {
-  scrollbar-width: thin;
-  -ms-overflow-style: auto;
+@keyframes np-sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
-
-.thin-scrollbar::-webkit-scrollbar {
-  display: block;
-  width: 6px;
-  height: 6px;
+@keyframes np-sheet-in {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
 }
-
-.thin-scrollbar::-webkit-scrollbar-thumb {
-  background-color: var(--border-strong);
-  border-radius: 9999px;
+.np-sheet { animation: np-sheet-up 220ms cubic-bezier(0.22, 1, 0.36, 1); }
+@media (min-width: 768px) {
+  .np-sheet { animation-name: np-sheet-in; }
+  [dir='rtl'] .np-sheet { animation-name: np-sheet-in-rtl; }
+}
+@keyframes np-sheet-in-rtl {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }

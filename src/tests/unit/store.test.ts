@@ -28,13 +28,13 @@ describe('Zustand AppStore State & Persistence', () => {
 
     s0.toggleExperienceLevel();
     expect(useAppStore.getState().experienceLevel).toBe('pro');
-    expect(localStorage.getItem('gg-experience')).toBe('pro');
+    expect(localStorage.getItem('netpulse-experience')).toBe('pro');
     s0.setExperienceLevel('simple');
     expect(useAppStore.getState().experienceLevel).toBe('simple');
 
     s0.dismissWelcome();
     expect(useAppStore.getState().welcomeDismissed).toBe(true);
-    expect(localStorage.getItem('gg-entry-v2-dismissed')).toBe('true');
+    expect(localStorage.getItem('netpulse-welcome-dismissed')).toBe('true');
     s0.reopenWelcome();
     expect(useAppStore.getState().welcomeDismissed).toBe(false);
   });

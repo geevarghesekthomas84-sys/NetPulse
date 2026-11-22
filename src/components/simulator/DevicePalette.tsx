@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Cable, ChevronLeft, ChevronRight, ChevronUp, Plus } from 'lucide-react';
+import { Cable, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { DeviceRole, LinkMedium } from '../../engine/types';
 import { IsometricDeviceIcon } from '../common/IsometricIcons';
+import { tc } from '../../i18n/content';
 
 export type PaletteCategory = 'all' | 'end' | 'network' | 'servers' | 'security';
 
@@ -67,50 +68,43 @@ export const DevicePalette: React.FC<DevicePaletteProps> = ({
   if (collapsed) {
     return (
       <aside
-        aria-label="Collapsed Hardware Palette"
-        className="flex lg:flex-col w-full lg:w-12 shrink-0 items-center justify-between lg:justify-start border-b lg:border-b-0 lg:border-e border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3 py-1.5 lg:py-2 gap-2 shadow-2xs"
+        aria-label={tc('Collapsed Hardware Palette')}
+        className="hidden lg:flex w-12 shrink-0 flex-col items-center border-e border-[var(--border-hairline)] bg-[var(--bg-surface)] py-2 gap-2"
       >
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={onToggleCollapse}
-            title="Expand Hardware & Cabling Rail"
-            aria-label="Expand Hardware & Cabling Rail"
-            className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/60 transition-colors"
-          >
-            <ChevronRight className="w-4 h-4 hidden lg:inline" />
-            <Plus className="w-4 h-4 lg:hidden text-[var(--accent-primary)]" />
-          </button>
-          <span className="lg:hidden text-xs font-bold text-[var(--text-primary)]">
-            {t('simulator.palette')}
-          </span>
-        </div>
+        <button
+          type="button"
+          onClick={onToggleCollapse}
+          title={tc('Expand Hardware & Cabling Rail')}
+          aria-label={tc('Expand Hardware & Cabling Rail')}
+          className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/60"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
 
         <button
           type="button"
           onClick={onToggleConnectMode}
           title={t('simulator.connectCable')}
-          aria-label="Toggle Connect Cable"
+          aria-label={tc('Toggle Connect Cable')}
           aria-pressed={connectMode}
-          className={`flex h-7.5 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-semibold transition-colors ${
+          className={`flex h-8 w-8 items-center justify-center rounded-md border transition-colors ${
             connectMode
-              ? 'border-[var(--accent-cta)] bg-[var(--accent-cta)] text-white'
+              ? 'border-[var(--accent-cta)] bg-[var(--accent-cta)] text-[var(--on-accent)]'
               : 'border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
           }`}
         >
-          <Cable className="w-3.5 h-3.5" />
-          <span className="lg:hidden">{connectMode ? t('simulator.cancelConnect') : t('simulator.connectCable')}</span>
+          <Cable className="w-4 h-4" />
         </button>
 
-        <span className="hidden lg:block h-px w-6 bg-[var(--border-hairline)]" />
+        <span className="h-px w-6 bg-[var(--border-hairline)]" />
 
-        <div className="hidden lg:flex flex-col gap-1.5 overflow-y-auto px-1">
+        <div className="flex flex-col gap-1.5 overflow-y-auto px-1">
           {PALETTE_ITEMS.slice(0, 8).map((item) => (
             <button
               key={item.role}
               type="button"
               draggable
-              onDragStart={(e) => e.dataTransfer.setData('application/gg-device-role', item.role)}
+              onDragStart={(e) => e.dataTransfer.setData('application/netpulse-device-role', item.role)}
               onClick={() => onAddDevice(item.role)}
               title={`Add ${item.label}`}
               className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--border-hairline)] bg-[var(--bg-inset)]/60 hover:border-[var(--accent-primary)]/60"
@@ -125,43 +119,40 @@ export const DevicePalette: React.FC<DevicePaletteProps> = ({
 
   return (
     <aside
-      aria-label="Network Hardware & Cabling Rail"
-      className="flex lg:w-[276px] max-h-60 lg:max-h-none shrink-0 flex-col border-b lg:border-b-0 lg:border-e border-[var(--border-hairline)] bg-[var(--bg-surface)] overflow-hidden shadow-2xs"
+      aria-label={tc('Network Hardware & Cabling Rail')}
+      className="hud-panel flex lg:w-60 shrink-0 flex-col overflow-hidden"
     >
       {/* Header + Collapse */}
-      <div className="flex items-center justify-between border-b border-[var(--border-hairline)] px-3.5 py-2">
-        <span className="font-display text-xs sm:text-sm font-bold tracking-tight text-[var(--text-primary)]">
-          {t('simulator.palette')}
-        </span>
+      <div className="flex items-center justify-between border-b border-[var(--border-hairline)] px-3 py-2">
+        <span className="hud-title text-xs text-[var(--text-primary)]">{t('simulator.palette')}</span>
         <button
           type="button"
           onClick={onToggleCollapse}
-          title="Collapse Rail"
-          aria-label="Collapse Hardware Rail"
-          className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+          title={tc('Collapse Rail')}
+          aria-label={tc('Collapse Hardware Rail')}
+          className="hidden lg:flex h-6 w-6 items-center justify-center rounded border border-[var(--border-hairline)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
         >
-          <ChevronLeft className="w-4 h-4 hidden lg:inline" />
-          <ChevronUp className="w-4 h-4 lg:hidden" />
+          <ChevronLeft className="w-3.5 h-3.5" />
         </button>
       </div>
 
       {/* Physical Cable Selector */}
-      <div className="border-b border-[var(--border-hairline)] p-3 space-y-2.5">
+      <div className="border-b border-[var(--border-hairline)] p-2.5 space-y-2">
         <button
           type="button"
           onClick={onToggleConnectMode}
           aria-pressed={connectMode}
-          className={`flex w-full items-center justify-center gap-2 rounded-lg border px-3 py-2 text-[13px] font-semibold transition-colors whitespace-nowrap shrink-0 ${
+          className={`flex w-full items-center justify-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 ${
             connectMode
-              ? 'border-[var(--accent-cta)] bg-[var(--accent-cta)] text-white shadow-xs'
-              : 'border-[var(--border-hairline)] bg-[var(--bg-inset)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]'
+              ? 'border-[var(--accent-cta)] bg-[var(--accent-cta)] text-[var(--on-accent)] shadow-sm'
+              : 'border-[var(--border-hairline)] bg-[var(--bg-inset)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]/60'
           }`}
         >
-          <Cable className="w-4 h-4" />
+          <Cable className="w-3.5 h-3.5" />
           <span>{connectMode ? t('simulator.cancelConnect') : t('simulator.connectCable')}</span>
         </button>
 
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className="grid grid-cols-2 gap-1">
           {MEDIUM_OPTIONS.map((med) => {
             const active = linkMedium === med.id;
             return (
@@ -170,19 +161,17 @@ export const DevicePalette: React.FC<DevicePaletteProps> = ({
                 type="button"
                 onClick={() => onChangeMedium(med.id)}
                 aria-pressed={active}
-                className={`flex flex-col items-start rounded-lg border px-2.5 py-2 text-start transition-colors ${
+                className={`flex flex-col items-start rounded-md border px-2 py-1 text-start transition-colors ${
                   active
                     ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--text-primary)]'
-                    : 'border-[var(--border-hairline)] bg-[var(--bg-inset)]/70 text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                    : 'border-[var(--border-hairline)] bg-[var(--bg-inset)]/50 text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
               >
-                <span className="flex items-center gap-1.5 text-[12.5px] font-semibold">
-                  <span className="h-2 w-3 rounded-xs shrink-0" style={{ backgroundColor: med.color }} />
+                <span className="flex items-center gap-1.5 text-[11px] font-semibold">
+                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: med.color }} />
                   <span>{med.label}</span>
                 </span>
-                <span className="mt-0.5 font-mono text-[11.5px] font-medium text-[var(--text-muted)] tabular-nums">
-                  {med.spec}
-                </span>
+                <span className="font-mono text-[11px] text-[var(--text-muted)]">{med.spec}</span>
               </button>
             );
           })}
@@ -190,7 +179,7 @@ export const DevicePalette: React.FC<DevicePaletteProps> = ({
       </div>
 
       {/* Category Filter Tabs */}
-      <div className="flex items-center gap-1 border-b border-[var(--border-hairline)] bg-[var(--bg-inset)] px-2.5 py-1.5">
+      <div className="flex items-center gap-0.5 border-b border-[var(--border-hairline)] bg-[var(--bg-inset)]/60 px-2 py-1">
         {(
           [
             { id: 'all', label: t('drawer.all') },
@@ -204,10 +193,10 @@ export const DevicePalette: React.FC<DevicePaletteProps> = ({
             key={tab.id}
             type="button"
             onClick={() => setCat(tab.id)}
-            className={`flex-1 rounded-md py-1.5 text-xs font-semibold transition-colors ${
+            className={`flex-1 rounded py-1 text-[11px] font-semibold transition-colors ${
               cat === tab.id
                 ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-xs'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
             }`}
           >
             {tab.label}
@@ -216,24 +205,22 @@ export const DevicePalette: React.FC<DevicePaletteProps> = ({
       </div>
 
       {/* Device Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-1 gap-1.5 overflow-y-auto p-2.5 flex-1 min-h-[140px]">
+      <div className="grid grid-cols-2 lg:grid-cols-1 gap-1 overflow-y-auto p-2 flex-1 min-h-[140px]">
         {visibleItems.map((item) => (
           <button
             key={item.role}
             type="button"
             draggable
-            onDragStart={(e) => e.dataTransfer.setData('application/gg-device-role', item.role)}
+            onDragStart={(e) => e.dataTransfer.setData('application/netpulse-device-role', item.role)}
             onClick={() => onAddDevice(item.role)}
-            className="flex min-h-[48px] items-center gap-3 rounded-xl border border-transparent hover:border-[var(--border-hairline)] bg-[var(--bg-inset)]/55 hover:bg-[var(--accent-primary-soft)] px-3 py-2 text-start transition-colors"
+            className="flex items-center gap-2 rounded-lg border border-transparent hover:border-[var(--border-hairline)] bg-[var(--bg-inset)]/40 hover:bg-[var(--accent-primary-soft)] px-2 py-1.5 text-start transition-colors"
           >
-            <IsometricDeviceIcon role={item.role} size={30} />
+            <IsometricDeviceIcon role={item.role} size={28} />
             <div className="min-w-0 flex-1">
-              <div className="text-[13px] font-semibold text-[var(--text-primary)] truncate">{item.label}</div>
-              <div className="text-xs font-mono font-medium text-[var(--text-muted)] tabular-nums">
-                {item.defaultIp}
-              </div>
+              <div className="text-[11.5px] font-medium text-[var(--text-primary)] truncate">{item.label}</div>
+              <div className="text-[11px] font-mono text-[var(--text-muted)]">{item.defaultIp}</div>
             </div>
-            <Plus className="w-4 h-4 text-[var(--text-secondary)] shrink-0" />
+            <Plus className="w-3.5 h-3.5 text-[var(--text-muted)] shrink-0" />
           </button>
         ))}
       </div>

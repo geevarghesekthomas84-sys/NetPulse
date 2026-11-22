@@ -34,17 +34,17 @@ export function decodeExploreHash(hash: string): ExploreDeepLink {
   }
   const params = new URLSearchParams(clean);
   const res: ExploreDeepLink = {};
-  const m = params.get('m') || params.get('mode');
+  const m = params.get('m');
   if (m === 'explore' || m === 'simulator' || m === 'learn') res.mode = m;
-  const p = params.get('p') || params.get('protocol');
+  const p = params.get('p');
   if (p) res.protocol = p;
-  const s = params.get('s') || params.get('step');
+  const s = params.get('s');
   if (s && !Number.isNaN(Number(s))) res.step = Number(s);
-  const sp = params.get('sp') || params.get('speed');
+  const sp = params.get('sp');
   if (sp && !Number.isNaN(Number(sp))) res.speed = Number(sp);
-  const v = params.get('v') || params.get('view');
+  const v = params.get('v');
   if (v === 'network' || v === 'sequence') res.view = v;
-  const t = params.get('t') || params.get('theme');
+  const t = params.get('t');
   if (t === 'dark' || t === 'light') res.theme = t;
   const sim = params.get('sim');
   if (sim) res.sim = sim;

@@ -35,9 +35,11 @@ describe('i18n Locale Completeness & Parity Across All 6 Languages', () => {
 
   it.each(Object.entries(locales))('locale "%s" matches all English translation keys with non-empty strings', (code, data) => {
     const flat = flattenKeys(data as unknown as Record<string, unknown>);
-    const keys = Object.keys(flat).sort();
-    expect(keys).toEqual(enKeys);
-    for (const key of enKeys) {
+    // Languages differ in plural categories (Arabic has six), so compare keys without the plural suffix.
+    const base = (k: string) => k.replace(/_(zero|one|two|few|many|other)$/, '');
+    const keys = [...new Set(Object.keys(flat).map(base))].sort();
+    expect(keys).toEqual([...new Set(enKeys.map(base))].sort());
+    for (const key of Object.keys(flat)) {
       expect(flat[key].trim().length, `Empty string for ${code}.${key}`).toBeGreaterThan(0);
     }
   });

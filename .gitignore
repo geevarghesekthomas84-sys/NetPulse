@@ -6,3 +6,9 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Local-only folders and build output
+newsite/
+dev-dist/
+.claude/
+.aistudio/

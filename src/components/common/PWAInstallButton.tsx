@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Download } from 'lucide-react';
+import { tc } from '../../i18n/content';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -52,10 +53,10 @@ export const PWAInstallButton: React.FC = () => {
             setDeferredPrompt(null);
           }
         }}
-        className="flex items-center gap-1.5 rounded-lg bg-[var(--accent-cta)] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[var(--accent-cta-hover)] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[var(--accent-primary)]"
+        className="flex items-center gap-1.5 rounded-lg bg-[var(--accent-cta)] px-3 py-1.5 text-xs font-semibold text-[var(--on-accent)] hover:bg-[var(--accent-cta-hover)] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[var(--accent-primary)]"
       >
         <Download className="w-3.5 h-3.5" />
-        Install App
+        {tc('Install App')}
       </button>
     );
   }
@@ -69,22 +70,22 @@ export const PWAInstallButton: React.FC = () => {
           className="flex items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] px-2.5 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
         >
           <Download className="w-3.5 h-3.5" />
-          Install
+          {tc('Install')}
         </button>
         {showIOSGuide && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
             <div className="w-full max-w-sm rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-5 shadow-xl">
-              <h3 className="text-base font-semibold text-[var(--text-primary)]">Install gg on iPhone / iPad</h3>
+              <h3 className="text-base font-semibold text-[var(--text-primary)]">{tc('Install NetPulse on iPhone / iPad')}</h3>
               <p className="mt-2 text-sm text-[var(--text-secondary)]">
-                1. Tap the <strong>Share</strong> icon in Safari.<br />
-                2. Scroll down and tap <strong>Add to Home Screen</strong>.
+                1. Tap the <strong>{tc('Share')}</strong> {tc('icon in Safari.')}<br />
+                2. Scroll down and tap <strong>{tc('Add to Home Screen')}</strong>.
               </p>
               <button
                 type="button"
                 onClick={() => setShowIOSGuide(false)}
-                className="mt-4 w-full rounded-lg bg-[var(--accent-cta)] hover:bg-[var(--accent-cta-hover)] py-2 text-sm font-medium text-white transition-colors"
+                className="mt-4 w-full rounded-lg bg-[var(--accent-cta)] hover:bg-[var(--accent-cta-hover)] py-2 text-sm font-medium text-[var(--on-accent)] transition-colors"
               >
-                Close
+                {tc('Close')}
               </button>
             </div>
           </div>
@@ -117,7 +118,7 @@ export const OfflineIndicator: React.FC = () => {
       role="status"
       className="fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-lg border border-[var(--tone-warning)]/40 bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-semibold text-[var(--tone-warning)] shadow-lg"
     >
-      <span>Offline Mode — Cached app active</span>
+      <span>{tc('Offline Mode — Cached app active')}</span>
     </div>
   );
 };

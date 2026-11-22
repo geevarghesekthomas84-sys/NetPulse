@@ -1,48 +1,31 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  BarChart3,
-  ChevronDown,
-  ChevronUp,
-  Layers,
-  Maximize2,
-  Minimize2,
-  Network,
-  Play,
-  Pause,
-  RotateCcw,
-  ScrollText,
-  SkipBack,
-  Sparkles,
-  StepForward,
-  Table2,
-  Terminal,
-} from 'lucide-react';
+import { BarChart3, ChevronDown, ChevronUp, Layers, Maximize2, Minimize2, Network, Play, Pause, RotateCcw, ScrollText, SkipBack, Sparkles, StepForward, Table2, Terminal, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { createDefaultInterface, SimulationEngine } from '../../engine/simulator';
 import type { CapturedPacket, DeviceRole, LinkMedium, SimDevice, SimLink } from '../../engine/types';
 import { compressTopology, encodeExploreHash } from '../../lib/deepLink';
 import { matchesDisplayFilter, validateDisplayFilter } from '../../lib/displayFilter';
-import { buildCsvExport, buildPcapFile, triggerDownload } from '../../lib/pcapWriter';
+import { triggerDownload } from '../../lib/pcapWriter';
 import { computeSimulationAnalytics } from '../../lib/simAnalytics';
 import { describePacketStateChange, resolveSimShortcutAction, SIM_PLAYBACK_SPEEDS } from '../../lib/simPlayback';
-import { ALL_SIM_LABS, BREAK_IT_CHALLENGES, PRESET_LABS, type PresetLab } from '../../simulator/labs';
+import { PRESET_LABS, type PresetLab } from '../../simulator/labs';
 import type { StarterTemplate } from '../../simulator/templates';
 import { useAppStore } from '../../store/useAppStore';
 import { EventLogPanel } from '../common/EventLogPanel';
 import { PacketInspector, PacketInspectorContent } from '../common/PacketInspector';
 import { PacketTable } from '../explore/PacketTable';
-import { BreakItChallengeHUD } from './BreakItChallengeHUD';
 import { CaptureFilterBar } from './CaptureFilterBar';
 import { DevicePalette, PALETTE_ITEMS } from './DevicePalette';
 import { LabsDrawer } from './LabsDrawer';
+import { DeviceDesktop } from './DeviceDesktop';
+import { PduPanel } from './PduPanel';
 import { PropertiesPanel } from './PropertiesPanel';
+import type { PduKind } from '../../engine/simulator';
 import { SimAnalyticsPanel } from './SimAnalyticsPanel';
 import { type CanvasAnnotation, type ConnectPortsPayload, SimCanvas } from './SimCanvas';
 import { SimControls } from './SimControls';
 import { TerminalEmulator } from './TerminalEmulator';
-import { PacketTracerDeviceModal } from './PacketTracerDeviceModal';
-import { PduListBar } from './PduListBar';
-import { PacketTracerPduModal } from './PacketTracerPduModal';
+import { tc } from '../../i18n/content';
 
 interface Snapshot {
   devices: SimDevice[];
@@ -70,11 +53,9 @@ export const SimulatorWorkspace: React.FC = () => {
     settingsOpen,
     aboutOpen,
     tourOpen,
-    setTourOpen,
   } = useAppStore();
   const isPro = experienceLevel === 'pro';
-  const activeLab = ALL_SIM_LABS.find((l) => l.id === activeLabId) ?? PRESET_LABS[0];
-  const isBreakIt = activeLab.category.includes('Break-It');
+  const activeLab = PRESET_LABS.find((l) => l.id === activeLabId) ?? PRESET_LABS[0];
 
   const engineRef = useRef<SimulationEngine>(
     new SimulationEngine({ seed: settings.defaultSeed, devices: simDevices, links: simLinks })
@@ -106,6 +87,10 @@ export const SimulatorWorkspace: React.FC = () => {
   const [activeTemplate, setActiveTemplate] = useState<StarterTemplate | null>(null);
   const [selectedLinkId, setSelectedLinkId] = useState<string | null>(null);
   const [connectMode, setConnectMode] = useState(false);
+  const [desktopDeviceId, setDesktopDeviceId] = useState<string | null>(null);
+  const [pduMode, setPduMode] = useState(false);
+  const [pduSourceId, setPduSourceId] = useState<string | null>(null);
+  const [pduKind, setPduKind] = useState<PduKind>('ICMP');
   const [linkMedium, setLinkMedium] = useState<LinkMedium>('ethernet');
   const [annotations, setAnnotations] = useState<CanvasAnnotation[]>([]);
   const [undoStack, setUndoStack] = useState<Snapshot[]>([]);
@@ -116,17 +101,11 @@ export const SimulatorWorkspace: React.FC = () => {
   const [captureFilter, setCaptureFilter] = useState('');
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
-  // Cisco Packet Tracer Pro States
-  const [ptModalDevice, setPtModalDevice] = useState<SimDevice | null>(null);
-  const [ptPduModalPacket, setPtPduModalPacket] = useState<CapturedPacket | null>(null);
-  const [isAddingSimplePdu, setIsAddingSimplePdu] = useState(false);
-  const [pduSourceId, setPduSourceId] = useState<string | null>(null);
-
   // Packet-Tracer IDE Workbench Panel States
   const [labsOpen, setLabsOpen] = useState(false);
   const [leftRailCollapsed, setLeftRailCollapsed] = useState(false);
   const [rightInspectorOpen, setRightInspectorOpen] = useState(true);
-  const [dockTab, setDockTab] = useState<'capture' | 'logs' | 'inspector' | 'terminal' | 'metrics' | 'tables'>(
+  const [dockTab, setDockTab] = useState<'capture' | 'logs' | 'inspector' | 'terminal' | 'metrics' | 'tables' | 'pdu'>(
     'capture'
   );
   const [dockSize, setDockSize] = useState<'collapsed' | 'compact' | 'expanded'>('compact');
@@ -189,54 +168,92 @@ export const SimulatorWorkspace: React.FC = () => {
     bump();
   };
 
-  const handleStartAddSimplePdu = () => {
-    setIsAddingSimplePdu(true);
-    setPduSourceId(null);
-  };
-
-  const handleCancelSimplePdu = () => {
-    setIsAddingSimplePdu(false);
-    setPduSourceId(null);
-  };
-
-  const handleFireSimplePdu = (srcId: string, dstId: string) => {
-    const prevCount = engineRef.current.packets.length;
-    engineRef.current.sendSimplePdu(srcId, dstId);
-    syncAfterPacketEmission(prevCount);
-    bump();
-  };
-
-  const handleSelectSimplePduEndpoint = (devId: string) => {
-    if (!pduSourceId) {
-      setPduSourceId(devId);
-    } else {
-      if (pduSourceId !== devId) {
-        handleFireSimplePdu(pduSourceId, devId);
-      }
-      setIsAddingSimplePdu(false);
-      setPduSourceId(null);
-    }
-  };
-
-  const handleClearPdus = () => {
-    engineRef.current.simplePdus = [];
-    bump();
-  };
-
   useEffect(() => {
     engineRef.current.loadTopology(simDevices, simLinks);
     bump();
   }, [simDevices, simLinks]);
 
-  // First-time visitor interactive simulator tour trigger
+  /** Stores any configuration the engine changed (DHCP lease, CLI edits) so it persists and can be undone. */
+  const commitEngineConfig = () => {
+    const changed = engineRef.current.consumeConfigChanges();
+    if (changed) pushHistory(changed.devices, changed.links);
+  };
+
+  const handleDesktopDhcp = (deviceId: string) => {
+    const prev = engineRef.current.packets.length;
+    const result = engineRef.current.requestDhcp(deviceId);
+    syncAfterPacketEmission(prev);
+    commitEngineConfig();
+    return result;
+  };
+
+  const handleDesktopRelease = (deviceId: string) => {
+    const msg = engineRef.current.releaseDhcp(deviceId);
+    commitEngineConfig();
+    return msg;
+  };
+
+  const handleDesktopStatic = (deviceId: string, cfg: { ip: string; mask: string; gateway: string; dns: string }) => {
+    pushHistory(
+      simDevices.map((d) =>
+        d.id !== deviceId
+          ? d
+          : {
+              ...d,
+              dhcpEnabled: false,
+              dnsServer: cfg.dns || undefined,
+              interfaces: d.interfaces.map((i, idx) => (idx === 0 ? { ...i, ip: cfg.ip, mask: cfg.mask, gateway: cfg.gateway || undefined } : i)),
+            }
+      ),
+      simLinks
+    );
+  };
+
+  /** Sends a test packet and shows what happened to it in the PDU tab. */
+  const handleSendPdu = (srcId: string, dstId: string, kind: PduKind) => {
+    const prevCount = engineRef.current.packets.length;
+    const rec = engineRef.current.sendPdu(srcId, dstId, kind);
+    if (!rec) return;
+    syncAfterPacketEmission(prevCount);
+    setDockTab('pdu');
+    setDockSize((s) => (s === 'collapsed' ? 'compact' : s));
+  };
+
   useEffect(() => {
-    if (typeof window !== 'undefined' && !localStorage.getItem('netpulse-sim-tour-dismissed')) {
-      const timer = setTimeout(() => {
-        setTourOpen(true);
-      }, 700);
-      return () => clearTimeout(timer);
+    if (!pduMode) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setPduMode(false);
+        setPduSourceId(null);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [pduMode]);
+
+  const togglePduMode = () => {
+    setPduMode((on) => !on);
+    setPduSourceId(null);
+    setConnectMode(false);
+  };
+
+  /** Canvas selection doubles as source/destination picking while "Add PDU" is on. */
+  const handleCanvasSelectDevice = (id: string | null) => {
+    if (!pduMode || !id) {
+      setSelectedDeviceId(id);
+      return;
     }
-  }, [setTourOpen]);
+    if (!pduSourceId) {
+      setPduSourceId(id);
+      setSelectedDeviceId(id);
+      return;
+    }
+    if (id === pduSourceId) return;
+    handleSendPdu(pduSourceId, id, pduKind);
+    setPduMode(false);
+    setPduSourceId(null);
+    setSelectedDeviceId(id);
+  };
 
   const stepIntervalMs =
     playbackMode === 'step'
@@ -990,13 +1007,13 @@ export const SimulatorWorkspace: React.FC = () => {
 
   const dockHeightClass =
     dockSize === 'collapsed'
-      ? 'h-9.5'
+      ? 'h-9'
       : dockSize === 'expanded'
-      ? 'h-[420px] max-h-[60vh]'
-      : 'h-[280px] sm:h-[300px] max-h-[45vh]';
+      ? 'h-[410px]'
+      : 'h-[260px]';
 
   return (
-    <div className="flex flex-1 min-h-0 flex-col overflow-hidden bg-[var(--bg-canvas)]">
+    <div className="flex flex-1 min-h-0 flex-col overflow-y-auto bg-[var(--bg-canvas)]">
       {/* Top Compact Command Strip */}
       <SimControls
         clockMs={displayedClockMs}
@@ -1036,7 +1053,7 @@ export const SimulatorWorkspace: React.FC = () => {
         }}
         onExportJson={() => {
           const json = JSON.stringify({ devices: simDevices, links: simLinks }, null, 2);
-          triggerDownload(new Blob([json], { type: 'application/json' }), 'gg-topology.json');
+          triggerDownload(new Blob([json], { type: 'application/json' }), 'netpulse-topology.json');
         }}
         onExportPng={() => {
           void canvasExportRef.current?.exportPng();
@@ -1064,81 +1081,41 @@ export const SimulatorWorkspace: React.FC = () => {
         onRunLabSolve={handleRunLabSolve}
       />
 
-      {/* Break-It Troubleshooting Challenge Interactive HUD Banner */}
-      {isBreakIt && (
-        <BreakItChallengeHUD
-          lab={activeLab}
-          onRunTest={() => {
-            if (activeLab.onSolve) {
-              const output = activeLab.onSolve(engineRef.current);
-              setExternalLog({
-                deviceId: activeLab.devices[0]?.name || 'host',
-                cmd: `diagnose(${activeLab.title})`,
-                output,
-              });
-              if (playbackMode === 'step') {
-                syncAfterPacketEmission(0);
-              } else {
-                if (engineRef.current.packets.length > 0) {
-                  setLiveCursor(1);
-                  setDockInspectedId(engineRef.current.packets[0].id);
-                  setSimPlaying(true);
-                }
-                if (dockSize === 'collapsed') setDockSize('compact');
-                bump();
-              }
-              return output;
-            }
-            return '';
-          }}
-          onReset={() => handleSelectLab(activeLab)}
-          onNext={() => {
-            const currIdx = BREAK_IT_CHALLENGES.findIndex((c) => c.id === activeLab.id);
-            if (currIdx >= 0 && currIdx < BREAK_IT_CHALLENGES.length - 1) {
-              handleSelectLab(BREAK_IT_CHALLENGES[currIdx + 1]);
-            }
-          }}
-          onClose={() => handleSelectLab(PRESET_LABS[0])}
-        />
-      )}
-
-      {/* Simple Mode Guided Lab Goal Strip (for Standard Labs) */}
-      {!isPro && !labsOpen && !isBreakIt && (
-        <div className="shrink-0 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 py-1.5 text-xs sm:text-[13px] shadow-2xs">
-          <div className="flex flex-wrap items-center gap-2.5 min-w-0">
-            <span className="font-mono text-xs font-bold text-[var(--accent-primary)] tabular-nums shrink-0">
-              Lab {activeLab.number}
-            </span>
-            <span className="h-3.5 w-px bg-[var(--border-hairline)]" aria-hidden="true" />
-            <span className="font-semibold text-[var(--text-secondary)] shrink-0">
+      {/* Simple Mode Guided Lab Goal Strip */}
+      {!isPro && (
+        <div className="@container shrink-0 flex items-center justify-between gap-3 border-b border-[var(--border-hairline)] bg-[var(--accent-primary-soft)] px-4 py-2 text-xs">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <span className="shrink-0 font-mono text-[11px] font-bold uppercase tracking-wider text-[var(--accent-teal)]">
               {t('simulator.labGoal')}:
             </span>
-            <span className="font-medium text-[var(--text-primary)] truncate max-w-xl">
-              {activeLab.goals[0] ?? activeLab.description}
+            <span className="min-w-0 truncate font-medium text-[var(--text-primary)]">
+              {tc(activeLab.goals[0] ?? activeLab.description)}
             </span>
           </div>
-          <div className="flex flex-wrap items-center gap-1.5 shrink-0">
+          <div className="flex shrink-0 items-center gap-1.5">
             <button
               type="button"
               onClick={() => handleRunLabDemo(activeLab)}
-              className="flex h-8 items-center gap-1.5 rounded-lg bg-[var(--accent-cta)] hover:bg-[var(--accent-cta-hover)] px-3 text-xs font-semibold text-white transition-colors whitespace-nowrap"
+              aria-label={t('simulator.runDemo')}
+              className="flex h-7 items-center gap-1 rounded-md bg-[var(--accent-cta)] hover:bg-[var(--accent-cta-hover)] px-2.5 text-xs font-semibold text-[var(--on-accent)] transition-colors whitespace-nowrap"
             >
-              <Play className="w-3.5 h-3.5" />
-              <span>{t('simulator.runDemo')}</span>
+              <Play className="w-3 h-3" />
+              <span className="hidden @2xl:inline">{t('simulator.runDemo')}</span>
             </button>
             <button
               type="button"
               onClick={() => handleRunLabSolve(activeLab)}
-              className="flex h-8 items-center gap-1.5 rounded-lg border border-[var(--tone-success)]/45 bg-[var(--bg-canvas)] px-2.5 text-xs font-semibold text-[var(--tone-success)] hover:bg-[var(--tone-success)]/10 transition-colors whitespace-nowrap"
+              aria-label={t('simulator.checkSolution')}
+              className="flex h-7 items-center gap-1 rounded-md border border-[var(--tone-success)]/45 bg-[var(--bg-surface)] px-2.5 text-xs font-semibold text-[var(--tone-success)] hover:bg-[var(--tone-success)]/10 transition-colors whitespace-nowrap"
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{t('simulator.checkSolution')}</span>
+              <Sparkles className="w-3 h-3" />
+              <span className="hidden @2xl:inline">{t('simulator.checkSolution')}</span>
             </button>
             <button
               type="button"
               onClick={() => setExperienceLevel('pro')}
               title={t('simulator.proHint')}
-              className="hidden xl:inline-flex h-8 items-center rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-canvas)] px-2.5 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors whitespace-nowrap"
+              className="hidden xl:inline-flex h-7 items-center rounded-md border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-2.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap"
             >
               {t('welcome.switchToPro')}
             </button>
@@ -1151,24 +1128,24 @@ export const SimulatorWorkspace: React.FC = () => {
         <div
           role="region"
           aria-label={t('simulator.stepByStepMode')}
-          className="shrink-0 flex flex-wrap items-center justify-between gap-2.5 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-4 py-2.5 text-[13px]"
+          className="shrink-0 flex flex-wrap items-center justify-between gap-2.5 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-4 py-2 text-xs"
         >
           <div className="flex flex-wrap items-center gap-2 min-w-0 flex-1">
-            <span className="rounded-md border border-[var(--accent-teal)]/35 bg-[var(--bg-canvas)] px-2.5 py-0.5 font-mono text-xs font-bold text-[var(--accent-teal)] tabular-nums shrink-0">
+            <span className="rounded bg-[var(--accent-teal-soft)] px-2 py-0.5 font-mono text-[11px] font-bold text-[var(--accent-teal)] tabular-nums shrink-0">
               {t('simulator.stepProgress', { current: clampedStepCursor, total: allPackets.length })}
             </span>
 
             {activeStepPacket && activeStateSnapshot ? (
               <div className="flex flex-wrap items-center gap-2 min-w-0">
                 <span
-                  className={`rounded-md border px-2.5 py-0.5 font-mono text-xs font-semibold shrink-0 tabular-nums ${
+                  className={`rounded px-2 py-0.5 font-mono text-[11px] font-bold shrink-0 ${
                     activeStateSnapshot.tone === 'danger'
-                      ? 'border-[var(--tone-danger)]/40 bg-[var(--tone-danger)]/10 text-[var(--tone-danger)]'
+                      ? 'bg-[var(--tone-danger)]/15 text-[var(--tone-danger)]'
                       : activeStateSnapshot.tone === 'warning'
-                      ? 'border-[var(--tone-warning)]/40 bg-[var(--tone-warning)]/10 text-[var(--tone-warning)]'
+                      ? 'bg-[var(--tone-warning)]/15 text-[var(--tone-warning)]'
                       : activeStateSnapshot.tone === 'success'
-                      ? 'border-[var(--tone-success)]/40 bg-[var(--tone-success)]/10 text-[var(--tone-success)]'
-                      : 'border-[var(--accent-primary)]/40 bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
+                      ? 'bg-[var(--tone-success)]/15 text-[var(--tone-success)]'
+                      : 'bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
                   }`}
                 >
                   #{activeStepPacket.no} · {activeStateSnapshot.phase}: {activeStateSnapshot.transition}
@@ -1182,11 +1159,11 @@ export const SimulatorWorkspace: React.FC = () => {
             )}
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             {allPackets.length > 0 && (
               <input
                 type="range"
-                aria-label="Packet delivery timeline scrubber"
+                aria-label={tc('Packet delivery timeline scrubber')}
                 min={0}
                 max={allPackets.length}
                 value={clampedStepCursor}
@@ -1197,7 +1174,7 @@ export const SimulatorWorkspace: React.FC = () => {
                   const pkt = val > 0 ? allPackets[val - 1] : null;
                   setDockInspectedId(pkt ? pkt.id : null);
                 }}
-                className="w-24 sm:w-32 accent-[var(--accent-teal)] cursor-pointer me-1"
+                className="w-24 sm:w-32 accent-[var(--accent-teal)] cursor-pointer"
               />
             )}
 
@@ -1206,9 +1183,9 @@ export const SimulatorWorkspace: React.FC = () => {
               onClick={handleRewindStep}
               disabled={clampedStepCursor === 0}
               title={`${t('simulator.rewind')} (Home)`}
-              className="flex h-8 items-center gap-1 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-canvas)] px-2.5 text-xs font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] disabled:opacity-40 transition-colors whitespace-nowrap"
+              className="flex h-7 items-center gap-1 rounded border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-2 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-40 whitespace-nowrap"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-3 h-3" />
               <span className="hidden sm:inline">{t('simulator.rewind')}</span>
             </button>
 
@@ -1216,11 +1193,11 @@ export const SimulatorWorkspace: React.FC = () => {
               type="button"
               onClick={handleSingleStepBack}
               disabled={clampedStepCursor <= 0}
-              aria-label="Step Back One Event"
+              aria-label={tc('Step Back One Event')}
               title={`${t('simulator.stepBack')} (←)`}
-              className="flex h-8 items-center gap-1 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-canvas)] px-2.5 text-xs font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] disabled:opacity-40 transition-colors whitespace-nowrap"
+              className="flex h-7 items-center gap-1 rounded border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-2 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-40 whitespace-nowrap"
             >
-              <SkipBack className="w-3.5 h-3.5" />
+              <SkipBack className="w-3 h-3" />
             </button>
 
             <button
@@ -1228,20 +1205,20 @@ export const SimulatorWorkspace: React.FC = () => {
               onClick={handleTogglePlayPause}
               aria-label={simPlaying ? 'Pause Step Playback' : 'Resume Step Playback'}
               title={`${simPlaying ? t('simulator.pause') : t('simulator.resume')} (Space)`}
-              className="flex h-8 items-center gap-1.5 rounded-lg bg-[var(--accent-cta)] hover:bg-[var(--accent-cta-hover)] px-3 text-xs font-semibold text-white transition-colors whitespace-nowrap"
+              className="flex h-7 items-center gap-1 rounded bg-[var(--accent-cta)] hover:bg-[var(--accent-cta-hover)] px-2.5 text-xs font-semibold text-[var(--on-accent)] whitespace-nowrap"
             >
-              {simPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+              {simPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
               <span>{simPlaying ? t('simulator.pause') : t('simulator.resume')}</span>
             </button>
 
             <button
               type="button"
               onClick={handleSingleStepForward}
-              aria-label="Single Step Next Event"
+              aria-label={tc('Single Step Next Event')}
               title={`${t('simulator.stepNext')} (→)`}
-              className="flex h-8 items-center gap-1.5 rounded-lg border border-[var(--accent-teal)]/50 bg-[var(--accent-teal-soft)] px-2.5 text-xs font-semibold text-[var(--accent-teal)] hover:bg-[var(--accent-teal)]/20 transition-colors whitespace-nowrap"
+              className="flex h-7 items-center gap-1 rounded border border-[var(--accent-teal)]/50 bg-[var(--accent-teal-soft)] px-2.5 text-xs font-semibold text-[var(--accent-teal)] hover:bg-[var(--accent-teal)]/20 whitespace-nowrap"
             >
-              <StepForward className="w-3.5 h-3.5" />
+              <StepForward className="w-3 h-3" />
               <span>{t('simulator.stepNext')}</span>
             </button>
           </div>
@@ -1249,7 +1226,7 @@ export const SimulatorWorkspace: React.FC = () => {
       )}
 
       {/* Middle Stage: Topology Canvas (+ Palette & Inspector in Pro Mode) */}
-      <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden">
+      <div className="flex flex-col lg:flex-row flex-1 min-h-[280px] overflow-hidden lg:gap-3 lg:p-3">
         {isPro && (
           <DevicePalette
             collapsed={leftRailCollapsed}
@@ -1276,8 +1253,11 @@ export const SimulatorWorkspace: React.FC = () => {
           canRedo={redoStack.length > 0}
           annotations={annotations}
           onToggleConnectMode={(next) => setConnectMode((curr) => (next !== undefined ? next : !curr))}
+          pduMode={pduMode}
+          pduSourceName={pduSourceId ? simDevices.find((d) => d.id === pduSourceId)?.name ?? null : null}
+          onTogglePduMode={togglePduMode}
           onChangeMedium={setLinkMedium}
-          onSelectDevice={setSelectedDeviceId}
+          onSelectDevice={handleCanvasSelectDevice}
           onSelectLink={setSelectedLinkId}
           onMoveDevice={(id, x, y) => {
             setSimTopology(
@@ -1323,15 +1303,11 @@ export const SimulatorWorkspace: React.FC = () => {
           stepDurationMs={stepIntervalMs}
           animationTick={playbackMode === 'step' ? clampedStepCursor : clampedLiveCursor ?? tickVersion}
           exportActionsRef={canvasExportRef}
-          onOpenDeviceModal={(dev) => setPtModalDevice(dev)}
-          isAddingSimplePdu={isAddingSimplePdu}
-          pduSourceId={pduSourceId}
-          onSelectSimplePduEndpoint={handleSelectSimplePduEndpoint}
-          onCancelSimplePdu={handleCancelSimplePdu}
         />
 
         {isPro && rightInspectorOpen && (
           <PropertiesPanel
+            onOpenDesktop={setDesktopDeviceId}
             device={selectedDevice}
             link={selectedLink}
             devices={simDevices}
@@ -1356,29 +1332,36 @@ export const SimulatorWorkspace: React.FC = () => {
               setSelectedLinkId(null);
             }}
             onAddDevicePort={handleAddDevicePort}
-            onOpenDeviceModal={(d) => setPtModalDevice(d)}
           />
         )}
       </div>
 
-      {/* Packet Tracer Simple PDU Simulation Table Drawer (Pro Mode) */}
-      {isPro && (
-        <PduListBar
-          pdus={engineRef.current.simplePdus}
-          onFirePdu={handleFireSimplePdu}
-          onClearPdus={handleClearPdus}
-          onStartAddPdu={handleStartAddSimplePdu}
-          isAddingPdu={isAddingSimplePdu}
+      {desktopDeviceId && liveDevices.find((d) => d.id === desktopDeviceId) && (
+        <DeviceDesktop
+          device={liveDevices.find((d) => d.id === desktopDeviceId)!}
+          onClose={() => setDesktopDeviceId(null)}
+          onApplyStatic={(cfg) => handleDesktopStatic(desktopDeviceId, cfg)}
+          onRequestDhcp={() => handleDesktopDhcp(desktopDeviceId)}
+          onRelease={() => handleDesktopRelease(desktopDeviceId)}
+          onExecute={(devId, cmd) => {
+            const prev = engine.packets.length;
+            const out = engine.execCommand(devId, cmd);
+            syncAfterPacketEmission(prev);
+            commitEngineConfig();
+            return out;
+          }}
+          getPrompt={(id) => engine.getCliPrompt(id)}
+          onComplete={(id, line) => engine.completeCli(id, line)}
         />
       )}
 
       {/* Bottom Docked Resizable IDE Workbench Deck: Capture | Event Logs | Packet Inspector | CLI | Metrics | Tables */}
       <section
-        aria-label="Simulator Docked Console Deck"
-        className={`shrink-0 flex flex-col border-t border-[var(--border-strong)] bg-[var(--bg-surface)] transition-[height] duration-150 overflow-hidden ${dockHeightClass}`}
+        aria-label={tc('Simulator Docked Console Deck')}
+        className={`shrink-0 flex flex-col border-t border-[var(--border-strong)] bg-[var(--bg-surface)] transition-[height] duration-150 ${dockHeightClass}`}
       >
         {/* Dock Tab Bar + Size Controls */}
-        <div className="shrink-0 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] bg-[var(--bg-inset)] px-3 pt-1.5">
+        <div className="shrink-0 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3">
           <div className="flex items-center gap-1 overflow-x-auto">
             {(
               [
@@ -1390,6 +1373,7 @@ export const SimulatorWorkspace: React.FC = () => {
                   icon: Layers,
                   proOnly: false,
                 },
+                { id: 'pdu', label: `${t('pdu.tab')} (${engine.pdus.length})`, icon: Mail, proOnly: false },
                 { id: 'terminal', label: t('simulator.terminal'), icon: Terminal, proOnly: false },
                 { id: 'metrics', label: t('simulator.metrics'), icon: BarChart3, proOnly: false },
                 { id: 'tables', label: t('simulator.tables'), icon: Table2, proOnly: false },
@@ -1407,18 +1391,13 @@ export const SimulatorWorkspace: React.FC = () => {
                       setDockTab(item.id);
                       if (dockSize === 'collapsed') setDockSize('compact');
                     }}
-                    className={`relative flex h-9 items-center gap-1.5 rounded-t-lg border-t border-x px-3.5 text-[13px] font-semibold transition-colors whitespace-nowrap shrink-0 tabular-nums ${
+                    aria-current={active ? 'true' : undefined}
+                    className={`-mb-px flex shrink-0 items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2 text-xs font-semibold transition-colors ${
                       active
-                        ? 'border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--accent-primary)] shadow-2xs -mb-px pb-px'
-                        : 'border-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]/60 hover:text-[var(--text-primary)]'
+                        ? 'border-[var(--accent-primary)] text-[var(--accent-primary)]'
+                        : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
-                    {active && (
-                      <span
-                        className="absolute inset-x-0 top-0 h-0.5 rounded-t-lg bg-[var(--accent-primary)]"
-                        aria-hidden="true"
-                      />
-                    )}
                     <Icon className="w-3.5 h-3.5" />
                     <span>{item.label}</span>
                   </button>
@@ -1426,14 +1405,14 @@ export const SimulatorWorkspace: React.FC = () => {
               })}
           </div>
 
-          <div className="flex items-center gap-3 pb-1.5 shrink-0">
-            <div className="hidden xl:flex items-center gap-3.5 font-mono text-xs text-[var(--text-secondary)] tabular-nums">
-              <span>Sent <strong className="text-[var(--text-primary)] font-bold">{liveAnalytics.sentCount}</strong></span>
-              <span>Delivered <strong className="text-[var(--tone-success)] font-bold">{liveAnalytics.deliveredCount}</strong></span>
-              <span className={liveAnalytics.droppedCount > 0 ? 'text-[var(--tone-danger)] font-bold' : ''}>
-                Dropped <strong>{liveAnalytics.droppedCount}</strong>
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="hidden xl:flex items-center gap-3 font-mono text-xs text-[var(--text-muted)] tabular-nums">
+              <span>Sent: {liveAnalytics.sentCount}</span>
+              <span>Delivered: {liveAnalytics.deliveredCount}</span>
+              <span className={liveAnalytics.droppedCount > 0 ? 'text-[var(--tone-danger)]' : ''}>
+                Dropped: {liveAnalytics.droppedCount}
               </span>
-              <span>Avg RTT <strong className="text-[var(--text-primary)] font-bold">{liveAnalytics.avgLatencyMs}ms</strong></span>
+              <span>Avg RTT: {liveAnalytics.avgLatencyMs}ms</span>
             </div>
 
             <div className="flex items-center gap-1">
@@ -1442,18 +1421,18 @@ export const SimulatorWorkspace: React.FC = () => {
                 onClick={() => setDockSize((s) => (s === 'collapsed' ? 'compact' : 'collapsed'))}
                 title={dockSize === 'collapsed' ? 'Expand Console Deck' : 'Collapse Console Deck'}
                 aria-label={dockSize === 'collapsed' ? 'Expand Console Deck' : 'Collapse Console Deck'}
-                className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors"
+                className="flex h-6 w-6 items-center justify-center rounded border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               >
-                {dockSize === 'collapsed' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                {dockSize === 'collapsed' ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               </button>
               <button
                 type="button"
                 onClick={() => setDockSize((s) => (s === 'expanded' ? 'compact' : 'expanded'))}
                 title={dockSize === 'expanded' ? 'Compact Height' : 'Maximize Console Deck'}
                 aria-label={dockSize === 'expanded' ? 'Compact Height' : 'Maximize Console Deck'}
-                className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors"
+                className="flex h-6 w-6 items-center justify-center rounded border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               >
-                {dockSize === 'expanded' ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                {dockSize === 'expanded' ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
               </button>
             </div>
           </div>
@@ -1463,8 +1442,8 @@ export const SimulatorWorkspace: React.FC = () => {
         {dockSize !== 'collapsed' && (
           <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
             {effectiveDockTab === 'capture' && (
-              <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-                <div className="shrink-0">
+              <div className="flex-1 min-h-0 overflow-y-auto">
+                <div className="border-b border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3 py-2">
                   <CaptureFilterBar
                     value={captureFilter}
                     validation={filterValidation}
@@ -1472,70 +1451,62 @@ export const SimulatorWorkspace: React.FC = () => {
                     totalCount={packets.length}
                     onChange={setCaptureFilter}
                     onClear={() => setCaptureFilter('')}
-                    onExportPcap={() => {
-                      const bytes = buildPcapFile(filteredPackets);
-                      const copy = new Uint8Array(bytes.byteLength);
-                      copy.set(bytes);
-                      triggerDownload(new Blob([copy], { type: 'application/vnd.tcpdump.pcap' }), 'gg-sim-capture.pcap');
-                    }}
-                    onExportCsv={() => {
-                      const csv = buildCsvExport(filteredPackets);
-                      triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'gg-sim-capture.csv');
-                    }}
                   />
                 </div>
-                <div className="flex-1 min-h-0 overflow-y-auto">
-                  <PacketTable
-                    packets={filteredPackets}
-                    currentPacketIndex={Math.max(0, filteredPackets.length - 1)}
-                    filenamePrefix="gg-sim-capture"
-                    flat
-                    onSelectPacket={(id) => setDockInspectedId(id)}
-                    onInspectPacket={(id) => {
-                      setDockInspectedId(id);
-                      setDockTab('inspector');
-                      setDockSize((s) => (s === 'collapsed' ? 'compact' : s));
-                    }}
-                    externalFilter={captureFilter}
-                    totalPacketCount={packets.length}
-                    onClearExternalFilter={() => setCaptureFilter('')}
-                    hideInternalFilter
-                    hideToolbar
-                  />
-                </div>
+                <PacketTable
+                  packets={filteredPackets}
+                  currentPacketIndex={Math.max(0, filteredPackets.length - 1)}
+                  filenamePrefix="netpulse-sim-capture"
+                  flat
+                  onSelectPacket={(id) => setDockInspectedId(id)}
+                  onInspectPacket={(id) => {
+                    setDockInspectedId(id);
+                    setDockTab('inspector');
+                    setDockSize((s) => (s === 'collapsed' ? 'compact' : s));
+                  }}
+                  externalFilter={captureFilter}
+                  totalPacketCount={packets.length}
+                  onClearExternalFilter={() => setCaptureFilter('')}
+                  hideInternalFilter
+                />
               </div>
             )}
 
             {effectiveDockTab === 'logs' && <EventLogPanel logs={visibleLogs} devices={simDevices} />}
 
             {effectiveDockTab === 'inspector' && (
-              <div className="flex flex-col h-full overflow-hidden">
-                {isPro && dockedInspectedPacket && (
-                  <div className="shrink-0 flex items-center justify-between px-3 py-1.5 bg-[var(--bg-inset)] border-b border-[var(--border-hairline)] text-xs">
-                    <span className="font-mono text-[var(--text-secondary)] font-medium">
-                      PDU Model: {dockedInspectedPacket.protocol} · Layer {dockedInspectedPacket.osiLayer || 3}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setPtPduModalPacket(dockedInspectedPacket)}
-                      className="flex items-center gap-1.5 rounded-md bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] hover:bg-[var(--accent-primary)] hover:text-white px-2.5 py-1 font-semibold transition-colors shadow-2xs"
-                    >
-                      <Layers className="w-3.5 h-3.5" />
-                      <span>Packet Tracer PDU Layers (In/Out)</span>
-                    </button>
-                  </div>
-                )}
-                <div className="flex-1 min-h-0 overflow-auto pb-2">
-                  <PacketInspectorContent
-                    packet={dockedInspectedPacket}
-                    defaultShowHex={settings.showHexByDefault}
-                    embedded
-                    onPopOut={
-                      dockedInspectedPacket ? () => setModalInspectedId(dockedInspectedPacket.id) : undefined
-                    }
-                  />
-                </div>
-              </div>
+              <PacketInspectorContent
+                packet={dockedInspectedPacket}
+                defaultShowHex={settings.showHexByDefault}
+                embedded
+                onPopOut={
+                  dockedInspectedPacket ? () => setModalInspectedId(dockedInspectedPacket.id) : undefined
+                }
+              />
+            )}
+
+            {effectiveDockTab === 'pdu' && (
+              <PduPanel
+                devices={simDevices}
+                pdus={engine.pdus}
+                packets={allPackets}
+                onSend={handleSendPdu}
+                onSelectEvent={(pkt) => {
+                  setDockInspectedId(pkt.id);
+                  if (playbackMode === 'step') {
+                    const idx = allPackets.findIndex((p) => p.id === pkt.id);
+                    if (idx >= 0) commitStepCursor(idx + 1);
+                  }
+                }}
+                onInspect={(id) => {
+                  setDockInspectedId(id);
+                  setDockTab('inspector');
+                }}
+                selectedPacketId={dockInspectedId}
+                pendingSourceId={pduSourceId}
+                initialKind={pduKind}
+                onKindChange={setPduKind}
+              />
             )}
 
             {effectiveDockTab === 'terminal' && (
@@ -1547,10 +1518,15 @@ export const SimulatorWorkspace: React.FC = () => {
                   const prevCount = engine.packets.length;
                   const out = engine.execCommand(devId, cmd);
                   syncAfterPacketEmission(prevCount);
+                  // CLI configuration (ip address, shutdown, vlan...) is real: store it so it survives and can be undone.
+                  const changed = engine.consumeConfigChanges();
+                  if (changed) pushHistory(changed.devices, changed.links);
                   return out;
                 }}
+                getPrompt={(id) => engine.getCliPrompt(id)}
+                isIos={(id) => engine.isIosDevice(id)}
+                onComplete={(id, line) => engine.completeCli(id, line)}
                 externalLogTrigger={externalLog}
-                getPrompt={(id) => engineRef.current.getCiscoPrompt(id)}
               />
             )}
 
@@ -1564,102 +1540,74 @@ export const SimulatorWorkspace: React.FC = () => {
             )}
 
             {effectiveDockTab === 'tables' && (
-              <div className="flex-1 min-h-0 overflow-y-auto p-3.5 grid gap-3 md:grid-cols-2 lg:grid-cols-4 font-mono text-xs tabular-nums">
+              <div className="flex-1 min-h-0 overflow-y-auto p-3 grid gap-3 md:grid-cols-2 lg:grid-cols-4 font-mono text-xs">
                 {!selectedDevice ? (
-                  <div className="col-span-full flex items-center gap-2 rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-canvas)] px-4 py-3 font-sans text-[13px] text-[var(--text-secondary)]">
-                    Select a device on the canvas to inspect its ARP cache, MAC table, Routing table, and NAT translations.
+                  <div className="col-span-full text-[var(--text-muted)]">
+                    {tc('Select a device on the canvas to inspect its ARP cache, MAC table, Routing table, and NAT translations.')}
                   </div>
                 ) : (
                   <>
-                    <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-canvas)] p-3.5">
-                      <div className="mb-2 flex items-center justify-between border-b border-[var(--border-hairline)] pb-1.5">
-                        <span className="font-display text-sm font-bold text-[var(--text-primary)]">
-                          {selectedDevice.name} · ARP Cache
-                        </span>
-                        <span className="text-xs font-semibold text-[var(--text-secondary)]">{selectedDevice.arpCache.length}</span>
-                      </div>
+                    <div className="rounded border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-2.5">
+                      <div className="mb-1.5 font-bold text-[var(--accent-primary)]">{selectedDevice.name} · ARP Cache</div>
                       {selectedDevice.arpCache.length === 0 ? (
-                        <div className="text-[var(--text-muted)] py-1">(empty)</div>
+                        <div className="text-[var(--text-muted)]">{tc('(empty)')}</div>
                       ) : (
-                        <div className="divide-y divide-[var(--border-hairline)]">
-                          {selectedDevice.arpCache.map((a, idx) => (
-                            <div key={idx} className="flex justify-between gap-2 py-1.5 first:pt-0 last:pb-0">
-                              <span className="text-[var(--text-primary)]">{a.ip}</span>
-                              <span className="text-[var(--text-secondary)]">{a.mac}</span>
-                            </div>
-                          ))}
-                        </div>
+                        selectedDevice.arpCache.map((a, idx) => (
+                          <div key={idx} className="flex justify-between py-0.5 border-b border-[var(--border-hairline)]/40">
+                            <span>{a.ip}</span>
+                            <span className="text-[var(--text-muted)]">{a.mac}</span>
+                          </div>
+                        ))
                       )}
                     </div>
 
-                    <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-canvas)] p-3.5">
-                      <div className="mb-2 flex items-center justify-between border-b border-[var(--border-hairline)] pb-1.5">
-                        <span className="font-display text-sm font-bold text-[var(--text-primary)]">
-                          {selectedDevice.name} · Routing Table
-                        </span>
-                        <span className="text-xs font-semibold text-[var(--text-secondary)]">{selectedDevice.routingTable.length}</span>
-                      </div>
+                    <div className="rounded border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-2.5">
+                      <div className="mb-1.5 font-bold text-[var(--accent-primary)]">{selectedDevice.name} · Routing Table</div>
                       {selectedDevice.routingTable.length === 0 ? (
-                        <div className="text-[var(--text-muted)] py-1">(connected / default gw)</div>
+                        <div className="text-[var(--text-muted)]">{tc('(connected / default gw)')}</div>
                       ) : (
-                        <div className="divide-y divide-[var(--border-hairline)]">
-                          {selectedDevice.routingTable.map((r, idx) => (
-                            <div key={idx} className="flex justify-between gap-2 py-1.5 first:pt-0 last:pb-0">
-                              <span className="text-[var(--text-primary)] truncate">
-                                {r.network}/{r.mask}
-                              </span>
-                              <span className="text-[var(--text-secondary)] shrink-0">via {r.nextHop}</span>
-                            </div>
-                          ))}
-                        </div>
+                        selectedDevice.routingTable.map((r, idx) => (
+                          <div key={idx} className="flex justify-between py-0.5 border-b border-[var(--border-hairline)]/40">
+                            <span>
+                              {r.network}/{r.mask}
+                            </span>
+                            <span className="text-[var(--text-muted)]">via {r.nextHop}</span>
+                          </div>
+                        ))
                       )}
                     </div>
 
-                    <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-canvas)] p-3.5">
-                      <div className="mb-2 flex items-center justify-between border-b border-[var(--border-hairline)] pb-1.5">
-                        <span className="font-display text-sm font-bold text-[var(--text-primary)]">
-                          {selectedDevice.name} · MAC Table
-                        </span>
-                        <span className="text-xs font-semibold text-[var(--text-secondary)]">{selectedDevice.macTable.length}</span>
-                      </div>
+                    <div className="rounded border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-2.5">
+                      <div className="mb-1.5 font-bold text-[var(--accent-primary)]">{selectedDevice.name} · MAC Table</div>
                       {selectedDevice.macTable.length === 0 ? (
-                        <div className="text-[var(--text-muted)] py-1">(empty)</div>
+                        <div className="text-[var(--text-muted)]">{tc('(empty)')}</div>
                       ) : (
-                        <div className="divide-y divide-[var(--border-hairline)]">
-                          {selectedDevice.macTable.map((m, idx) => (
-                            <div key={idx} className="flex justify-between gap-2 py-1.5 first:pt-0 last:pb-0">
-                              <span className="text-[var(--text-primary)]">{m.mac}</span>
-                              <span className="text-[var(--text-secondary)]">
-                                V{m.vlan} · {m.portIfaceId}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
+                        selectedDevice.macTable.map((m, idx) => (
+                          <div key={idx} className="flex justify-between py-0.5 border-b border-[var(--border-hairline)]/40">
+                            <span>{m.mac}</span>
+                            <span className="text-[var(--text-muted)]">
+                              V{m.vlan} · {m.portIfaceId}
+                            </span>
+                          </div>
+                        ))
                       )}
                     </div>
 
-                    <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-canvas)] p-3.5">
-                      <div className="mb-2 flex items-center justify-between border-b border-[var(--border-hairline)] pb-1.5">
-                        <span className="font-display text-sm font-bold text-[var(--text-primary)]">
-                          {selectedDevice.name} · NAT
-                        </span>
-                        <span className="text-xs font-semibold text-[var(--text-secondary)]">{selectedDevice.natTable.length}</span>
-                      </div>
+                    <div className="rounded border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-2.5">
+                      <div className="mb-1.5 font-bold text-[var(--accent-primary)]">{selectedDevice.name} · NAT</div>
                       {selectedDevice.natTable.length === 0 ? (
-                        <div className="text-[var(--text-muted)] py-1">(no NAT sessions)</div>
+                        <div className="text-[var(--text-muted)]">{tc('(no NAT sessions)')}</div>
                       ) : (
-                        <div className="divide-y divide-[var(--border-hairline)]">
-                          {selectedDevice.natTable.map((n) => (
-                            <div key={n.id} className="flex justify-between gap-2 py-1.5 first:pt-0 last:pb-0">
-                              <span className="text-[var(--text-primary)]">
-                                {n.insideLocalIp}:{n.insideLocalPort}
-                              </span>
-                              <span className="text-[var(--tone-success)]">
-                                → {n.insideGlobalIp}:{n.insideGlobalPort}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
+                        selectedDevice.natTable.map((n) => (
+                          <div key={n.id} className="flex justify-between py-0.5 border-b border-[var(--border-hairline)]/40">
+                            <span>
+                              {n.insideLocalIp}:{n.insideLocalPort}
+                            </span>
+                            <span className="text-[var(--tone-success)]">
+                              → {n.insideGlobalIp}:{n.insideGlobalPort}
+                            </span>
+                          </div>
+                        ))
                       )}
                     </div>
                   </>
@@ -1675,33 +1623,6 @@ export const SimulatorWorkspace: React.FC = () => {
         onClose={() => setModalInspectedId(null)}
         defaultShowHex={settings.showHexByDefault}
       />
-
-      {/* Cisco Packet Tracer Device Modal (Physical, Config, CLI, Desktop, Services) */}
-      {ptModalDevice && (
-        <PacketTracerDeviceModal
-          device={ptModalDevice}
-          engine={engineRef.current}
-          links={simLinks}
-          onUpdateDevice={(updated) => {
-            pushHistory(
-              simDevices.map((d) => (d.id === updated.id ? updated : d)),
-              simLinks
-            );
-            setPtModalDevice(updated);
-            bump();
-          }}
-          onClose={() => setPtModalDevice(null)}
-        />
-      )}
-
-      {/* Cisco Packet Tracer In/Out Layers PDU Inspector Modal */}
-      {ptPduModalPacket && (
-        <PacketTracerPduModal
-          packet={ptPduModalPacket}
-          device={liveDevices.find((d) => d.id === ptPduModalPacket.fromDeviceId) || null}
-          onClose={() => setPtPduModalPacket(null)}
-        />
-      )}
     </div>
   );
 };

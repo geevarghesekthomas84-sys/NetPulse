@@ -1,27 +1,23 @@
+import '../lib/migrateStorage';
 import { create } from 'zustand';
 import i18n, { LANGUAGES } from '../i18n';
+import { loadContentLanguage, onContentLoaded } from '../i18n/content';
 import { getProtocolById } from '../protocols';
 import type { ScenarioOptions } from '../protocols/types';
 import { PRESET_LABS } from '../simulator/labs';
-import type { CapturedPacket, SimDevice, SimLink } from '../engine/types';
+import type { SimDevice, SimLink } from '../engine/types';
 import { playPacketBlip } from '../lib/sound';
-
-export interface WrongQuestion {
-  protocolId: string;
-  question: string;
-  options: string[];
-  correctIndex: number;
-  explanation: string;
-}
-
-export interface DailyStreakData {
-  current: number;
-  lastDate: string;
-  longest: number;
-}
+import { dayKey, EMPTY_STREAK, recordDay, type StreakState } from '../lib/streak';
 
 export type AppMode = 'explore' | 'simulator' | 'learn';
 export type ExploreView = 'network' | 'sequence';
+export interface MissedQuestion {
+  protocolId: string;
+  /** English question text, which is also how it is looked up in the protocol's quiz. */
+  question: string;
+  misses: number;
+}
+
 export type ThemeMode = 'dark' | 'light';
 export type ExperienceLevel = 'simple' | 'pro';
 
@@ -46,9 +42,13 @@ export interface SavedLabProject {
 interface AppState {
   theme: ThemeMode;
   language: string;
+  /** Bumped when a lesson-content dictionary finishes loading. */
+  contentVersion: number;
   mode: AppMode;
   experienceLevel: ExperienceLevel;
   welcomeDismissed: boolean;
+  /** The landing page is shown instead of the workspace. */
+  landingOpen: boolean;
   drawerOpen: boolean;
   drawerCategory: 'ALL' | 'CORE' | 'APPLICATION' | 'SECURITY';
   activeProtocolId: string;
@@ -77,14 +77,18 @@ interface AppState {
   tourOpen: boolean;
   settings: AppSettings;
 
-  // Learn progress & Daily practice
+  // Learn progress
   viewedProtocols: string[];
+  /** Protocols the learner has played through to the last packet. */
+  finishedProtocols: string[];
+  /** Best score (10-100) per Break-it challenge id. */
+  challengeBest: Record<string, number>;
+  /** Daily activity streak, stored per browser. */
+  streak: StreakState;
+  /** Quiz questions answered wrongly and not yet answered correctly in review. */
+  missed: Record<string, MissedQuestion>;
   completedLabs: string[];
   quizScores: Record<string, number>;
-  dailyStreak: DailyStreakData;
-  wrongQuizQuestions: WrongQuestion[];
-  customPcapPackets: CapturedPacket[] | null;
-  guidedTrackDismissed: boolean;
 
   // Simulator workspace state
   simDevices: SimDevice[];
@@ -103,6 +107,7 @@ interface AppState {
   dismissWelcome: () => void;
   reopenWelcome: () => void;
   setLanguage: (lang: string) => void;
+  setLandingOpen: (open: boolean) => void;
   setMode: (mode: AppMode) => void;
   setDrawerOpen: (open: boolean) => void;
   setDrawerCategory: (cat: AppState['drawerCategory']) => void;
@@ -128,13 +133,12 @@ interface AppState {
   setTourOpen: (open: boolean) => void;
   updateSettings: (partial: Partial<AppSettings>) => void;
 
+  markProtocolFinished: (id: string) => void;
+  recordChallenge: (id: string, score: number) => void;
+  recordActivity: () => void;
+  recordQuizResults: (items: Array<{ protocolId: string; question: string; correct: boolean }>) => void;
   recordQuizScore: (protocolId: string, score: number) => void;
   markLabCompleted: (labId: string) => void;
-  updateDailyStreak: () => void;
-  recordWrongQuizQuestion: (q: WrongQuestion) => void;
-  clearWrongQuizQuestion: (question: string) => void;
-  setCustomPcapPackets: (packets: CapturedPacket[] | null) => void;
-  setGuidedTrackDismissed: (dismissed: boolean) => void;
 
   loadLab: (labId: string) => void;
   setSimTopology: (devices: SimDevice[], links: SimLink[]) => void;
@@ -156,22 +160,24 @@ const loadJson = <T,>(key: string, fallback: T): T => {
 };
 
 const initialTheme: ThemeMode =
-  typeof window !== 'undefined' && localStorage.getItem('gg-theme') === 'dark' ? 'dark' : 'light';
+  typeof window !== 'undefined' && localStorage.getItem('netpulse-theme') === 'dark' ? 'dark' : 'light';
 
 const initialExperience: ExperienceLevel =
-  typeof window !== 'undefined' && localStorage.getItem('gg-experience') === 'pro' ? 'pro' : 'simple';
+  typeof window !== 'undefined' && localStorage.getItem('netpulse-experience') === 'pro' ? 'pro' : 'simple';
 
 const initialWelcomeDismissed: boolean =
-  typeof window !== 'undefined' && localStorage.getItem('gg-entry-v2-dismissed') === 'true';
+  typeof window !== 'undefined' && localStorage.getItem('netpulse-welcome-dismissed') !== 'false';
 
 const defaultLab = PRESET_LABS[0];
 
 export const useAppStore = create<AppState>((set, get) => ({
   theme: initialTheme,
-  language: typeof window !== 'undefined' ? localStorage.getItem('gg-lang') || 'en' : 'en',
+  language: typeof window !== 'undefined' ? localStorage.getItem('netpulse-lang') || 'en' : 'en',
+  contentVersion: 0,
   mode: 'explore',
   experienceLevel: initialExperience,
   welcomeDismissed: initialWelcomeDismissed,
+  landingOpen: false,
   drawerOpen: false,
   drawerCategory: 'ALL',
   activeProtocolId: 'http',
@@ -188,14 +194,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   autoAdvanceSteps: true,
   inspectedPacketId: null,
 
-  favorites: loadJson<string[]>('gg-favorites', ['http', 'dns', 'tcp', 'tls']),
-  recentlyViewed: loadJson<string[]>('gg-recent', ['http', 'dns', 'tcp']),
+  favorites: loadJson<string[]>('netpulse-favorites', ['http', 'dns', 'tcp', 'tls']),
+  recentlyViewed: loadJson<string[]>('netpulse-recent', ['http', 'dns', 'tcp']),
 
   settingsOpen: false,
   aboutOpen: false,
   commandPaletteOpen: false,
   tourOpen: false,
-  settings: loadJson<AppSettings>('gg-settings', {
+  settings: loadJson<AppSettings>('netpulse-settings', {
     animationsEnabled: true,
     packetScale: 1,
     showMacAddresses: false,
@@ -205,13 +211,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     defaultSeed: 42,
   }),
 
-  viewedProtocols: loadJson<string[]>('gg-viewed', ['http']),
-  completedLabs: loadJson<string[]>('gg-completed-labs', []),
-  quizScores: loadJson<Record<string, number>>('gg-quiz-scores', {}),
-  dailyStreak: loadJson<DailyStreakData>('netpulse-streak', { current: 1, lastDate: '', longest: 1 }),
-  wrongQuizQuestions: loadJson<WrongQuestion[]>('netpulse-wrong-quiz', []),
-  customPcapPackets: null,
-  guidedTrackDismissed: loadJson<boolean>('netpulse-guided-dismissed', false),
+  viewedProtocols: loadJson<string[]>('netpulse-viewed', ['http']),
+  finishedProtocols: loadJson<string[]>('netpulse-finished', []),
+  challengeBest: loadJson<Record<string, number>>('netpulse-challenges', {}),
+  streak: loadJson<StreakState>('netpulse-streak', EMPTY_STREAK),
+  missed: loadJson<Record<string, MissedQuestion>>('netpulse-missed', {}),
+  completedLabs: loadJson<string[]>('netpulse-completed-labs', []),
+  quizScores: loadJson<Record<string, number>>('netpulse-quiz-scores', {}),
 
   simDevices: structuredClone(defaultLab.devices),
   simLinks: structuredClone(defaultLab.links),
@@ -219,15 +225,20 @@ export const useAppStore = create<AppState>((set, get) => ({
   simSpeed: 1,
   simPlaying: false,
   selectedDeviceId: defaultLab.devices[0]?.id ?? null,
-  savedProjects: loadJson<SavedLabProject[]>('gg-saved-projects', []),
+  savedProjects: loadJson<SavedLabProject[]>('netpulse-saved-projects', []),
 
   setTheme: (theme) => {
     if (typeof document !== 'undefined') {
-      document.documentElement.classList.toggle('dark', theme === 'dark');
-      localStorage.setItem('gg-theme', theme);
+      const root = document.documentElement;
+      root.classList.add('theme-switching');
+      root.classList.toggle('dark', theme === 'dark');
+      // Force the new token values to be applied before transitions are re-enabled.
+      void root.offsetHeight;
+      window.setTimeout(() => root.classList.remove('theme-switching'), 60);
+      localStorage.setItem('netpulse-theme', theme);
       const meta = document.querySelector('meta[name="theme-color"]');
       if (meta) {
-        meta.setAttribute('content', theme === 'dark' ? '#08111e' : '#f6f8fb');
+        meta.setAttribute('content', theme === 'dark' ? '#14161d' : '#f7f5f0');
       }
     }
     set({ theme });
@@ -240,7 +251,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   setExperienceLevel: (experienceLevel) => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('gg-experience', experienceLevel);
+      localStorage.setItem('netpulse-experience', experienceLevel);
     }
     set({ experienceLevel });
   },
@@ -251,26 +262,28 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   dismissWelcome: () => {
-    if (typeof window !== 'undefined') localStorage.setItem('gg-entry-v2-dismissed', 'true');
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-welcome-dismissed', 'true');
     set({ welcomeDismissed: true });
   },
 
   reopenWelcome: () => {
-    if (typeof window !== 'undefined') localStorage.setItem('gg-entry-v2-dismissed', 'false');
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-welcome-dismissed', 'false');
     set({ welcomeDismissed: false });
   },
 
   setLanguage: (lang) => {
+    void loadContentLanguage(lang);
     void i18n.changeLanguage(lang);
     const meta = LANGUAGES.find((l) => l.code === lang);
     if (typeof document !== 'undefined') {
       document.documentElement.dir = meta?.dir ?? 'ltr';
       document.documentElement.lang = lang;
-      localStorage.setItem('gg-lang', lang);
+      localStorage.setItem('netpulse-lang', lang);
     }
     set({ language: lang });
   },
 
+  setLandingOpen: (landingOpen) => set({ landingOpen }),
   setMode: (mode) => set({ mode }),
   setDrawerOpen: (drawerOpen) => set({ drawerOpen }),
   setDrawerCategory: (drawerCategory) => set({ drawerCategory }),
@@ -280,9 +293,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     const recent = [proto.id, ...get().recentlyViewed.filter((x) => x !== proto.id)].slice(0, 6);
     const viewed = Array.from(new Set([...get().viewedProtocols, proto.id]));
     if (typeof window !== 'undefined') {
-      localStorage.setItem('gg-recent', JSON.stringify(recent));
-      localStorage.setItem('gg-viewed', JSON.stringify(viewed));
-      document.title = `${proto.name} (${proto.fullName}) – NetPulse`;
+      localStorage.setItem('netpulse-recent', JSON.stringify(recent));
+      localStorage.setItem('netpulse-viewed', JSON.stringify(viewed));
+      document.title = `${proto.name} – NetPulse`;
     }
     const result = proto.scenario(get().whatIfOptions);
     const firstPacketOfStep = Math.max(
@@ -330,7 +343,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   toggleFavorite: (id) => {
     const favs = get().favorites;
     const next = favs.includes(id) ? favs.filter((f) => f !== id) : [...favs, id];
-    if (typeof window !== 'undefined') localStorage.setItem('gg-favorites', JSON.stringify(next));
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-favorites', JSON.stringify(next));
     set({ favorites: next });
   },
 
@@ -341,62 +354,59 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   updateSettings: (partial) => {
     const next = { ...get().settings, ...partial };
-    if (typeof window !== 'undefined') localStorage.setItem('gg-settings', JSON.stringify(next));
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-settings', JSON.stringify(next));
     set({ settings: next });
   },
 
+  recordActivity: () => {
+    const prev = get().streak;
+    const next = recordDay(prev, dayKey());
+    if (next === prev) return;
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-streak', JSON.stringify(next));
+    set({ streak: next });
+  },
+
+  recordQuizResults: (items) => {
+    const missed = { ...get().missed };
+    for (const it of items) {
+      const key = `${it.protocolId}|${it.question}`;
+      if (it.correct) delete missed[key];
+      else missed[key] = { protocolId: it.protocolId, question: it.question, misses: (missed[key]?.misses ?? 0) + 1 };
+    }
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-missed', JSON.stringify(missed));
+    set({ missed });
+    get().recordActivity();
+  },
+
+  recordChallenge: (id, score) => {
+    get().recordActivity();
+    const cur = get().challengeBest;
+    const next = { ...cur, [id]: Math.max(cur[id] ?? 0, score) };
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-challenges', JSON.stringify(next));
+    set({ challengeBest: next });
+  },
+
+  markProtocolFinished: (id) => {
+    get().recordActivity();
+    const cur = get().finishedProtocols;
+    if (cur.includes(id)) return;
+    const next = [...cur, id];
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-finished', JSON.stringify(next));
+    set({ finishedProtocols: next });
+  },
+
   recordQuizScore: (protocolId, score) => {
+    get().recordActivity();
     const prev = get().quizScores;
     const next = { ...prev, [protocolId]: Math.max(prev[protocolId] ?? 0, score) };
-    if (typeof window !== 'undefined') localStorage.setItem('gg-quiz-scores', JSON.stringify(next));
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-quiz-scores', JSON.stringify(next));
     set({ quizScores: next });
   },
 
   markLabCompleted: (labId) => {
     const next = Array.from(new Set([...get().completedLabs, labId]));
-    if (typeof window !== 'undefined') localStorage.setItem('gg-completed-labs', JSON.stringify(next));
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-completed-labs', JSON.stringify(next));
     set({ completedLabs: next });
-  },
-
-  updateDailyStreak: () => {
-    const today = new Date().toISOString().slice(0, 10);
-    const { current, lastDate, longest } = get().dailyStreak;
-    if (lastDate === today) return;
-
-    let nextCurrent = 1;
-    if (lastDate) {
-      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-      if (lastDate === yesterday) {
-        nextCurrent = current + 1;
-      }
-    }
-    const nextLongest = Math.max(longest, nextCurrent);
-    const updated = { current: nextCurrent, lastDate: today, longest: nextLongest };
-    if (typeof window !== 'undefined') localStorage.setItem('netpulse-streak', JSON.stringify(updated));
-    set({ dailyStreak: updated });
-  },
-
-  recordWrongQuizQuestion: (q) => {
-    const prev = get().wrongQuizQuestions;
-    const exists = prev.some((item) => item.question === q.question);
-    if (!exists) {
-      const next = [q, ...prev].slice(0, 30);
-      if (typeof window !== 'undefined') localStorage.setItem('netpulse-wrong-quiz', JSON.stringify(next));
-      set({ wrongQuizQuestions: next });
-    }
-  },
-
-  clearWrongQuizQuestion: (question) => {
-    const next = get().wrongQuizQuestions.filter((q) => q.question !== question);
-    if (typeof window !== 'undefined') localStorage.setItem('netpulse-wrong-quiz', JSON.stringify(next));
-    set({ wrongQuizQuestions: next });
-  },
-
-  setCustomPcapPackets: (customPcapPackets) => set({ customPcapPackets }),
-
-  setGuidedTrackDismissed: (guidedTrackDismissed) => {
-    if (typeof window !== 'undefined') localStorage.setItem('netpulse-guided-dismissed', JSON.stringify(guidedTrackDismissed));
-    set({ guidedTrackDismissed });
   },
 
   loadLab: (labId) => {
@@ -424,7 +434,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       links: structuredClone(get().simLinks),
     };
     const next = [proj, ...get().savedProjects].slice(0, 20);
-    if (typeof window !== 'undefined') localStorage.setItem('gg-saved-projects', JSON.stringify(next));
+    if (typeof window !== 'undefined') localStorage.setItem('netpulse-saved-projects', JSON.stringify(next));
     set({ savedProjects: next });
   },
 
@@ -438,3 +448,5 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
 }));
+
+onContentLoaded(() => useAppStore.setState((s) => ({ contentVersion: s.contentVersion + 1 })));

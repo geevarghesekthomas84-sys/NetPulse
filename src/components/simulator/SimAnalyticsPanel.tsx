@@ -3,6 +3,7 @@ import { Activity, AlertTriangle, BarChart3, CheckCircle2, Layers } from 'lucide
 import { useTranslation } from 'react-i18next';
 import type { SimulationAnalytics } from '../../lib/simAnalytics';
 import { PACKET_COLORS } from '../explore/colors';
+import { tc } from '../../i18n/content';
 
 interface SimAnalyticsPanelProps {
   analytics: SimulationAnalytics;
@@ -69,26 +70,26 @@ export const SimAnalyticsPanel: React.FC<SimAnalyticsPanelProps> = ({
       className="flex-1 min-h-0 overflow-y-auto p-3 space-y-3"
     >
       {/* Top Status & KPI Summary Strip */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] pb-2.5 text-[13px]">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] pb-2 text-xs">
         <div className="flex items-center gap-2 min-w-0">
-          <BarChart3 className="w-4 h-4 text-[var(--accent-primary)] shrink-0" />
-          <span className="font-display font-bold text-[var(--text-primary)]">{t('simulator.liveAnalytics')}</span>
-          <span className="font-mono text-xs font-medium text-[var(--text-secondary)] tabular-nums">
+          <BarChart3 className="w-3.5 h-3.5 text-[var(--accent-primary)] shrink-0" />
+          <span className="font-semibold text-[var(--text-primary)]">{t('simulator.liveAnalytics')}</span>
+          <span className="font-mono text-xs text-[var(--text-muted)] tabular-nums">
             · {visiblePacketCount}/{totalPacketCount} · {playbackMode === 'step' ? t('simulator.stepByStepMode') : t('simulator.liveMode')}
           </span>
         </div>
 
         <div className="flex items-center gap-1.5 font-mono text-xs font-semibold tabular-nums">
           {hasDrops ? (
-            <span className="inline-flex items-center gap-1.5 text-[var(--tone-danger)]">
-              <AlertTriangle className="w-4 h-4" />
+            <span className="inline-flex items-center gap-1 text-[var(--tone-danger)]">
+              <AlertTriangle className="w-3.5 h-3.5" />
               <span>
                 {t('simulator.lossDetected')}: {analytics.droppedCount} ({analytics.dropRatePercent}%)
               </span>
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 text-[var(--tone-success)]">
-              <CheckCircle2 className="w-4 h-4" />
+            <span className="inline-flex items-center gap-1 text-[var(--tone-success)]">
+              <CheckCircle2 className="w-3.5 h-3.5" />
               <span>{t('simulator.nominalStatus')} · 0% {t('simulator.dropRate')}</span>
             </span>
           )}
@@ -96,72 +97,72 @@ export const SimAnalyticsPanel: React.FC<SimAnalyticsPanelProps> = ({
       </div>
 
       {/* KPI Numeric Strip (Tabular Numerals) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-xs tabular-nums">
-        <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 py-2.5 shadow-2xs">
-          <div className="text-xs font-semibold text-[var(--text-secondary)]">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 font-mono text-xs tabular-nums">
+        <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-2.5 py-2">
+          <div className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">
             {t('simulator.throughputLabel')}
           </div>
-          <div data-testid="kpi-throughput" className="mt-1 font-mono text-base font-extrabold text-[var(--accent-primary)]">
+          <div data-testid="kpi-throughput" className="mt-0.5 text-sm font-bold text-[var(--accent-primary)]">
             {analytics.throughputKbps} Kbps
           </div>
         </div>
-        <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 py-2.5 shadow-2xs">
-          <div className="text-xs font-semibold text-[var(--text-secondary)]">
+        <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-2.5 py-2">
+          <div className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">
             {t('simulator.goodputLabel')}
           </div>
-          <div data-testid="kpi-goodput" className="mt-1 font-mono text-base font-extrabold text-[var(--tone-success)]">
+          <div data-testid="kpi-goodput" className="mt-0.5 text-sm font-bold text-[var(--tone-success)]">
             {analytics.goodputKbps} Kbps
           </div>
         </div>
-        <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 py-2.5 shadow-2xs">
-          <div className="text-xs font-semibold text-[var(--text-secondary)]">Avg RTT</div>
-          <div className="mt-1 font-mono text-base font-extrabold text-[var(--text-primary)]">{analytics.avgLatencyMs} ms</div>
+        <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-2.5 py-2">
+          <div className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">{tc('AVG RTT')}</div>
+          <div className="mt-0.5 text-sm font-bold text-[var(--text-primary)]">{analytics.avgLatencyMs} ms</div>
         </div>
-        <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 py-2.5 shadow-2xs">
-          <div className="text-xs font-semibold text-[var(--text-secondary)]">Jitter</div>
-          <div className="mt-1 font-mono text-base font-extrabold text-[var(--text-primary)]">{analytics.jitterMs} ms</div>
+        <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-2.5 py-2">
+          <div className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">{tc('JITTER')}</div>
+          <div className="mt-0.5 text-sm font-bold text-[var(--text-primary)]">{analytics.jitterMs} ms</div>
         </div>
-        <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 py-2.5 shadow-2xs">
-          <div className="text-xs font-semibold text-[var(--text-secondary)]">
+        <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-2.5 py-2">
+          <div className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">
             {t('simulator.dropRate')}
           </div>
           <div
-            className={`mt-1 font-mono text-base font-extrabold ${
+            className={`mt-0.5 text-sm font-bold ${
               hasDrops ? 'text-[var(--tone-danger)]' : 'text-[var(--text-primary)]'
             }`}
           >
             {analytics.dropRatePercent}% ({analytics.droppedCount})
           </div>
         </div>
-        <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 py-2.5 shadow-2xs">
-          <div className="text-xs font-semibold text-[var(--text-secondary)]">Total Bytes</div>
-          <div className="mt-1 font-mono text-base font-extrabold text-[var(--text-primary)]">{analytics.totalBytes} B</div>
+        <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-2.5 py-2">
+          <div className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">{tc('TOTAL BYTES')}</div>
+          <div className="mt-0.5 text-sm font-bold text-[var(--text-primary)]">{analytics.totalBytes} B</div>
         </div>
       </div>
 
       {!hasPackets ? (
-        <div className="rounded-xl border border-dashed border-[var(--border-hairline)] bg-[var(--bg-inset)]/60 px-4 py-6 text-center text-[13px] text-[var(--text-secondary)]">
+        <div className="rounded-lg border border-dashed border-[var(--border-hairline)] bg-[var(--bg-inset)]/60 px-4 py-6 text-center text-xs text-[var(--text-muted)]">
           {t('simulator.noTrafficAnalytics')}
         </div>
       ) : (
         <div className="grid gap-3 lg:grid-cols-12">
           {/* Live Throughput & Goodput Time-Series SVG Chart */}
-          <div className="lg:col-span-7 rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-3 space-y-2">
+          <div className="lg:col-span-7 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-2.5 space-y-1.5">
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
               <div className="flex items-center gap-3">
-                <span className="font-display text-[13px] font-bold text-[var(--text-primary)]">{t('simulator.throughputChart')}</span>
-                <span className="inline-flex items-center gap-1.5 font-mono text-xs text-[var(--text-secondary)]">
+                <span className="font-semibold text-[var(--text-primary)]">{t('simulator.throughputChart')}</span>
+                <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-[var(--text-secondary)]">
                   <span className="inline-block h-2 w-2 rounded-xs bg-[var(--accent-primary)]" />
                   {t('simulator.throughputLabel')}
                 </span>
-                <span className="inline-flex items-center gap-1.5 font-mono text-xs text-[var(--text-secondary)]">
+                <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-[var(--text-secondary)]">
                   <span className="inline-block h-0.5 w-3 border-t-2 border-dashed border-[var(--tone-success)]" />
                   {t('simulator.goodputLabel')}
                 </span>
               </div>
 
               {activeBucket && (
-                <span className="font-mono text-xs font-semibold text-[var(--accent-primary)] tabular-nums">
+                <span className="font-mono text-[11px] text-[var(--accent-primary)] tabular-nums">
                   {activeBucket.startMs}–{activeBucket.endMs}ms · {activeBucket.throughputKbps} Kbps · {activeBucket.packetCount}{' '}
                   {t('simulator.packetsPerBucket')}
                 </span>
@@ -200,7 +201,7 @@ export const SimAnalyticsPanel: React.FC<SimAnalyticsPanelProps> = ({
                       x={padL - 5}
                       y={y + 3}
                       textAnchor="end"
-                      className="fill-[var(--text-secondary)] text-[10.5px] font-mono tabular-nums"
+                      className="fill-[var(--text-muted)] text-[11px] font-mono tabular-nums"
                     >
                       {val}
                     </text>
@@ -268,7 +269,7 @@ export const SimAnalyticsPanel: React.FC<SimAnalyticsPanelProps> = ({
                         x={cx}
                         y={chartH - 6}
                         textAnchor="middle"
-                        className="fill-[var(--text-secondary)] text-[10.5px] font-mono tabular-nums"
+                        className="fill-[var(--text-muted)] text-[11px] font-mono tabular-nums"
                       >
                         {b.label}
                       </text>
@@ -281,26 +282,26 @@ export const SimAnalyticsPanel: React.FC<SimAnalyticsPanelProps> = ({
 
           {/* Protocol Distribution + Per-Link Utilization */}
           <div className="lg:col-span-5 flex flex-col gap-2.5">
-            <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-3 space-y-2">
+            <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-2.5 space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1.5 font-display text-[13px] font-bold text-[var(--text-primary)]">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-[var(--text-primary)]">
                   <Layers className="w-3.5 h-3.5 text-[var(--accent-teal)]" />
                   <span>{t('simulator.protocolMix')}</span>
                 </span>
-                <span className="font-mono text-xs font-medium text-[var(--text-secondary)] tabular-nums">
+                <span className="font-mono text-[11px] text-[var(--text-muted)] tabular-nums">
                   {analytics.sentCount} frames
                 </span>
               </div>
 
               <div className="space-y-1.5">
                 {analytics.protocolStats.slice(0, 5).map((item) => {
-                  const hex = PACKET_COLORS[item.colorCategory]?.hex || '#38bdf8';
+                  const hex = PACKET_COLORS[item.colorCategory]?.hex || 'var(--pkt-tcp)';
                   return (
-                    <div key={item.protocol} className="space-y-1 font-mono text-xs tabular-nums">
+                    <div key={item.protocol} className="space-y-0.5 font-mono text-xs tabular-nums">
                       <div className="flex items-center justify-between">
                         <span className="flex items-center gap-1.5 font-semibold text-[var(--text-primary)]">
                           <span
-                            className="inline-block h-2.5 w-2.5 rounded-xs shrink-0"
+                            className="inline-block h-2 w-2 rounded-xs shrink-0"
                             style={{ backgroundColor: hex }}
                           />
                           <span>{item.protocol}</span>
@@ -321,22 +322,22 @@ export const SimAnalyticsPanel: React.FC<SimAnalyticsPanelProps> = ({
               </div>
             </div>
 
-            <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-3 space-y-2">
-              <div className="font-display text-[13px] font-bold text-[var(--text-primary)]">
+            <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-2.5 space-y-1.5">
+              <div className="text-xs font-semibold text-[var(--text-primary)]">
                 {t('simulator.linkUtilization')}
               </div>
-              <div className="space-y-2 max-h-32 overflow-y-auto">
+              <div className="space-y-1.5 max-h-28 overflow-y-auto">
                 {analytics.linkStats.map((ls) => (
                   <div key={ls.linkId} className="font-mono text-xs tabular-nums">
                     <div className="flex items-center justify-between gap-2">
                       <span className="truncate text-[var(--text-secondary)]">
                         {ls.label} {!ls.up ? '(DOWN)' : ''}
                       </span>
-                      <span className="font-semibold text-[var(--accent-primary)] shrink-0">
+                      <span className="text-[var(--accent-primary)] shrink-0">
                         {ls.packets}p · {ls.utilizationPercent}%
                       </span>
                     </div>
-                    <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[var(--border-hairline)]">
+                    <div className="mt-0.5 h-1.5 w-full overflow-hidden rounded-full bg-[var(--border-hairline)]">
                       <div
                         className={`h-full transition-[width] duration-150 ${
                           !ls.up ? 'bg-[var(--tone-danger)]' : 'bg-[var(--accent-cta)]'
@@ -355,7 +356,7 @@ export const SimAnalyticsPanel: React.FC<SimAnalyticsPanelProps> = ({
             <div className="lg:col-span-12 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-2.5">
               <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-[var(--text-primary)]">
                 <Activity className="w-3.5 h-3.5 text-[var(--accent-teal)]" />
-                <span>TCP cwnd / ssthresh Sawtooth</span>
+                <span>{tc('TCP cwnd / ssthresh Sawtooth')}</span>
               </div>
               <svg viewBox="0 0 600 110" className="w-full h-24">
                 {(() => {

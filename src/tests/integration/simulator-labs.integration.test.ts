@@ -175,7 +175,7 @@ describe('Simulator Labs & End-to-End Engine Integration', () => {
     const eng = new SimulationEngine({ seed: 42, devices: lab1.devices, links: lab1.links });
     expect(eng.execCommand('pc', 'help')).toContain('Available commands');
     expect(eng.execCommand('pc', 'ipconfig')).toContain('192.168.1.10');
-    expect(eng.execCommand('isp', 'show ip route')).toContain('Destination');
+    expect(eng.execCommand('isp', 'show ip route')).toContain('Codes:');
     expect(eng.execCommand('pc', 'show running-config')).toContain('hostname Home PC');
     const traceOut = eng.execCommand('pc', 'traceroute 203.0.113.10');
     expect(traceOut).toContain('Wi-Fi Router');

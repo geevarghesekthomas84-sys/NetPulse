@@ -1,5 +1,6 @@
-import { intToIp, ipToInt, isValidIpv4, sameSubnet } from '../lib/ipUtils';
+import { intToIp, ipToInt, isValidIpv4, maskToPrefix as maskToPrefixLocal, prefixToMask as prefixToMaskLocal, sameSubnet } from '../lib/ipUtils';
 import { EventQueue } from './eventQueue';
+import { completeIos, execIos, iosPrompt, isIosDevice, type IosHost, type IosSession } from './ios';
 import {
   applyNatOutbound,
   convergeRoutingTables,
@@ -23,8 +24,8 @@ import {
 } from './tcp';
 import type {
   CapturedPacket,
-  CiscoCliSession,
   CongestionAlgorithm,
+  DhcpLease,
   DnsRecord,
   NetworkInterface,
   PacketColorCategory,
@@ -34,10 +35,32 @@ import type {
   SimLink,
   SimLogEntry,
   SimMetrics,
-  SimplePduEntry,
   TcpControlBlock,
   TopologyWarning,
 } from './types';
+
+const cidrOf = (mask: string): number => maskToPrefixLocal(mask);
+
+export type PduKind = 'ICMP' | 'TCP' | 'UDP';
+
+/** A "Simple PDU" (Packet Tracer): one test packet sent between two devices and its outcome. */
+export interface PduRecord {
+  id: number;
+  kind: PduKind;
+  srcId: string;
+  dstId: string;
+  srcName: string;
+  dstName: string;
+  srcIp: string;
+  dstIp: string;
+  status: 'Successful' | 'Failed';
+  reason?: string;
+  startMs: number;
+  endMs: number;
+  /** Packet numbers (1-based, inclusive) that belong to this PDU in the capture; 0 when none were created. */
+  firstPacketNo: number;
+  lastPacketNo: number;
+}
 
 export function computeNonDirectCurvedPath(
   from: { id: string; x: number; y: number },
@@ -126,8 +149,6 @@ export class SimulationEngine {
   public tcpSessions: Map<string, TcpControlBlock> = new Map();
   public dnsCaches: Map<string, DnsCacheEntry[]> = new Map();
   public establishedFlows: Set<string> = new Set();
-  public ciscoCliSessions: Map<string, CiscoCliSession> = new Map();
-  public simplePdus: SimplePduEntry[] = [];
 
   private initialConfig: SimulationConfig;
   private eventSeq = 0;
@@ -159,6 +180,9 @@ export class SimulationEngine {
     this.eventSeq = 0;
     this.packetSeq = 0;
     this.packets = [];
+    this.pdus = [];
+    this.pduSeq = 0;
+    this.dhcpLeases.clear();
     this.logs = [];
     this.scheduledActions = [];
     this.tcpSessions.clear();
@@ -166,8 +190,6 @@ export class SimulationEngine {
     this.establishedFlows.clear();
     this.linkBytesInWindow.clear();
     this.latencies = [];
-    this.ciscoCliSessions.clear();
-    this.simplePdus = [];
     this.queue.clear();
     this.rng = new SeededRNG(newSeed ?? this.initialConfig.seed ?? 42);
     this.loadTopology(this.initialConfig.devices, this.initialConfig.links);
@@ -320,13 +342,19 @@ export class SimulationEngine {
     const transitMs = link ? this.computeLinkTransitMs(link, estBytes) : 12;
 
     const lossRoll = this.rng.next() * 100;
-    const linkDown = link ? !link.up : false;
+    const ifaceShut = link
+      ? [
+          this.devices.get(link.sourceId)?.interfaces.find((i) => i.id === link.sourceIface),
+          this.devices.get(link.targetId)?.interfaces.find((i) => i.id === link.targetIface),
+        ].some((i) => i?.up === false)
+      : false;
+    const linkDown = link ? !link.up || ifaceShut : false;
     const deviceDown = !fromDev?.poweredOn || !toDev?.poweredOn;
     const randomLoss = link ? lossRoll < link.lossPercent : false;
     const dropped = Boolean(opts.forceDrop || linkDown || deviceDown || randomLoss);
     const dropReason =
       opts.dropReason ||
-      (linkDown ? 'Link Down' : deviceDown ? 'Device Powered Off' : randomLoss ? 'Link Packet Loss' : undefined);
+      (linkDown ? (link && link.up ? 'Interface administratively down' : 'Link Down') : deviceDown ? 'Device Powered Off' : randomLoss ? 'Link Packet Loss' : undefined);
 
     const no = ++this.packetSeq;
     const pkt = buildRealPacket({
@@ -1335,309 +1363,71 @@ export class SimulationEngine {
     };
   }
 
-  public getCiscoCliSession(deviceId: string): CiscoCliSession {
-    let sess = this.ciscoCliSessions.get(deviceId);
-    if (!sess) {
-      sess = { mode: 'user' };
-      this.ciscoCliSessions.set(deviceId, sess);
+  public pdus: PduRecord[] = [];
+  /** DHCP leases handed out, by server device id. */
+  public dhcpLeases = new Map<string, DhcpLease[]>();
+  private pduSeq = 0;
+  private iosSessions = new Map<string, IosSession>();
+  private configDirty = false;
+  private skipIos = false;
+
+  private iosSession(id: string): IosSession {
+    let s = this.iosSessions.get(id);
+    if (!s) {
+      s = { mode: 'user' };
+      this.iosSessions.set(id, s);
     }
-    return sess;
+    return s;
   }
 
-  public getCiscoPrompt(deviceId: string): string {
-    const dev = this.devices.get(deviceId);
-    if (!dev) return 'Host$';
-    const isCisco =
-      dev.role === 'router' ||
-      dev.role === 'switch' ||
-      dev.role === 'firewall' ||
-      dev.role === 'nat_gateway';
-
-    if (!isCisco) {
-      return `${dev.name}>`;
-    }
-
-    const sess = this.getCiscoCliSession(deviceId);
-    switch (sess.mode) {
-      case 'user':
-        return `${dev.name}>`;
-      case 'privileged':
-        return `${dev.name}#`;
-      case 'config':
-        return `${dev.name}(config)#`;
-      case 'config-if':
-        return `${dev.name}(config-if)#`;
-      case 'config-router':
-        return `${dev.name}(config-router)#`;
-      default:
-        return `${dev.name}>`;
-    }
-  }
-
-  public requestDhcp(deviceId: string, ifaceName?: string): {
-    success: boolean;
-    ip?: string;
-    mask?: string;
-    gateway?: string;
-    dns?: string;
-    message: string;
-  } {
-    const dev = this.devices.get(deviceId);
-    if (!dev) return { success: false, message: 'Device not found' };
-    const iface = ifaceName ? dev.interfaces.find((i) => i.name === ifaceName) : dev.interfaces[0];
-    if (!iface) return { success: false, message: 'Interface not found' };
-
-    const dhcpServer = Array.from(this.devices.values()).find(
-      (d) => d.poweredOn && (d.role === 'dhcp_server' || d.services?.dhcp?.enabled)
-    );
-
-    if (!dhcpServer) {
-      const oct3 = Math.floor(this.rng.next() * 200 + 1);
-      const oct4 = Math.floor(this.rng.next() * 250 + 2);
-      const apipaIp = `169.254.${oct3}.${oct4}`;
-      iface.ip = apipaIp;
-      iface.mask = '255.255.0.0';
-      return {
-        success: false,
-        ip: apipaIp,
-        mask: '255.255.0.0',
-        message: `DHCP failed. APIPA is being used: ${apipaIp}`,
-      };
-    }
-
-    const srvIface = dhcpServer.interfaces[0] || createDefaultInterface('eth0', '192.168.1.1', '255.255.255.0');
-    const srvIp = srvIface.ip || '192.168.1.1';
-    const srvMask = srvIface.mask || '255.255.255.0';
-    const parts = srvIp.split('.');
-    const subnetPrefix = `${parts[0] || '192'}.${parts[1] || '168'}.${parts[2] || '1'}`;
-
-    const usedLastOctets = new Set<number>();
-    usedLastOctets.add(Number(parts[3]) || 1);
+  /** Rebuilds learned routes from scratch (used after a CLI change so show commands reflect it at once). */
+  public reconverge(): void {
+    const routerLike = new Set(['router', 'firewall', 'nat_gateway', 'vpn_gateway']);
     for (const d of this.devices.values()) {
-      for (const inf of d.interfaces) {
-        if (inf.ip && inf.ip.startsWith(subnetPrefix + '.')) {
-          const octet = Number(inf.ip.split('.')[3]);
-          if (!isNaN(octet)) usedLastOctets.add(octet);
-        }
-      }
+      if (routerLike.has(d.role)) d.routingTable = d.routingTable.filter((r) => r.protocol === 'static');
     }
-
-    let startOctet = 10;
-    if (dhcpServer.services.dhcp?.poolStart) {
-      const p = dhcpServer.services.dhcp.poolStart.split('.');
-      if (p.length === 4 && !isNaN(Number(p[3]))) {
-        startOctet = Number(p[3]);
-      }
-    }
-    let assignedOctet = startOctet;
-    while (usedLastOctets.has(assignedOctet) && assignedOctet < 250) {
-      assignedOctet++;
-    }
-    const assignedIp = `${subnetPrefix}.${assignedOctet}`;
-    const gatewayIp = dhcpServer.services.dhcp?.gateway || srvIp;
-    const dnsIp = dhcpServer.services.dhcp?.dns || dhcpServer.dnsServer || '8.8.8.8';
-
-    const startT = this.clockMs;
-    // 1. DHCP Discover
-    this.enqueueDirectPacket({
-      fromId: dev.id,
-      toId: dhcpServer.id,
-      startTimeMs: startT,
-      protocol: 'DHCP',
-      colorCategory: 'udp',
-      info: 'DHCP Discover (Broadcast) - Client requesting IP lease',
-      osiLayer: 7,
-      ipv4: {
-        version: 4,
-        ihl: 5,
-        tos: 0,
-        identification: 0xd001,
-        flags: { df: false, mf: false },
-        fragmentOffset: 0,
-        ttl: 64,
-        protocol: 17,
-        srcIp: '0.0.0.0',
-        dstIp: '255.255.255.255',
-      },
-      udp: { srcPort: 68, dstPort: 67 },
-    });
-
-    // 2. DHCP Offer
-    this.enqueueDirectPacket({
-      fromId: dhcpServer.id,
-      toId: dev.id,
-      startTimeMs: startT + 12,
-      protocol: 'DHCP',
-      colorCategory: 'udp',
-      info: `DHCP Offer - Server offering ${assignedIp} (Gateway: ${gatewayIp})`,
-      osiLayer: 7,
-      ipv4: {
-        version: 4,
-        ihl: 5,
-        tos: 0,
-        identification: 0xd002,
-        flags: { df: false, mf: false },
-        fragmentOffset: 0,
-        ttl: 64,
-        protocol: 17,
-        srcIp: srvIp,
-        dstIp: assignedIp,
-      },
-      udp: { srcPort: 67, dstPort: 68 },
-    });
-
-    // 3. DHCP Request
-    this.enqueueDirectPacket({
-      fromId: dev.id,
-      toId: dhcpServer.id,
-      startTimeMs: startT + 24,
-      protocol: 'DHCP',
-      colorCategory: 'udp',
-      info: `DHCP Request - Client accepting ${assignedIp}`,
-      osiLayer: 7,
-      ipv4: {
-        version: 4,
-        ihl: 5,
-        tos: 0,
-        identification: 0xd003,
-        flags: { df: false, mf: false },
-        fragmentOffset: 0,
-        ttl: 64,
-        protocol: 17,
-        srcIp: '0.0.0.0',
-        dstIp: '255.255.255.255',
-      },
-      udp: { srcPort: 68, dstPort: 67 },
-    });
-
-    // 4. DHCP ACK
-    this.enqueueDirectPacket({
-      fromId: dhcpServer.id,
-      toId: dev.id,
-      startTimeMs: startT + 36,
-      protocol: 'DHCP',
-      colorCategory: 'udp',
-      info: `DHCP ACK - Lease granted for ${assignedIp} (DNS: ${dnsIp})`,
-      osiLayer: 7,
-      ipv4: {
-        version: 4,
-        ihl: 5,
-        tos: 0,
-        identification: 0xd004,
-        flags: { df: false, mf: false },
-        fragmentOffset: 0,
-        ttl: 64,
-        protocol: 17,
-        srcIp: srvIp,
-        dstIp: assignedIp,
-      },
-      udp: { srcPort: 67, dstPort: 68 },
-    });
-
-    this.runAll();
-
-    iface.ip = assignedIp;
-    iface.mask = srvMask;
-    iface.gateway = gatewayIp;
-    dev.dnsServer = dnsIp;
-    dev.dhcpEnabled = true;
-
-    return {
-      success: true,
-      ip: assignedIp,
-      mask: srvMask,
-      gateway: gatewayIp,
-      dns: dnsIp,
-      message: `DHCP request successful. Assigned IP: ${assignedIp}, Mask: ${srvMask}, Gateway: ${gatewayIp}, DNS: ${dnsIp}`,
-    };
+    convergeRoutingTables(Array.from(this.devices.values()), Array.from(this.links.values()));
   }
 
-  public sendSimplePdu(srcId: string, dstId: string): {
-    success: boolean;
-    rttMs: number;
-    info: string;
-  } {
-    const src = this.devices.get(srcId);
-    const dst = this.devices.get(dstId);
-    if (!src || !dst) return { success: false, rttMs: 0, info: 'Device not found' };
-    if (!src.poweredOn || !dst.poweredOn) return { success: false, rttMs: 0, info: 'Device is powered off' };
+  /** The CLI prompt for a device, e.g. Router# or Router(config-if)#; name$ for hosts. */
+  public getCliPrompt(deviceId: string): string {
+    const dev = this.devices.get(deviceId);
+    if (!dev) return '$';
+    return isIosDevice(dev) ? iosPrompt(dev, this.iosSession(dev.id)) : `${dev.name}$`;
+  }
 
-    const srcIp = src.interfaces[0]?.ip;
-    const dstIp = dst.interfaces[0]?.ip;
-    if (!srcIp || !dstIp) return { success: false, rttMs: 0, info: 'Unassigned IP address' };
+  public isIosDevice(deviceId: string): boolean {
+    const dev = this.devices.get(deviceId);
+    return Boolean(dev && isIosDevice(dev));
+  }
 
-    const path = this.findPath(srcId, dstId);
-    if (path.length <= 1) {
-      const pdu: SimplePduEntry = {
-        id: `pdu-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-        srcId,
-        dstId,
-        status: 'failed',
-        timeMs: this.clockMs,
-        rttMs: 0,
-        info: 'Destination unreachable (no route found)',
-      };
-      this.simplePdus.unshift(pdu);
-      return { success: false, rttMs: 0, info: pdu.info };
-    }
+  /** Tab completion for the CLI line; null when there is nothing unique to complete. */
+  public completeCli(deviceId: string, line: string): string | null {
+    const dev = this.devices.get(deviceId);
+    return dev && isIosDevice(dev) ? completeIos(this.iosSession(dev.id).mode, line) : null;
+  }
 
-    const res = this.transmitMultiHopPacket({
-      srcDeviceId: srcId,
-      dstDeviceId: dstId,
-      srcIp,
-      dstIp,
-      protocol: 'ICMP',
-      colorCategory: 'icmp',
-      info: `Simple PDU (Echo Req): ${src.name} -> ${dst.name}`,
-      osiLayer: 3,
-      ttl: 64,
-      icmp: { type: 8, code: 0, identifier: 0x0501, sequence: 1, message: 'simple-pdu' },
+  /**
+   * If CLI commands changed device configuration since the last call, returns the new topology
+   * (configuration only, learned and derived state stripped) so the UI can store it. Otherwise null.
+   */
+  public consumeConfigChanges(): { devices: SimDevice[]; links: SimLink[] } | null {
+    if (!this.configDirty) return null;
+    this.configDirty = false;
+    const routerLike = new Set(['router', 'firewall', 'nat_gateway', 'vpn_gateway']);
+    const devices = Array.from(this.devices.values()).map((d) => {
+      const c = structuredClone(d);
+      if (routerLike.has(c.role)) c.routingTable = c.routingTable.filter((r) => r.protocol === 'static');
+      c.arpCache = [];
+      c.macTable = [];
+      c.natTable = [];
+      return c;
     });
-
-    if (!res.delivered) {
-      const pdu: SimplePduEntry = {
-        id: `pdu-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-        srcId,
-        dstId,
-        status: 'failed',
-        timeMs: this.clockMs,
-        rttMs: 0,
-        info: `Failed: ${res.dropReason || 'Dropped in transit'}`,
-      };
-      this.simplePdus.unshift(pdu);
-      return { success: false, rttMs: 0, info: pdu.info };
-    }
-
-    const replyRes = this.transmitMultiHopPacket({
-      srcDeviceId: dstId,
-      dstDeviceId: srcId,
-      srcIp: dstIp,
-      dstIp: srcIp,
-      protocol: 'ICMP',
-      colorCategory: 'icmp',
-      info: `Simple PDU (Echo Reply): ${dst.name} -> ${src.name}`,
-      osiLayer: 3,
-      ttl: 64,
-      icmp: { type: 0, code: 0, identifier: 0x0501, sequence: 1, message: 'simple-pdu-reply' },
-    });
-
-    const rtt = Math.max(2, (res.packets.length + replyRes.packets.length) * 3);
-    const pdu: SimplePduEntry = {
-      id: `pdu-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      srcId,
-      dstId,
-      status: replyRes.delivered ? 'successful' : 'failed',
-      timeMs: this.clockMs,
-      rttMs: rtt,
-      info: replyRes.delivered ? `Successful (RTT: ${rtt}ms)` : 'Echo reply dropped in transit',
-    };
-    this.simplePdus.unshift(pdu);
-    return { success: replyRes.delivered, rttMs: rtt, info: pdu.info };
+    return { devices, links: Array.from(this.links.values()).map((l) => structuredClone(l)) };
   }
 
   /**
    * Executes OS-realistic CLI commands directly against the simulation engine.
-   * Full Cisco IOS modes (enable, conf t, int, ip address, no shut, ip route) supported for routers/switches.
    */
   public execCommand(deviceId: string, rawCmd: string): string {
     const dev = this.devices.get(deviceId);
@@ -1646,18 +1436,29 @@ export class SimulationEngine {
 
     const trimmed = rawCmd.trim();
     if (!trimmed) return '';
-    const sess = this.getCiscoCliSession(deviceId);
-    const isCisco =
-      dev.role === 'router' ||
-      dev.role === 'switch' ||
-      dev.role === 'firewall' ||
-      dev.role === 'nat_gateway';
-
-    let cmdStr = trimmed;
-    if (cmdStr.toLowerCase().startsWith('do ') && isCisco) {
-      cmdStr = cmdStr.slice(3).trim();
+    if (isIosDevice(dev) && !this.skipIos) {
+      const host: IosHost = {
+        links: () => Array.from(this.links.values()),
+        devices: () => Array.from(this.devices.values()),
+        dhcpLeases: () => this.dhcpLeases.get(dev.id) ?? [],
+        markDirty: () => {
+          this.configDirty = true;
+          this.reconverge();
+        },
+        runGeneric: (c) => {
+          this.skipIos = true;
+          try {
+            return this.execCommand(deviceId, c);
+          } finally {
+            this.skipIos = false;
+          }
+        },
+      };
+      const out = execIos(host, dev, this.iosSession(dev.id), trimmed);
+      if (out !== null) return out;
     }
-    const tokens = cmdStr.split(/\s+/);
+
+    const tokens = trimmed.split(/\s+/);
     const cmd = tokens[0].toLowerCase();
     const args = tokens.slice(1);
 
@@ -1673,213 +1474,6 @@ export class SimulationEngine {
       }
       return {};
     };
-
-    // Cisco CLI Mode Transitions & Commands
-    if (isCisco) {
-      if (cmd === 'enable' || cmd === 'en') {
-        sess.mode = 'privileged';
-        return '';
-      }
-      if (cmd === 'disable') {
-        sess.mode = 'user';
-        return '';
-      }
-      if (
-        (cmd === 'configure' && (args[0] === 'terminal' || args[0] === 't')) ||
-        (cmd === 'conf' && (args[0] === 't' || args[0] === 'terminal')) ||
-        cmd === 'config'
-      ) {
-        if (sess.mode === 'user') {
-          return '% Type "enable" first to enter privileged EXEC mode';
-        }
-        sess.mode = 'config';
-        return 'Enter configuration commands, one per line. End with CNTL/Z or "end".';
-      }
-      if (cmd === 'interface' || cmd === 'int') {
-        if (sess.mode === 'config' || sess.mode === 'config-if') {
-          const targetName = args[0] || 'Gig0/0';
-          let matched = dev.interfaces.find(
-            (i) =>
-              i.name.toLowerCase() === targetName.toLowerCase() ||
-              i.name.toLowerCase().includes(targetName.toLowerCase())
-          );
-          if (!matched) {
-            matched = createDefaultInterface(targetName, '0.0.0.0', '255.255.255.0');
-            dev.interfaces.push(matched);
-          }
-          sess.mode = 'config-if';
-          sess.ifaceName = matched.name;
-          return '';
-        }
-        return '% Unknown command. Enter "configure terminal" first.';
-      }
-      if (cmd === 'ip' && (args[0] === 'address' || args[0] === 'addr')) {
-        if (sess.mode === 'config-if' && sess.ifaceName) {
-          const iface = dev.interfaces.find((i) => i.name === sess.ifaceName);
-          if (iface && args[1]) {
-            iface.ip = args[1];
-            iface.mask = args[2] || '255.255.255.0';
-            convergeRoutingTables(Array.from(this.devices.values()), Array.from(this.links.values()));
-            return '';
-          }
-          return '% Incomplete command: ip address <ip> <subnet_mask>';
-        }
-        return '% Command rejected: not in interface configuration mode.';
-      }
-      if ((cmd === 'no' && args[0] === 'shutdown') || (cmd === 'no' && args[0] === 'shut')) {
-        if (sess.mode === 'config-if' && sess.ifaceName) {
-          const iface = dev.interfaces.find((i) => i.name === sess.ifaceName);
-          if (iface) {
-            iface.up = true;
-            for (const l of this.links.values()) {
-              if (
-                (l.sourceId === dev.id && l.sourceIface === iface.name) ||
-                (l.targetId === dev.id && l.targetIface === iface.name)
-              ) {
-                l.up = true;
-              }
-            }
-            return `%LINK-5-CHANGED: Interface ${sess.ifaceName}, changed state to up\n%LINEPROTO-5-UPDOWN: Line protocol on Interface ${sess.ifaceName}, changed state to up`;
-          }
-        }
-      }
-      if (cmd === 'shutdown' || cmd === 'shut') {
-        if (sess.mode === 'config-if' && sess.ifaceName) {
-          const iface = dev.interfaces.find((i) => i.name === sess.ifaceName);
-          if (iface) {
-            iface.up = false;
-            for (const l of this.links.values()) {
-              if (
-                (l.sourceId === dev.id && l.sourceIface === iface.name) ||
-                (l.targetId === dev.id && l.targetIface === iface.name)
-              ) {
-                l.up = false;
-              }
-            }
-            return `%LINK-5-CHANGED: Interface ${sess.ifaceName}, changed state to administratively down\n%LINEPROTO-5-UPDOWN: Line protocol on Interface ${sess.ifaceName}, changed state to down`;
-          }
-        }
-      }
-      if (cmd === 'hostname') {
-        if (sess.mode === 'config' && args[0]) {
-          dev.name = args[0];
-          return '';
-        }
-      }
-      if (cmd === 'ip' && args[0] === 'route') {
-        if (sess.mode === 'config' && args.length >= 4) {
-          dev.routingTable.push({
-            network: args[1],
-            mask: args[2],
-            nextHop: args[3],
-            iface: dev.interfaces[0]?.name || 'Gig0/0',
-            metric: 1,
-            protocol: 'static',
-          });
-          convergeRoutingTables(Array.from(this.devices.values()), Array.from(this.links.values()));
-          return '';
-        }
-        return '% Incomplete command: ip route <network> <mask> <next-hop>';
-      }
-      if (cmd === 'router' && (args[0] === 'ospf' || args[0] === 'rip' || args[0] === 'bgp')) {
-        if (sess.mode === 'config') {
-          sess.mode = 'config-router';
-          sess.routerProto = args[0];
-          dev.routingProtocol = args[0] as 'ospf' | 'rip' | 'bgp';
-          return '';
-        }
-      }
-      if (cmd === 'network') {
-        if (sess.mode === 'config-router') {
-          return '';
-        }
-      }
-      if (cmd === 'exit') {
-        if (sess.mode === 'config-if' || sess.mode === 'config-router') {
-          sess.mode = 'config';
-          return '';
-        }
-        if (sess.mode === 'config') {
-          sess.mode = 'privileged';
-          return '%SYS-5-CONFIG_I: Configured from console by console';
-        }
-        if (sess.mode === 'privileged') {
-          sess.mode = 'user';
-          return '';
-        }
-        return '';
-      }
-      if (cmd === 'end') {
-        sess.mode = 'privileged';
-        return '%SYS-5-CONFIG_I: Configured from console by console';
-      }
-      if (
-        cmd === 'write' ||
-        (cmd === 'copy' && args[0] === 'run' && args[1] === 'start') ||
-        (cmd === 'copy' && args[0] === 'running-config' && args[1] === 'startup-config') ||
-        cmd === 'wr'
-      ) {
-        return 'Building configuration...\n[OK]';
-      }
-      if (
-        (cmd === 'show' && (args[0] === 'ip' || args[0] === 'interface' || args[0] === 'int') && (args[1] === 'brief' || args[1] === 'br' || args[2] === 'brief' || args[2] === 'br')) ||
-        (cmd === 'sh' && (args[0] === 'ip' || args[0] === 'int') && (args[1] === 'brief' || args[1] === 'br' || args[2] === 'brief' || args[2] === 'br'))
-      ) {
-        const header = 'Interface              IP-Address      OK? Method Status                Protocol';
-        const rows = dev.interfaces.map((i) => {
-          const hasLink = this.getConnectedLinks(dev.id).some(
-            (l) => l.sourceIface === i.name || l.targetIface === i.name
-          );
-          const statusStr = i.up ? (hasLink ? 'up' : 'down') : 'administratively down';
-          const protoStr = i.up && hasLink ? 'up' : 'down';
-          return `${i.name.padEnd(22)} ${(i.ip || 'unassigned').padEnd(15)} YES manual ${statusStr.padEnd(21)} ${protoStr}`;
-        });
-        return [header, ...rows].join('\n');
-      }
-      if ((cmd === 'show' && args[0] === 'version') || (cmd === 'sh' && args[0] === 'ver')) {
-        return [
-          `Cisco IOS Software, C2900 Software (C2900-UNIVERSALK9-M), Version 15.7(3)M2`,
-          `Technical Support: http://www.cisco.com/techsupport`,
-          `Compiled Mon 18-Nov-26 01:00 by netpulse-engine`,
-          `ROM: System Bootstrap, Version 15.0(1r)M16`,
-          `${dev.name} uptime is 4 hours, 12 minutes`,
-          `System returned to ROM by power-on`,
-          `Cisco CISCO2911/K9 (revision 1.0) with 520192K/32768K bytes of memory.`,
-          `Processor board ID FHK1521F06L`,
-          `${dev.interfaces.length} Gigabit Ethernet interfaces`,
-          `DRAM configuration is 64 bits wide with parity disabled.`,
-          `255K bytes of non-volatile configuration memory.`,
-          `Configuration register is 0x2102`,
-        ].join('\n');
-      }
-    }
-
-    // Windows / Linux Host DHCP & IPCONFIG Commands
-    if (cmd === 'ipconfig' && (args[0] === '/renew' || args[0] === '-renew')) {
-      const res = this.requestDhcp(deviceId);
-      return res.message;
-    }
-    if (cmd === 'ipconfig' && (args[0] === '/all' || args[0] === '-all')) {
-      return [
-        `Windows IP Configuration`,
-        `   Host Name . . . . . . . . . . . . : ${dev.name}`,
-        `   Primary Dns Suffix  . . . . . . . : local`,
-        `   Node Type . . . . . . . . . . . . : Hybrid`,
-        `   IP Routing Enabled. . . . . . . . : ${isCisco ? 'Yes' : 'No'}`,
-        `   DNS Suffix Search List. . . . . . : local`,
-        ...dev.interfaces.map((i) => [
-          `\nEthernet adapter ${i.name}:`,
-          `   Connection-specific DNS Suffix  . : local`,
-          `   Description . . . . . . . . . . . : NetPulse Virtual Gigabit Ethernet Adapter`,
-          `   Physical Address. . . . . . . . . : ${i.mac}`,
-          `   DHCP Enabled. . . . . . . . . . . : ${dev.dhcpEnabled ? 'Yes' : 'No'}`,
-          `   IPv4 Address. . . . . . . . . . . : ${i.ip || 'unassigned'}`,
-          `   Subnet Mask . . . . . . . . . . . : ${i.mask || '255.255.255.0'}`,
-          `   Default Gateway . . . . . . . . . : ${i.gateway || dev.interfaces[0]?.gateway || 'none'}`,
-          `   DNS Servers . . . . . . . . . . . : ${dev.dnsServer || 'none'}`,
-        ].join('\n')),
-      ].join('\n');
-    }
 
     if (cmd === 'help') {
       return [
@@ -1898,6 +1492,48 @@ export class SimulationEngine {
         '  show ip route | show mac address-table | show running-config',
         '  clear | help',
       ].join('\n');
+    }
+
+    if (!isIosDevice(dev) && ((cmd === 'ipconfig' && args[0]?.toLowerCase() === '/renew') || cmd === 'dhclient' || (cmd === 'dhcp' && args[0] === 'renew'))) {
+      return this.requestDhcp(dev.id).message;
+    }
+    if (!isIosDevice(dev) && ((cmd === 'ipconfig' && args[0]?.toLowerCase() === '/release') || (cmd === 'dhclient' && args[0] === '-r'))) {
+      return this.releaseDhcp(dev.id);
+    }
+
+    // Host configuration: ifconfig eth0 10.0.0.5 netmask 255.255.255.0, ip addr add IP/N dev eth0,
+    // ip route add default via X, route add default gw X, hostname NAME.
+    const hostCfg = !isIosDevice(dev);
+    if (hostCfg && cmd === 'ifconfig' && args.length >= 2) {
+      const iface = dev.interfaces.find((i) => i.name === args[0] || i.id === args[0]);
+      if (!iface) return `ifconfig: interface ${args[0]} not found`;
+      if (!isValidIpv4(args[1])) return `ifconfig: bad address '${args[1]}'`;
+      const mi = args.findIndex((a) => a === 'netmask');
+      iface.ip = args[1];
+      iface.mask = mi >= 0 ? args[mi + 1] : iface.mask || '255.255.255.0';
+      this.configDirty = true;
+      return '';
+    }
+    if (hostCfg && cmd === 'ip' && args[0] === 'addr' && args[1] === 'add') {
+      const [ip, pfx] = (args[2] ?? '').split('/');
+      const iface = dev.interfaces.find((i) => i.name === args[4] || i.id === args[4]) ?? dev.interfaces[0];
+      if (!isValidIpv4(ip) || !pfx) return 'Usage: ip addr add <ip>/<prefix> dev <iface>';
+      iface.ip = ip;
+      iface.mask = prefixToMaskLocal(Number(pfx));
+      this.configDirty = true;
+      return '';
+    }
+    if (hostCfg && ((cmd === 'ip' && args[0] === 'route' && args[1] === 'add' && args[2] === 'default' && args[3] === 'via') || (cmd === 'route' && args[0] === 'add' && args[1] === 'default' && args[2] === 'gw'))) {
+      const gw = cmd === 'ip' ? args[4] : args[3];
+      if (!isValidIpv4(gw ?? '')) return 'Usage: ip route add default via <gateway>';
+      for (const i of dev.interfaces) i.gateway = gw;
+      this.configDirty = true;
+      return '';
+    }
+    if (hostCfg && cmd === 'hostname' && args[0]) {
+      dev.name = args[0];
+      this.configDirty = true;
+      return '';
     }
 
     if (cmd === 'ipconfig' || cmd === 'ifconfig' || (cmd === 'ip' && args[0] === 'addr')) {
@@ -2321,6 +1957,249 @@ export class SimulationEngine {
     }
 
     return `${cmd}: command not found. Type "help" for available commands.`;
+  }
+
+  /** Finds a DHCP server the client can reach: on its own LAN, or through a router with ip helper-address. */
+  private findDhcpServer(client: SimDevice): { server: SimDevice; giaddr?: string } | null {
+    const l2 = new Set(['switch', 'hub', 'access_point']);
+    const start = client.id;
+    const seen = new Set<string>([start]);
+    const queue = [start];
+    const edge: SimDevice[] = [];
+    while (queue.length) {
+      const id = queue.shift()!;
+      for (const link of this.getConnectedLinks(id)) {
+        if (!link.up) continue;
+        const { peerId } = this.getPeerOnLink(link, id);
+        const peer = this.devices.get(peerId);
+        if (!peer || !peer.poweredOn || seen.has(peerId)) continue;
+        seen.add(peerId);
+        if (l2.has(peer.role)) queue.push(peerId);
+        else edge.push(peer);
+      }
+    }
+    for (const d of edge) {
+      if (d.services.dhcp?.enabled) return { server: d };
+    }
+    for (const d of edge) {
+      for (const iface of d.interfaces) {
+        if (!iface.helper) continue;
+        const server = this.findDeviceByIp(iface.helper);
+        if (server?.poweredOn && server.services.dhcp?.enabled && this.findPath(d.id, server.id).length > 1) {
+          return { server, giaddr: iface.ip };
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Runs DHCP Discover → Offer → Request → Ack for a client. On success the client's first interface
+   * gets the leased address, mask, gateway and DNS; with no server it falls back to 169.254.x.x.
+   */
+  public requestDhcp(clientId: string): { ok: boolean; message: string; ip?: string } {
+    const client = this.devices.get(clientId);
+    if (!client) return { ok: false, message: 'Device not found.' };
+    if (!client.poweredOn) return { ok: false, message: `${client.name} is powered off.` };
+    const iface = client.interfaces[0];
+    if (!iface) return { ok: false, message: `${client.name} has no network interface.` };
+
+    const found = this.findDhcpServer(client);
+    const emit = (from: string, to: string, info: string, k: number, srcIp: string, dstIp: string, ports: [number, number], path: string[], drop?: string) =>
+      this.enqueueDirectPacket({
+        fromId: from,
+        toId: to,
+        startTimeMs: this.clockMs + k * 6,
+        flowPathNodeIds: path.length >= 2 ? path : undefined,
+        protocol: 'DHCP',
+        colorCategory: 'udp',
+        info,
+        osiLayer: 7,
+        udp: { srcPort: ports[0], dstPort: ports[1] },
+        ipv4: { version: 4, ihl: 5, tos: 0, identification: 0xd000 + k, flags: { df: false, mf: false }, fragmentOffset: 0, ttl: 64, protocol: 17, srcIp, dstIp },
+        forceDrop: Boolean(drop),
+        dropReason: drop,
+      });
+
+    if (!found) {
+      const path = this.getConnectedLinks(client.id).length ? [client.id, this.getPeerOnLink(this.getConnectedLinks(client.id)[0], client.id).peerId] : [];
+      const peer = path[1];
+      if (peer) emit(client.id, peer, 'DHCPDISCOVER (Broadcast) — no reply', 0, '0.0.0.0', '255.255.255.255', [68, 67], path, 'No DHCP server answered');
+      this.runAll();
+      const a = Math.floor(this.rng.next() * 254) + 1;
+      const c = Math.floor(this.rng.next() * 254) + 1;
+      iface.ip = `169.254.${a}.${c}`;
+      iface.mask = '255.255.0.0';
+      iface.gateway = undefined;
+      client.dhcpEnabled = true;
+      this.configDirty = true;
+      return { ok: false, message: `DHCP failed: no server answered. Using link-local address ${iface.ip}.`, ip: iface.ip };
+    }
+
+    const { server, giaddr } = found;
+    const cfg = server.services.dhcp!;
+    const serverIp = server.interfaces.find((i) => i.ip)?.ip ?? '0.0.0.0';
+    const scope = giaddr ?? serverIp;
+    if (!sameSubnet(cfg.poolStart, scope, cfg.mask)) {
+      this.runAll();
+      return { ok: false, message: `DHCP failed: ${server.name} has no address pool for the ${scope} network.` };
+    }
+
+    const leases = this.dhcpLeases.get(server.id) ?? [];
+    const mine = leases.find((l) => l.mac === iface.mac);
+    const used = new Set<string>();
+    for (const d of this.devices.values()) for (const i of d.interfaces) if (i.ip && !(d.id === client.id && i === iface)) used.add(i.ip);
+    for (const l of leases) if (l.mac !== iface.mac) used.add(l.ip);
+    let offer = mine?.ip;
+    if (!offer) {
+      for (let n = ipToInt(cfg.poolStart); n <= ipToInt(cfg.poolEnd); n++) {
+        const ip = intToIp(n >>> 0);
+        if (!used.has(ip)) {
+          offer = ip;
+          break;
+        }
+      }
+    }
+
+    const path = this.findPath(client.id, server.id);
+    const back = [...path].reverse();
+    emit(client.id, server.id, 'DHCPDISCOVER (Broadcast)', 0, '0.0.0.0', '255.255.255.255', [68, 67], path);
+    if (!offer) {
+      emit(server.id, client.id, 'DHCPNAK (address pool exhausted)', 1, serverIp, '255.255.255.255', [67, 68], back);
+      this.runAll();
+      return { ok: false, message: `DHCP failed: ${server.name} has no free addresses (${cfg.poolStart}–${cfg.poolEnd}).` };
+    }
+    emit(server.id, client.id, `DHCPOFFER ${offer}`, 1, serverIp, offer, [67, 68], back);
+    emit(client.id, server.id, `DHCPREQUEST ${offer}`, 2, '0.0.0.0', '255.255.255.255', [68, 67], path);
+    emit(server.id, client.id, `DHCPACK ${offer}/${cidrOf(cfg.mask)}`, 3, serverIp, offer, [67, 68], back);
+    this.runAll();
+
+    const lease: DhcpLease = { mac: iface.mac, ip: offer, mask: cfg.mask, gateway: cfg.gateway, dns: cfg.dns, expiresAtMs: this.clockMs + 86_400_000 };
+    this.dhcpLeases.set(server.id, [...leases.filter((l) => l.mac !== iface.mac), lease]);
+    iface.ip = offer;
+    iface.mask = cfg.mask;
+    iface.gateway = cfg.gateway;
+    client.dnsServer = cfg.dns;
+    client.dhcpEnabled = true;
+    this.configDirty = true;
+    return { ok: true, ip: offer, message: `DHCP lease acquired from ${server.name}${giaddr ? ` via relay ${giaddr}` : ''}: ${offer}/${cidrOf(cfg.mask)}, gateway ${cfg.gateway}, DNS ${cfg.dns}` };
+  }
+
+  /** Gives the address back and clears the interface. */
+  public releaseDhcp(clientId: string): string {
+    const client = this.devices.get(clientId);
+    const iface = client?.interfaces[0];
+    if (!client || !iface) return 'Device not found.';
+    for (const [sid, list] of this.dhcpLeases) this.dhcpLeases.set(sid, list.filter((l) => l.mac !== iface.mac));
+    iface.ip = '';
+    iface.gateway = undefined;
+    client.dhcpEnabled = true;
+    this.configDirty = true;
+    return 'DHCP lease released. The interface now has no IP address.';
+  }
+
+  /**
+   * Sends one test packet from `srcId` to `dstId` and records whether it arrived, like Packet Tracer's
+   * "Add Simple PDU". ICMP waits for the echo reply; TCP checks the handshake probe reaches an open
+   * port (80); UDP only needs the datagram to be delivered.
+   */
+  public sendPdu(srcId: string, dstId: string, kind: PduKind = 'ICMP'): PduRecord | null {
+    const src = this.devices.get(srcId);
+    const dst = this.devices.get(dstId);
+    if (!src || !dst || src.id === dst.id) return null;
+    const srcIp = src.interfaces.find((i) => i.ip)?.ip ?? '';
+    const dstIp = dst.interfaces.find((i) => i.ip)?.ip ?? '';
+    const before = this.packets.length;
+    const startMs = this.clockMs;
+    let status: PduRecord['status'] = 'Failed';
+    let reason: string | undefined;
+
+    if (!src.poweredOn) reason = `${src.name} is powered off`;
+    else if (!srcIp) reason = `${src.name} has no IP address`;
+    else if (!dstIp) reason = `${dst.name} has no IP address`;
+    else {
+      const base = { srcDeviceId: src.id, dstDeviceId: dst.id, srcIp, dstIp } as const;
+      if (kind === 'ICMP') {
+        const req = this.transmitMultiHopPacket({
+          ...base,
+          protocol: 'ICMP',
+          colorCategory: 'icmp',
+          info: 'PDU: Echo (ping) request',
+          osiLayer: 3,
+          icmp: { type: 8, code: 0, identifier: 0x7001, sequence: this.pduSeq + 1, message: 'pdu' },
+        });
+        if (!req.delivered) reason = req.dropReason ?? 'Destination unreachable';
+        else {
+          const rep = this.transmitMultiHopPacket({
+            srcDeviceId: dst.id,
+            dstDeviceId: src.id,
+            srcIp: dstIp,
+            dstIp: srcIp,
+            protocol: 'ICMP',
+            colorCategory: 'icmp',
+            info: 'PDU: Echo (ping) reply',
+            osiLayer: 3,
+            icmp: { type: 0, code: 0, identifier: 0x7001, sequence: this.pduSeq + 1, message: 'pdu' },
+          });
+          if (rep.delivered) status = 'Successful';
+          else reason = `Reply lost: ${rep.dropReason ?? 'dropped on the way back'}`;
+        }
+      } else if (kind === 'UDP') {
+        const res = this.transmitMultiHopPacket({
+          ...base,
+          protocol: 'UDP',
+          colorCategory: 'udp',
+          info: 'PDU: UDP datagram',
+          osiLayer: 4,
+          udp: { srcPort: 49200, dstPort: 5001 },
+        });
+        if (res.delivered) status = 'Successful';
+        else reason = res.dropReason ?? 'Dropped';
+      } else {
+        const res = this.transmitMultiHopPacket({
+          ...base,
+          protocol: 'TCP',
+          colorCategory: 'tcp',
+          info: 'PDU: TCP SYN to port 80',
+          osiLayer: 4,
+          tcp: {
+            srcPort: 49201,
+            dstPort: 80,
+            seq: 0,
+            ack: 0,
+            dataOffset: 5,
+            flags: { urg: false, ack: false, psh: false, rst: false, syn: true, fin: false },
+            window: 65535,
+            urgentPointer: 0,
+          },
+        });
+        if (!res.delivered) reason = res.dropReason ?? 'Dropped';
+        else if (!dst.openPorts.includes(80)) reason = `Connection refused: ${dst.name} is not listening on port 80`;
+        else status = 'Successful';
+      }
+    }
+
+    this.runAll();
+    const first = this.packets[before];
+    const last = this.packets[this.packets.length - 1];
+    const record: PduRecord = {
+      id: ++this.pduSeq,
+      kind,
+      srcId: src.id,
+      dstId: dst.id,
+      srcName: src.name,
+      dstName: dst.name,
+      srcIp,
+      dstIp,
+      status,
+      reason,
+      startMs,
+      endMs: this.clockMs,
+      firstPacketNo: first && this.packets.length > before ? first.no : 0,
+      lastPacketNo: first && this.packets.length > before ? last.no : 0,
+    };
+    this.pdus.push(record);
+    return record;
   }
 
   /**

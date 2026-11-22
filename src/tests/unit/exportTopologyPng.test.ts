@@ -7,8 +7,8 @@ describe('Topology PNG Blueprint Exporter', () => {
     const light = resolveBlueprintPalette('light');
     const dark = resolveBlueprintPalette('dark');
 
-    expect(light.bgCanvas).toBe('#f6f8fb');
-    expect(dark.bgCanvas).toBe('#08111e');
+    expect(light.bgCanvas).toBe('#f7f5f0');
+    expect(dark.bgCanvas).toBe('#14161d');
     expect(light.gridLine).not.toBe(dark.gridLine);
     expect(light.gridLineMajor).not.toBe(dark.gridLineMajor);
   });
@@ -43,22 +43,22 @@ describe('Topology PNG Blueprint Exporter', () => {
 
     drawBlueprintGrid(mockCtx, 1600, 832, 'light', { caption: 'gg · Lab 1' });
 
-    expect(fills[0]).toBe('#f6f8fb');
+    expect(fills[0]).toBe('#f7f5f0');
     expect(mockCtx.fillRect).toHaveBeenCalledWith(0, 0, 1600, 832);
     expect(mockCtx.moveTo).toHaveBeenCalled();
     expect(mockCtx.lineTo).toHaveBeenCalled();
     // Minor grid stroke + major grid stroke
-    expect(strokes).toContain('rgba(15, 23, 42, 0.045)');
-    expect(strokes).toContain('rgba(15, 23, 42, 0.09)');
+    expect(strokes).toContain('rgba(29, 33, 48, 0.04)');
+    expect(strokes).toContain('rgba(29, 33, 48, 0.08)');
     expect(mockCtx.strokeRect).toHaveBeenCalled();
     expect(mockCtx.fillText).toHaveBeenCalledWith('gg · Lab 1', 1582, 818);
 
     strokes.length = 0;
     fills.length = 0;
     drawBlueprintGrid(mockCtx, 1600, 832, 'dark');
-    expect(fills[0]).toBe('#08111e');
-    expect(strokes).toContain('rgba(45, 212, 191, 0.045)');
-    expect(strokes).toContain('rgba(56, 189, 248, 0.09)');
+    expect(fills[0]).toBe('#14161d');
+    expect(strokes).toContain('rgba(165, 180, 252, 0.045)');
+    expect(strokes).toContain('rgba(165, 180, 252, 0.09)');
   });
 
   it('embeds SVG stylesheet and resolves CSS var() tokens for standalone rasterization', () => {
@@ -76,12 +76,12 @@ describe('Topology PNG Blueprint Exporter', () => {
     const lightXml = prepareSvgForExport(svg, 'light');
     expect(lightXml).toContain('<style>');
     expect(lightXml).toContain('fill="#ffffff"');
-    expect(lightXml).toContain('stroke="#1d4ed8"');
+    expect(lightXml).toContain('stroke="#4338ca"');
     expect(lightXml).toContain('width="1600"');
     expect(lightXml).toContain('height="832"');
 
     const darkXml = prepareSvgForExport(svg, 'dark');
-    expect(darkXml).toContain('fill="#0e1b2e"');
-    expect(darkXml).toContain('stroke="#38bdf8"');
+    expect(darkXml).toContain('fill="#1b1e28"');
+    expect(darkXml).toContain('stroke="#a5b4fc"');
   });
 });

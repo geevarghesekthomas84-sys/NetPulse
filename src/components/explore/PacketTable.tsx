@@ -5,6 +5,7 @@ import type { CapturedPacket } from '../../engine/types';
 import { matchesDisplayFilter } from '../../lib/displayFilter';
 import { buildCsvExport, buildPcapFile, triggerDownload } from '../../lib/pcapWriter';
 import { PACKET_COLORS } from './colors';
+import { tc } from '../../i18n/content';
 
 interface PacketTableProps {
   packets: CapturedPacket[];
@@ -17,7 +18,6 @@ interface PacketTableProps {
   totalPacketCount?: number;
   onClearExternalFilter?: () => void;
   hideInternalFilter?: boolean;
-  hideToolbar?: boolean;
   flat?: boolean;
 }
 
@@ -34,7 +34,6 @@ export const PacketTable: React.FC<PacketTableProps> = ({
   totalPacketCount,
   onClearExternalFilter,
   hideInternalFilter = false,
-  hideToolbar = false,
   flat = false,
 }) => {
   const { t } = useTranslation();
@@ -94,7 +93,7 @@ export const PacketTable: React.FC<PacketTableProps> = ({
 
   return (
     <section
-      aria-label="Wireshark Packet Capture Table"
+      aria-label={tc('Wireshark Packet Capture Table')}
       className={
         flat
           ? 'bg-[var(--bg-surface)] overflow-hidden'
@@ -102,97 +101,95 @@ export const PacketTable: React.FC<PacketTableProps> = ({
       }
     >
       {/* Toolbar: Display Filter + Exports */}
-      {!hideToolbar && (
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] px-3.5 py-2.5">
-          {hideInternalFilter ? (
-            <div className="flex flex-wrap items-center gap-2 text-[13px] font-mono text-[var(--text-secondary)]">
-              <Filter className="w-3.5 h-3.5 text-[var(--tone-info)] shrink-0" />
-              {externalFilter?.trim() ? (
-                <>
-                  <span>
-                    {t('simulator.captureFilter')}: <strong className="text-[var(--text-primary)]">{externalFilter}</strong>
-                  </span>
-                  {onClearExternalFilter && (
-                    <button
-                      type="button"
-                      onClick={onClearExternalFilter}
-                      className="text-xs font-semibold text-[var(--accent-primary)] hover:underline"
-                    >
-                      {t('common.clear')}
-                    </button>
-                  )}
-                </>
-              ) : (
-                <span className="text-[var(--text-secondary)]">{t('simulator.allTraffic')}</span>
-              )}
-            </div>
-          ) : (
-            <div className="relative flex-1 min-w-[220px]">
-              <Filter className="w-4 h-4 text-[var(--text-muted)] absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                value={filterExpr}
-                onChange={(e) => setFilterExpr(e.target.value)}
-                placeholder={t('simulator.filterPlaceholder')}
-                aria-label="Wireshark display filter"
-                className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] py-2 ps-9 pe-3 font-mono text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
-              />
-            </div>
-          )}
-
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="font-mono text-xs font-medium text-[var(--text-secondary)] tabular-nums">
-              {visiblePackets.length}/{totalPacketCount ?? packets.length} pkts
-            </span>
-            <button
-              type="button"
-              onClick={handleExportPcap}
-              className="flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] px-3 text-xs font-mono font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>{t('explore.exportPcap')}</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleExportCsv}
-              className="flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-hairline)] px-3 text-xs font-mono font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>{t('explore.exportCsv')}</span>
-            </button>
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-hairline)] px-3.5 py-2">
+        {hideInternalFilter ? (
+          <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-[var(--text-secondary)]">
+            <Filter className="w-3.5 h-3.5 text-[var(--tone-info)] shrink-0" />
+            {externalFilter?.trim() ? (
+              <>
+                <span>
+                  {t('simulator.captureFilter')}: <strong className="text-[var(--text-primary)]">{externalFilter}</strong>
+                </span>
+                {onClearExternalFilter && (
+                  <button
+                    type="button"
+                    onClick={onClearExternalFilter}
+                    className="text-xs text-[var(--accent-primary)] hover:underline"
+                  >
+                    {t('common.clear')}
+                  </button>
+                )}
+              </>
+            ) : (
+              <span className="text-[var(--text-muted)]">{t('simulator.allTraffic')}</span>
+            )}
           </div>
+        ) : (
+          <div className="relative flex-1 min-w-[220px]">
+            <Filter className="w-3.5 h-3.5 text-[var(--text-muted)] absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={filterExpr}
+              onChange={(e) => setFilterExpr(e.target.value)}
+              placeholder={t('simulator.filterPlaceholder')}
+              aria-label={tc('Wireshark display filter')}
+              className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] py-1.5 ps-8 pe-3 font-mono text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+            />
+          </div>
+        )}
+
+        <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
+          <span className="font-mono text-xs text-[var(--text-muted)] tabular-nums">
+            {visiblePackets.length}/{totalPacketCount ?? packets.length} pkts
+          </span>
+          <button
+            type="button"
+            onClick={handleExportPcap}
+            className="flex items-center gap-1 rounded-lg border border-[var(--border-hairline)] px-2.5 py-1.5 text-xs font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>{t('explore.exportPcap')}</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleExportCsv}
+            className="flex items-center gap-1 rounded-lg border border-[var(--border-hairline)] px-2.5 py-1.5 text-xs font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] whitespace-nowrap shrink-0"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>{t('explore.exportCsv')}</span>
+          </button>
         </div>
-      )}
+      </div>
 
       {/* Table */}
       <div className="overflow-x-auto max-h-80 overflow-y-auto">
-        <table className="w-full text-start border-collapse font-mono text-[13px] tabular-nums">
-          <thead className="sticky top-0 z-10 bg-[var(--bg-inset)] text-xs font-semibold text-[var(--text-secondary)] border-b border-[var(--border-hairline)]">
+        <table className="w-full text-start border-collapse font-mono text-xs tabular-nums">
+          <thead className="sticky top-0 z-10 bg-[var(--bg-inset)] text-xs uppercase tracking-[0.14em] font-bold text-[var(--text-muted)] border-b border-[var(--border-hairline)]">
             <tr>
-              <th className="px-3 py-2.5 text-start">
+              <th className="px-3 py-2 text-start">
                 <button type="button" onClick={() => toggleSort('no')} className="inline-flex items-center gap-1 hover:text-[var(--text-primary)]">
                   No. <ArrowUpDown className="w-3 h-3" />
                 </button>
               </th>
-              <th className="px-3 py-2.5 text-start">
+              <th className="px-3 py-2 text-start">
                 <button type="button" onClick={() => toggleSort('time')} className="inline-flex items-center gap-1 hover:text-[var(--text-primary)]">
                   Time <ArrowUpDown className="w-3 h-3" />
                 </button>
               </th>
-              <th className="px-3 py-2.5 text-start">Source</th>
-              <th className="px-3 py-2.5 text-start">Destination</th>
-              <th className="px-3 py-2.5 text-start">
+              <th className="px-3 py-2 text-start">{tc('Source')}</th>
+              <th className="px-3 py-2 text-start">{tc('Destination')}</th>
+              <th className="px-3 py-2 text-start">
                 <button type="button" onClick={() => toggleSort('protocol')} className="inline-flex items-center gap-1 hover:text-[var(--text-primary)]">
                   Protocol <ArrowUpDown className="w-3 h-3" />
                 </button>
               </th>
-              <th className="px-3 py-2.5 text-start">Info</th>
-              <th className="px-3 py-2.5 text-end">
+              <th className="px-3 py-2 text-start">{tc('Info')}</th>
+              <th className="px-3 py-2 text-end">
                 <button type="button" onClick={() => toggleSort('size')} className="inline-flex items-center gap-1 hover:text-[var(--text-primary)]">
                   Size <ArrowUpDown className="w-3 h-3" />
                 </button>
               </th>
-              <th className="px-2.5 py-2.5 text-end">Act</th>
+              <th className="px-2 py-2 text-end">{tc('Act')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border-hairline)]/60">
@@ -215,28 +212,35 @@ export const PacketTable: React.FC<PacketTableProps> = ({
                       : `${colorMeta.bgClass} hover:bg-[var(--accent-primary-soft)]/60`
                   } ${isFuture ? 'opacity-55' : ''}`}
                 >
-                  <td className="px-3 py-2.5 text-[var(--text-muted)]">{pkt.no}</td>
-                  <td className="px-3 py-2.5 text-[var(--text-secondary)]">
+                  <td className="px-3 py-2">
+                    <span
+                      className="inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-[11px] font-bold text-white tabular-nums"
+                      style={{ backgroundColor: colorMeta.hex }}
+                    >
+                      {pkt.no}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2 text-[var(--text-secondary)]">
                     {(pkt.timestampMs / 1000).toFixed(4)}
                   </td>
-                  <td className="px-3 py-2.5 text-[var(--text-primary)] whitespace-nowrap">{pkt.srcIp || pkt.srcMac}</td>
-                  <td className="px-3 py-2.5 text-[var(--text-primary)] whitespace-nowrap">{pkt.dstIp || pkt.dstMac}</td>
-                  <td className={`px-3 py-2.5 font-semibold whitespace-nowrap ${colorMeta.textClass}`}>
+                  <td className="px-3 py-2 text-[var(--text-primary)] whitespace-nowrap">{pkt.srcIp || pkt.srcMac}</td>
+                  <td className="px-3 py-2 text-[var(--text-primary)] whitespace-nowrap">{pkt.dstIp || pkt.dstMac}</td>
+                  <td className={`px-3 py-2 font-semibold whitespace-nowrap ${colorMeta.textClass}`}>
                     {pkt.protocol}
                   </td>
-                  <td className="px-3 py-2.5 text-[var(--text-primary)] max-w-md truncate" title={pkt.info}>
+                  <td className="px-3 py-2 text-[var(--text-primary)] max-w-md truncate" title={pkt.info}>
                     {pkt.info}
                   </td>
-                  <td className="px-3 py-2.5 text-end text-[var(--text-secondary)]">{pkt.sizeBytes}B</td>
-                  <td className="px-2.5 py-2.5 text-end">
+                  <td className="px-3 py-2 text-end text-[var(--text-secondary)]">{pkt.sizeBytes}B</td>
+                  <td className="px-2 py-2 text-end">
                     <button
                       type="button"
                       onClick={(e) => void copySummary(pkt, e)}
-                      title="Copy packet summary"
+                      title={tc('Copy packet summary')}
                       className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     >
                       {copiedId === pkt.id ? (
-                        <span className="text-xs font-bold text-[var(--tone-success)]">OK</span>
+                        <span className="text-[11px] font-bold text-[var(--tone-success)]">OK</span>
                       ) : (
                         <Copy className="w-3.5 h-3.5" />
                       )}
@@ -247,7 +251,7 @@ export const PacketTable: React.FC<PacketTableProps> = ({
             })}
             {visiblePackets.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center font-sans text-[13px] text-[var(--text-secondary)]">
+                <td colSpan={8} className="px-4 py-8 text-center text-xs text-[var(--text-muted)]">
                   <span>
                     {filterExpr || externalFilter
                       ? `No packets match display filter "${filterExpr || externalFilter}".`
@@ -257,7 +261,7 @@ export const PacketTable: React.FC<PacketTableProps> = ({
                     <button
                       type="button"
                       onClick={onClearExternalFilter}
-                      className="ms-2 font-mono font-semibold text-[var(--accent-primary)] hover:underline"
+                      className="ms-2 font-mono text-[var(--accent-primary)] hover:underline"
                     >
                       {t('simulator.clearFilter')}
                     </button>

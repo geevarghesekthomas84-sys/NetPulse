@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExternalLink, X } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
+import { tc } from '../../i18n/content';
 
 export const AboutModal: React.FC = () => {
   const { t } = useTranslation();
@@ -35,7 +36,7 @@ export const AboutModal: React.FC = () => {
           <p>
             <strong className="text-[var(--text-primary)]">{t('credit')}</strong>. Built with React,
             TypeScript, Zustand, Tailwind CSS, and a pure-TypeScript simulation kernel supporting real RFC 1071 checksums,
-            TCP Reno/CUBIC congestion control, L2 MAC learning, LPM routing, and libpcap export.
+            {tc('TCP Reno/CUBIC congestion control, L2 MAC learning, LPM routing, and libpcap export.')}
           </p>
           <div className="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] p-3 text-xs">
             <div className="font-semibold text-[var(--text-primary)]">{t('nav.aboutPrivacy')}</div>
@@ -44,29 +45,18 @@ export const AboutModal: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center justify-between gap-4 pt-2 text-xs">
-            <div className="flex items-center gap-3">
-              <a
-                href="https://github.com/geevarghesekthomas84-sys/NetPulse"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1 text-[var(--accent-primary)] hover:underline"
-              >
-                GitHub <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-              <span className="text-[var(--text-muted)]">·</span>
-              <a
-                href="https://github.com/geevarghesekthomas84-sys/NetPulse/issues"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1 text-[var(--accent-primary)] hover:underline"
-              >
-                Report an issue <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            </div>
+            <a
+              href="https://github.com/geevarghese/gg/issues"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-[var(--accent-primary)] hover:underline"
+            >
+              Report an issue <ExternalLink className="w-3.5 h-3.5" />
+            </a>
             <button
               type="button"
               onClick={() => setAboutOpen(false)}
-              className="rounded-lg bg-[var(--accent-cta)] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[var(--accent-cta-hover)]"
+              className="rounded-lg bg-[var(--accent-cta)] px-3 py-1.5 text-xs font-semibold text-[var(--on-accent)] hover:bg-[var(--accent-cta-hover)]"
             >
               {t('common.close')}
             </button>

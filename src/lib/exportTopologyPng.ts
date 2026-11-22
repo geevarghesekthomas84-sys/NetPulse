@@ -1,4 +1,5 @@
 import { triggerDownload } from './pcapWriter';
+import { resolveCssVars } from './resolveCssVars';
 
 export type BlueprintThemeMode = 'light' | 'dark';
 
@@ -29,55 +30,55 @@ export interface BlueprintPalette {
 }
 
 const LIGHT_FALLBACK: BlueprintPalette = {
-  bgCanvas: '#f6f8fb',
+  bgCanvas: '#f7f5f0',
   bgSurface: '#ffffff',
-  bgElevated: '#eef2f7',
-  bgInset: '#e5ebf3',
-  textPrimary: '#0f172a',
-  textSecondary: '#334155',
-  textMuted: '#475569',
-  borderHairline: '#cbd5e1',
-  borderStrong: '#94a3b8',
-  accentPrimary: '#1d4ed8',
-  accentTeal: '#0f766e',
-  toneInfo: '#0369a1',
-  toneSuccess: '#047857',
-  toneWarning: '#b45309',
-  toneDanger: '#b91c1c',
-  gridLine: 'rgba(15, 23, 42, 0.045)',
-  gridLineMajor: 'rgba(15, 23, 42, 0.09)',
-  nodeStroke: '#0f766e',
-  nodeFill: '#f0fdfa',
-  linkStroke: '#64748b',
-  hwSlateLight: '#e2ecf6',
-  hwSlateDark: '#c5d6ea',
-  hwScreen: '#0f2942',
+  bgElevated: '#f2efe8',
+  bgInset: '#eeeae2',
+  textPrimary: '#1d2130',
+  textSecondary: '#394150',
+  textMuted: '#555d6e',
+  borderHairline: '#ddd7cb',
+  borderStrong: '#a9a08f',
+  accentPrimary: '#4338ca',
+  accentTeal: '#0b6b61',
+  toneInfo: '#075985',
+  toneSuccess: '#046c4e',
+  toneWarning: '#92400e',
+  toneDanger: '#b01c1c',
+  gridLine: 'rgba(29, 33, 48, 0.04)',
+  gridLineMajor: 'rgba(29, 33, 48, 0.08)',
+  nodeStroke: '#4338ca',
+  nodeFill: '#eef0ff',
+  linkStroke: '#6f7686',
+  hwSlateLight: '#e6e8f2',
+  hwSlateDark: '#c9cde0',
+  hwScreen: '#1b1f3a',
 };
 
 const DARK_FALLBACK: BlueprintPalette = {
-  bgCanvas: '#08111e',
-  bgSurface: '#0e1b2e',
-  bgElevated: '#15253d',
-  bgInset: '#0b1524',
-  textPrimary: '#f1f5f9',
-  textSecondary: '#cbd5e1',
-  textMuted: '#94a3b8',
-  borderHairline: '#233856',
-  borderStrong: '#38557d',
-  accentPrimary: '#38bdf8',
-  accentTeal: '#2dd4bf',
-  toneInfo: '#38bdf8',
-  toneSuccess: '#34d399',
-  toneWarning: '#fbbf24',
-  toneDanger: '#f87171',
-  gridLine: 'rgba(45, 212, 191, 0.045)',
-  gridLineMajor: 'rgba(56, 189, 248, 0.09)',
-  nodeStroke: '#2dd4bf',
-  nodeFill: '#0f2137',
-  linkStroke: '#56769e',
-  hwSlateLight: '#1e3352',
-  hwSlateDark: '#0b1526',
-  hwScreen: '#051629',
+  bgCanvas: '#14161d',
+  bgSurface: '#1b1e28',
+  bgElevated: '#252936',
+  bgInset: '#171922',
+  textPrimary: '#f2f3f7',
+  textSecondary: '#d0d4df',
+  textMuted: '#a6adbd',
+  borderHairline: '#2f3445',
+  borderStrong: '#4b5169',
+  accentPrimary: '#a5b4fc',
+  accentTeal: '#5eead4',
+  toneInfo: '#7dd3fc',
+  toneSuccess: '#6ee7b7',
+  toneWarning: '#fcd34d',
+  toneDanger: '#fca5a5',
+  gridLine: 'rgba(165, 180, 252, 0.045)',
+  gridLineMajor: 'rgba(165, 180, 252, 0.09)',
+  nodeStroke: '#a5b4fc',
+  nodeFill: '#20243a',
+  linkStroke: '#7b84a0',
+  hwSlateLight: '#2f3552',
+  hwSlateDark: '#171a2b',
+  hwScreen: '#0c0f20',
 };
 
 const VAR_MAP_KEYS: Array<[string, keyof BlueprintPalette]> = [
@@ -270,7 +271,9 @@ export function prepareSvgForExport(
     for (const attr of ['fill', 'stroke', 'stop-color', 'style']) {
       const val = el.getAttribute(attr);
       if (val && val.includes('var(')) {
-        el.setAttribute(attr, replaceVarTokens(val, varLookup));
+        // Palette first, then whatever the page defines (wireframe device tokens, packet colours).
+        const first = replaceVarTokens(val, varLookup);
+        el.setAttribute(attr, first.includes('var(') ? resolveCssVars(first) : first);
       }
     }
   });
@@ -293,7 +296,7 @@ export interface ExportTopologyPngParams {
 export function exportTopologyPng({
   svgElement,
   theme,
-  filename = 'gg-simulator-topology.png',
+  filename = 'netpulse-simulator-topology.png',
   caption,
   width = 1600,
   height = 832,

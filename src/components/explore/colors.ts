@@ -1,8 +1,8 @@
 import type { PacketColorCategory } from '../../engine/types';
 
 export interface PacketColorMeta {
+  /** CSS color for shapes and lines (a theme variable, so it follows light/dark). */
   hex: string;
-  darkHex: string;
   bgClass: string;
   textClass: string;
   borderClass: string;
@@ -10,97 +10,85 @@ export interface PacketColorMeta {
 }
 
 /**
- * Calmer, theme-harmonious palette designed to blend seamlessly with
- * Crisp Daylight (Light) and Deep Ocean Slate (Dark).
- * Uses balanced saturation to avoid eye fatigue during long simulation sessions.
+ * Packet colors come from the --pkt-* tokens in index.css, which are tuned per
+ * theme and checked for contrast in src/tests/unit/theme-contrast.test.ts.
  */
 export const PACKET_COLORS: Record<PacketColorCategory, PacketColorMeta> = {
   dns: {
-    hex: '#7c3aed',
-    darkHex: '#a78bfa',
-    bgClass: 'bg-violet-500/10 dark:bg-violet-500/15',
-    textClass: 'text-violet-700 dark:text-violet-300',
-    borderClass: 'border-violet-500/30 dark:border-violet-400/35',
+    hex: 'var(--pkt-dns)',
+    bgClass: 'bg-[color-mix(in_srgb,var(--pkt-dns)_13%,transparent)]',
+    textClass: 'text-[var(--pkt-dns-text)]',
+    borderClass: 'border-[color-mix(in_srgb,var(--pkt-dns)_45%,transparent)]',
     label: 'DNS',
   },
   tcp: {
-    hex: '#0284c7',
-    darkHex: '#38bdf8',
-    bgClass: 'bg-sky-500/10 dark:bg-sky-500/15',
-    textClass: 'text-sky-700 dark:text-sky-300',
-    borderClass: 'border-sky-500/30 dark:border-sky-400/35',
+    hex: 'var(--pkt-tcp)',
+    bgClass: 'bg-[color-mix(in_srgb,var(--pkt-tcp)_13%,transparent)]',
+    textClass: 'text-[var(--pkt-tcp-text)]',
+    borderClass: 'border-[color-mix(in_srgb,var(--pkt-tcp)_45%,transparent)]',
     label: 'TCP',
   },
   tls: {
-    hex: '#0f766e',
-    darkHex: '#2dd4bf',
-    bgClass: 'bg-teal-500/10 dark:bg-teal-500/15',
-    textClass: 'text-teal-700 dark:text-teal-300',
-    borderClass: 'border-teal-500/30 dark:border-teal-400/35',
+    hex: 'var(--pkt-tls)',
+    bgClass: 'bg-[color-mix(in_srgb,var(--pkt-tls)_13%,transparent)]',
+    textClass: 'text-[var(--pkt-tls-text)]',
+    borderClass: 'border-[color-mix(in_srgb,var(--pkt-tls)_45%,transparent)]',
     label: 'TLS',
   },
   http_req: {
-    hex: '#d97706',
-    darkHex: '#fbbf24',
-    bgClass: 'bg-amber-500/10 dark:bg-amber-500/15',
-    textClass: 'text-amber-800 dark:text-amber-300',
-    borderClass: 'border-amber-500/30 dark:border-amber-400/35',
+    hex: 'var(--pkt-http-req)',
+    bgClass: 'bg-[color-mix(in_srgb,var(--pkt-http-req)_13%,transparent)]',
+    textClass: 'text-[var(--pkt-http-req-text)]',
+    borderClass: 'border-[color-mix(in_srgb,var(--pkt-http-req)_45%,transparent)]',
     label: 'HTTP Req',
   },
   http_res: {
-    hex: '#2563eb',
-    darkHex: '#60a5fa',
-    bgClass: 'bg-blue-500/10 dark:bg-blue-500/15',
-    textClass: 'text-blue-700 dark:text-blue-300',
-    borderClass: 'border-blue-500/30 dark:border-blue-400/35',
+    hex: 'var(--pkt-http-res)',
+    bgClass: 'bg-[color-mix(in_srgb,var(--pkt-http-res)_13%,transparent)]',
+    textClass: 'text-[var(--pkt-http-res-text)]',
+    borderClass: 'border-[color-mix(in_srgb,var(--pkt-http-res)_45%,transparent)]',
     label: 'HTTP Res',
   },
   udp: {
-    hex: '#c2410c',
-    darkHex: '#fb923c',
-    bgClass: 'bg-orange-500/10 dark:bg-orange-500/15',
-    textClass: 'text-orange-800 dark:text-orange-300',
-    borderClass: 'border-orange-500/30 dark:border-orange-400/35',
+    hex: 'var(--pkt-udp)',
+    bgClass: 'bg-[color-mix(in_srgb,var(--pkt-udp)_13%,transparent)]',
+    textClass: 'text-[var(--pkt-udp-text)]',
+    borderClass: 'border-[color-mix(in_srgb,var(--pkt-udp)_45%,transparent)]',
     label: 'UDP',
   },
   icmp: {
-    hex: '#e11d48',
-    darkHex: '#fb7185',
-    bgClass: 'bg-rose-500/10 dark:bg-rose-500/15',
-    textClass: 'text-rose-700 dark:text-rose-300',
-    borderClass: 'border-rose-500/30 dark:border-rose-400/35',
+    hex: 'var(--pkt-icmp)',
+    bgClass: 'bg-[color-mix(in_srgb,var(--pkt-icmp)_13%,transparent)]',
+    textClass: 'text-[var(--pkt-icmp-text)]',
+    borderClass: 'border-[color-mix(in_srgb,var(--pkt-icmp)_45%,transparent)]',
     label: 'ICMP',
   },
   error: {
-    hex: '#b91c1c',
-    darkHex: '#f87171',
-    bgClass: 'bg-red-500/10 dark:bg-red-500/20',
-    textClass: 'text-red-700 dark:text-red-300',
-    borderClass: 'border-red-500/40 dark:border-red-400/45',
+    hex: 'var(--pkt-error)',
+    bgClass: 'bg-[color-mix(in_srgb,var(--pkt-error)_13%,transparent)]',
+    textClass: 'text-[var(--pkt-error-text)]',
+    borderClass: 'border-[color-mix(in_srgb,var(--pkt-error)_45%,transparent)]',
     label: 'Error / Drop',
   },
   l2: {
-    hex: '#059669',
-    darkHex: '#34d399',
-    bgClass: 'bg-emerald-500/10 dark:bg-emerald-500/15',
-    textClass: 'text-emerald-700 dark:text-emerald-300',
-    borderClass: 'border-emerald-500/30 dark:border-emerald-400/35',
+    hex: 'var(--pkt-l2)',
+    bgClass: 'bg-[color-mix(in_srgb,var(--pkt-l2)_13%,transparent)]',
+    textClass: 'text-[var(--pkt-l2-text)]',
+    borderClass: 'border-[color-mix(in_srgb,var(--pkt-l2)_45%,transparent)]',
     label: 'L2 / ARP',
   },
   sec: {
-    hex: '#0d9488',
-    darkHex: '#2dd4bf',
-    bgClass: 'bg-teal-500/10 dark:bg-teal-500/15',
-    textClass: 'text-teal-700 dark:text-teal-300',
-    borderClass: 'border-teal-500/30 dark:border-teal-400/35',
+    hex: 'var(--pkt-sec)',
+    bgClass: 'bg-[color-mix(in_srgb,var(--pkt-sec)_13%,transparent)]',
+    textClass: 'text-[var(--pkt-sec-text)]',
+    borderClass: 'border-[color-mix(in_srgb,var(--pkt-sec)_45%,transparent)]',
     label: 'Security',
   },
   routing: {
-    hex: '#4f46e5',
-    darkHex: '#818cf8',
-    bgClass: 'bg-indigo-500/10 dark:bg-indigo-500/15',
-    textClass: 'text-indigo-700 dark:text-indigo-300',
-    borderClass: 'border-indigo-500/30 dark:border-indigo-400/35',
+    hex: 'var(--pkt-routing)',
+    bgClass: 'bg-[color-mix(in_srgb,var(--pkt-routing)_13%,transparent)]',
+    textClass: 'text-[var(--pkt-routing-text)]',
+    borderClass: 'border-[color-mix(in_srgb,var(--pkt-routing)_45%,transparent)]',
     label: 'Routing',
   },
 };
@@ -113,5 +101,5 @@ export const LEGEND_ITEMS: Array<{ key: PacketColorCategory; label: string; hex:
   { key: 'http_res', label: 'HTTP Res', hex: PACKET_COLORS.http_res.hex },
   { key: 'udp', label: 'UDP', hex: PACKET_COLORS.udp.hex },
   { key: 'icmp', label: 'ICMP', hex: PACKET_COLORS.icmp.hex },
-  { key: 'error', label: 'Error / Drop', hex: PACKET_COLORS.error.hex },
+  { key: 'error', label: 'Error/Drop', hex: PACKET_COLORS.error.hex },
 ];

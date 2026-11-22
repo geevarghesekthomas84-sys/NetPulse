@@ -3,7 +3,6 @@ import React from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Header } from '../../components/common/Header';
-import { AnnotatedCaption } from '../../components/common/AnnotatedCaption';
 import { ExploreWorkspace } from '../../components/explore/ExploreWorkspace';
 import { SimCanvas } from '../../components/simulator/SimCanvas';
 import { SimulatorWorkspace } from '../../components/simulator/SimulatorWorkspace';
@@ -124,7 +123,7 @@ describe('UI Components Integration (SimCanvas, SimulatorWorkspace, TerminalEmul
 
     fireEvent.change(input, { target: { value: 'clear' } });
     fireEvent.submit(input.closest('form')!);
-    expect(screen.queryByText(/gg-net shell ready/)).toBeNull();
+    expect(screen.queryByText(/NetPulse shell ready/)).toBeNull();
   });
 
   it('switches ExploreWorkspace between Network and Sequence views and adjusts zoom', () => {
@@ -157,42 +156,37 @@ describe('UI Components Integration (SimCanvas, SimulatorWorkspace, TerminalEmul
       </>
     );
 
-    // Quick-Start Entry Site renders in Simple mode, Compare button is hidden until Pro mode
+    // Quick-Start guide renders in Simple mode, Compare button is hidden until Pro mode
     expect(screen.getByText(/First-Time Quick Start/i)).toBeTruthy();
-    expect(screen.getByRole('region', { name: /Platform Capabilities/i })).toBeTruthy();
-    expect(screen.getByText(/Curated Protocol Pathways/i)).toBeTruthy();
     expect(screen.queryByRole('button', { name: /^Compare$/i })).toBeNull();
-    expect(screen.getByRole('button', { name: /Open Network Simulator/i })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /Launch Topology Studio/i })).toBeTruthy();
 
     // Switch to Pro mode from Header
     fireEvent.click(screen.getByRole('button', { name: /^Pro$/i }));
     expect(useAppStore.getState().experienceLevel).toBe('pro');
     expect(screen.getAllByRole('button', { name: /^Compare$/i }).length).toBeGreaterThanOrEqual(1);
 
-    // Clicking Open Network Simulator updates workspace mode cleanly
-    fireEvent.click(screen.getByRole('button', { name: /Open Network Simulator/i }));
-    expect(useAppStore.getState().mode).toBe('simulator');
-    useAppStore.getState().setMode('explore');
-
-    // Hide Quick-Start Entry Site
+    // Hide Quick-Start Welcome Guide
     fireEvent.click(screen.getByRole('button', { name: /Hide guide/i }));
     expect(screen.queryByText(/First-Time Quick Start/i)).toBeNull();
-    expect(screen.queryByRole('region', { name: /Platform Capabilities/i })).toBeNull();
 
     // Toggle theme Crisp Daylight <-> Deep Ocean Slate
-    fireEvent.click(screen.getByLabelText(/Switch to Deep Ocean Slate/i));
+    fireEvent.click(screen.getByLabelText(/Switch to dark theme/i));
     expect(document.documentElement.classList.contains('dark')).toBe(true);
-    fireEvent.click(screen.getByLabelText(/Switch to Crisp Daylight/i));
+    fireEvent.click(screen.getByLabelText(/Switch to light theme/i));
     expect(document.documentElement.classList.contains('dark')).toBe(false);
 
     // Switch language to Arabic (RTL) and Spanish (LTR)
-    const langSelect = screen.getByLabelText(/Select Language/i) as HTMLSelectElement;
-    fireEvent.change(langSelect, { target: { value: 'ar' } });
+    const pickLanguage = (name: RegExp) => {
+      // the label itself is translated once the language changes, so find the trigger structurally
+      fireEvent.click(document.querySelector('button[aria-haspopup="listbox"]')!);
+      const option = screen.getByRole('option', { name });
+      fireEvent.click(option.querySelector('button')!);
+    };
+    pickLanguage(/العربية/);
     expect(document.documentElement.dir).toBe('rtl');
     expect(useAppStore.getState().language).toBe('ar');
 
-    fireEvent.change(langSelect, { target: { value: 'es' } });
+    pickLanguage(/Español/);
     expect(document.documentElement.dir).toBe('ltr');
     expect(useAppStore.getState().language).toBe('es');
   });
@@ -502,27 +496,6 @@ describe('UI Components Integration (SimCanvas, SimulatorWorkspace, TerminalEmul
     fireEvent.click(screen.getByLabelText('Undo'));
     expect(screen.getByText('4 nodes · 3 links')).toBeTruthy();
     expect(screen.getByText('Wi-Fi Router')).toBeTruthy();
-  });
-
-  it('renders interactive AnnotatedCaption and portaled glossary tooltips without canvas collision', () => {
-    render(<AnnotatedCaption text="Stub resolver queries 8.8.8.8, which walks the DNS hierarchy" />);
-
-    // Term button should exist
-    const dnsButton = screen.getByRole('button', { name: /DNS/i });
-    expect(dnsButton).toBeDefined();
-
-    // Clicking opens tooltip portal in document.body
-    fireEvent.click(dnsButton);
-
-    const tooltip = screen.getByRole('tooltip');
-    expect(tooltip).toBeDefined();
-    expect(tooltip.textContent).toContain('Domain Name System');
-    expect(tooltip.textContent).toContain('RFC 1035');
-
-    // Close button dismisses it
-    const closeBtn = screen.getByLabelText('Close tooltip');
-    fireEvent.click(closeBtn);
-    expect(screen.queryByRole('tooltip')).toBeNull();
   });
 });
 

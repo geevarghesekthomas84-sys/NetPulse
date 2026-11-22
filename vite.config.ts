@@ -6,7 +6,6 @@ import {VitePWA} from 'vite-plugin-pwa';
 
 export default defineConfig(() => {
   return {
-    base: './',
     plugins: [
       react(),
       tailwindcss(),
@@ -15,11 +14,11 @@ export default defineConfig(() => {
         includeAssets: ['icon.svg', 'apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png', 'pwa-maskable-512x512.png'],
         manifest: {
           id: '/',
-          name: 'NetPulse – Interactive Network & Protocol Simulator',
+          name: 'NetPulse – Network Protocol Visualizer & Simulator',
           short_name: 'NetPulse',
           description: 'Learn how the internet works with interactive protocol animations and a real discrete-event network simulator.',
-          theme_color: '#070d1a',
-          background_color: '#070d1a',
+          theme_color: '#14161d',
+          background_color: '#14161d',
           display: 'standalone',
           start_url: '/',
           scope: '/',
@@ -78,7 +77,7 @@ export default defineConfig(() => {
           ],
         },
         devOptions: {
-          enabled: false,
+          enabled: true,
           type: 'module',
         },
       }),
@@ -86,27 +85,6 @@ export default defineConfig(() => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
-      },
-    },
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            if (id.includes('node_modules/lucide-react')) {
-              return 'vendor-icons';
-            }
-            if (
-              id.includes('node_modules/react') ||
-              id.includes('node_modules/react-dom') ||
-              id.includes('node_modules/zustand')
-            ) {
-              return 'vendor-react';
-            }
-            if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next')) {
-              return 'vendor-i18n';
-            }
-          },
-        },
       },
     },
     server: {

@@ -1,3 +1,4 @@
+import '../lib/migrateStorage';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import ar from './ar.json';
@@ -16,7 +17,7 @@ export const LANGUAGES = [
   { code: 'ar', label: 'AR', name: 'العربية', dir: 'rtl' as const },
 ];
 
-const savedLang = typeof window !== 'undefined' ? localStorage.getItem('gg-lang') || 'en' : 'en';
+const savedLang = typeof window !== 'undefined' ? localStorage.getItem('netpulse-lang') || 'en' : 'en';
 
 i18n.use(initReactI18next).init({
   resources: {

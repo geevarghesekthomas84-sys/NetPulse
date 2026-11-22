@@ -4,6 +4,7 @@ import { ArrowRight, X } from 'lucide-react';
 import { COMPARE_PAIRS, getProtocolById } from '../../protocols';
 import { useAppStore } from '../../store/useAppStore';
 import { PACKET_COLORS } from './colors';
+import { tc } from '../../i18n/content';
 
 export const CompareView: React.FC = () => {
   const { t } = useTranslation();
@@ -35,7 +36,7 @@ export const CompareView: React.FC = () => {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <select
-            aria-label="Select comparison pair"
+            aria-label={tc('Select comparison pair')}
             value={pair.id}
             onChange={(e) => setComparePairId(e.target.value)}
             className="h-9 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-3 text-xs font-medium text-[var(--text-primary)]"
@@ -61,9 +62,9 @@ export const CompareView: React.FC = () => {
       {/* Highlights Matrix */}
       <div className="overflow-x-auto rounded-lg border border-[var(--border-hairline)]">
         <table className="w-full text-start text-xs border-collapse">
-          <thead className="bg-[var(--bg-inset)] text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
+          <thead className="bg-[var(--bg-inset)] text-xs uppercase tracking-wider text-[var(--text-muted)]">
             <tr>
-              <th className="px-3 py-2 text-start">Aspect</th>
+              <th className="px-3 py-2 text-start">{tc('Aspect')}</th>
               <th className="px-3 py-2 text-start text-[var(--accent-primary)]">{leftProto.name}</th>
               <th className="px-3 py-2 text-start text-[var(--accent-teal)]">{rightProto.name}</th>
             </tr>
@@ -71,13 +72,13 @@ export const CompareView: React.FC = () => {
           <tbody className="divide-y divide-[var(--border-hairline)]">
             {pair.highlights.map((row) => (
               <tr key={row.aspect}>
-                <td className="px-3 py-2 font-medium text-[var(--text-primary)]">{row.aspect}</td>
+                <td className="px-3 py-2 font-medium text-[var(--text-primary)]">{tc(row.aspect)}</td>
                 <td className="px-3 py-2 font-mono text-[var(--text-secondary)]">{row.left}</td>
                 <td className="px-3 py-2 font-mono text-[var(--text-secondary)]">{row.right}</td>
               </tr>
             ))}
             <tr>
-              <td className="px-3 py-2 font-medium text-[var(--text-primary)]">Simulated Frames</td>
+              <td className="px-3 py-2 font-medium text-[var(--text-primary)]">{tc('Simulated Frames')}</td>
               <td className="px-3 py-2 font-mono text-[var(--accent-primary)]">{leftScenario.packets.length} packets</td>
               <td className="px-3 py-2 font-mono text-[var(--accent-teal)]">{rightScenario.packets.length} packets</td>
             </tr>
@@ -108,7 +109,7 @@ export const CompareView: React.FC = () => {
                 <ArrowRight className="w-3 h-3" />
               </button>
             </div>
-            <div className="max-h-56 overflow-y-auto space-y-1 font-mono text-[11px]">
+            <div className="max-h-56 overflow-y-auto space-y-1 font-mono text-xs">
               {scenario.packets.map((pkt) => {
                 const c = PACKET_COLORS[pkt.colorCategory]?.textClass || 'text-[var(--accent-primary)]';
                 return (

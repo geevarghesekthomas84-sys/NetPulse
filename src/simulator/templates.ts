@@ -83,6 +83,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
       }),
       tplDev('tpl-soho-gw', 'Wi-Fi Router', 'nat_gateway', 380, 230, '192.168.1.1', {
         natEnabled: true,
+        services: { dhcp: { enabled: true, poolStart: '192.168.1.100', poolEnd: '192.168.1.150', mask: '255.255.255.0', gateway: '192.168.1.1', dns: '8.8.8.8' } },
         interfaces: [
           createDefaultInterface('eth0', 'lan0', '192.168.1.1', '255.255.255.0', undefined, '21'),
           createDefaultInterface('eth1', 'wan0', '198.51.100.2', '255.255.255.0', '198.51.100.1', '22'),

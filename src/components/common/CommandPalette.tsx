@@ -4,6 +4,7 @@ import { BookOpen, Cpu, Globe, Search, Settings, X } from 'lucide-react';
 import { PROTOCOLS } from '../../protocols';
 import { PRESET_LABS } from '../../simulator/labs';
 import { useAppStore } from '../../store/useAppStore';
+import { tc } from '../../i18n/content';
 
 export const CommandPalette: React.FC = () => {
   const { t } = useTranslation();
@@ -35,7 +36,7 @@ export const CommandPalette: React.FC = () => {
       list.push({
         id: `proto-${p.id}`,
         group: t('nav.protocols'),
-        title: `${p.name} — ${p.fullName}`,
+        title: `${p.name} — ${tc(p.fullName)}`,
         sub: `${p.category} · ${t('explore.port')} ${p.defaultPort}`,
         icon: <Globe className="w-4 h-4 text-[var(--tone-info)]" />,
         action: () => selectProtocol(p.id, 0),
@@ -46,8 +47,8 @@ export const CommandPalette: React.FC = () => {
       list.push({
         id: `lab-${lab.id}`,
         group: t('simulator.labs'),
-        title: `Lab ${lab.number}: ${lab.title}`,
-        sub: lab.category,
+        title: `${tc('Lab')} ${lab.number}: ${tc(lab.title)}`,
+        sub: tc(lab.category),
         icon: <Cpu className="w-4 h-4 text-[var(--tone-success)]" />,
         action: () => loadLab(lab.id),
       });

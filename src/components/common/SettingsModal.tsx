@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { LANGUAGES } from '../../i18n';
 import { useAppStore } from '../../store/useAppStore';
+import { tc } from '../../i18n/content';
 
 export const SettingsModal: React.FC = () => {
   const { t } = useTranslation();
@@ -43,14 +44,14 @@ export const SettingsModal: React.FC = () => {
         <div className="p-5 space-y-4 text-sm">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label className="block">
-              <span className="text-xs font-medium text-[var(--text-secondary)]">Theme</span>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">{t('settings.theme')}</span>
               <select
                 value={theme}
                 onChange={(e) => setTheme(e.target.value as 'dark' | 'light')}
                 className="mt-1 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-3 py-2 text-sm text-[var(--text-primary)]"
               >
-                <option value="light">Crisp Daylight (Light)</option>
-                <option value="dark">Deep Ocean Slate (Dark)</option>
+                <option value="light">{t('settings.themeLight')}</option>
+                <option value="dark">{t('settings.themeDark')}</option>
               </select>
             </label>
 
@@ -75,7 +76,7 @@ export const SettingsModal: React.FC = () => {
               <div className="text-xs font-semibold text-[var(--text-primary)]">
                 {t('nav.simpleMode')} / {t('nav.proMode')}
               </div>
-              <div className="text-[11px] text-[var(--text-muted)]">
+              <div className="text-xs text-[var(--text-muted)]">
                 {experienceLevel === 'simple' ? t('nav.simpleTooltip') : t('nav.proTooltip')}
               </div>
             </div>
@@ -84,7 +85,7 @@ export const SettingsModal: React.FC = () => {
                 type="button"
                 onClick={() => setExperienceLevel('simple')}
                 className={`rounded px-2.5 py-1 text-xs font-semibold transition-colors ${
-                  experienceLevel === 'simple' ? 'bg-[var(--accent-teal)] text-white' : 'text-[var(--text-secondary)]'
+                  experienceLevel === 'simple' ? 'bg-[var(--accent-teal)] text-[var(--on-teal)]' : 'text-[var(--text-secondary)]'
                 }`}
               >
                 {t('nav.simpleMode')}
@@ -93,7 +94,7 @@ export const SettingsModal: React.FC = () => {
                 type="button"
                 onClick={() => setExperienceLevel('pro')}
                 className={`rounded px-2.5 py-1 text-xs font-semibold transition-colors ${
-                  experienceLevel === 'pro' ? 'bg-[var(--accent-cta)] text-white' : 'text-[var(--text-secondary)]'
+                  experienceLevel === 'pro' ? 'bg-[var(--accent-cta)] text-[var(--on-accent)]' : 'text-[var(--text-secondary)]'
                 }`}
               >
                 {t('nav.proMode')}
@@ -118,7 +119,7 @@ export const SettingsModal: React.FC = () => {
             </label>
 
             <label className="block">
-              <span className="text-xs font-medium text-[var(--text-secondary)]">Deterministic RNG Seed</span>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">{tc('Deterministic RNG Seed')}</span>
               <input
                 type="number"
                 value={settings.defaultSeed}
@@ -129,14 +130,14 @@ export const SettingsModal: React.FC = () => {
           </div>
 
           <label className="block">
-            <span className="text-xs font-medium text-[var(--text-secondary)]">Packet Time Format</span>
+            <span className="text-xs font-medium text-[var(--text-secondary)]">{tc('Packet Time Format')}</span>
             <select
               value={settings.timeFormat}
               onChange={(e) => updateSettings({ timeFormat: e.target.value as 'relative' | 'ms' })}
               className="mt-1 w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-inset)] px-3 py-2 text-sm text-[var(--text-primary)]"
             >
-              <option value="relative">Seconds (0.024s)</option>
-              <option value="ms">Milliseconds (24.0 ms)</option>
+              <option value="relative">{tc('Seconds (0.024s)')}</option>
+              <option value="ms">{tc('Milliseconds (24.0 ms)')}</option>
             </select>
           </label>
 
@@ -166,7 +167,7 @@ export const SettingsModal: React.FC = () => {
           <button
             type="button"
             onClick={() => setSettingsOpen(false)}
-            className="rounded-lg bg-[var(--accent-cta)] px-4 py-2 text-xs font-semibold text-white hover:bg-[var(--accent-cta-hover)]"
+            className="rounded-lg bg-[var(--accent-cta)] px-4 py-2 text-xs font-semibold text-[var(--on-accent)] hover:bg-[var(--accent-cta-hover)]"
           >
             {t('common.gotIt')}
           </button>
