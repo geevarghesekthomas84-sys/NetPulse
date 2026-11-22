@@ -20,6 +20,7 @@
     <title>SSH Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="SSH establishes an encrypted, mutually authenticated channel over untrusted networks for remote shell access. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/ssh/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/ssh/" />
     <meta property="og:title" content="SSH Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How SSH works",
       "keywords": "22, remote shell, sftp, scp, ed25519, key exchange, bastion, terminal",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "SSH (Secure Shell Protocol (SSH-2))"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › SSH</nav>
 <h1>SSH (Secure Shell Protocol (SSH-2)): how it works, step by step</h1>
+<h2>What is SSH?</h2>
 <p>SSH establishes an encrypted, mutually authenticated channel over untrusted networks for remote shell access, SFTP file transfer, and port tunneling.</p>
 <p><a href="/explore/ssh/"><strong>Open the interactive SSH animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>SSH explained simply</h2>
+<h2>What is SSH, in simple words?</h2>
 <p>SSH is like opening an armored, soundproof tunnel to a distant server where you prove who you are with an unforgeable cryptographic key instead of shouting passwords across the street.</p>
 <h2>SSH at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>22</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>Binary Packet Protocol (Encrypted + MAC/AEAD)</td></tr><tr><th scope="row">Common methods</th><td>KEXINIT, KEX_ECDH, NEWKEYS, USERAUTH_REQUEST, CHANNEL_OPEN, CHANNEL_DATA</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>22</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>Binary Packet Protocol (Encrypted + MAC/AEAD)</td></tr><tr><th scope="row">Common methods</th><td>KEXINIT, KEX_ECDH, NEWKEYS, USERAUTH_REQUEST, CHANNEL_OPEN, CHANNEL_DATA</td></tr><tr><th scope="row">Specification</th><td>RFC 4253: SSH Transport Layer Protocol</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc4253" rel="noopener">RFC 4253: SSH Transport Layer Protocol</a>.</p>
-<h2>Devices in the SSH exchange</h2><ul><li><strong>Admin Laptop</strong> (host, 192.168.1.10)</li><li><strong>Bastion Firewall</strong> (firewall, 192.168.1.1)</li><li><strong>App Server</strong> (server tower, 10.0.0.20)</li></ul>
-<h2>How SSH works, step by step</h2>
+<h2>Which devices take part in a SSH exchange?</h2><ul><li><strong>Admin Laptop</strong> (host, 192.168.1.10)</li><li><strong>Bastion Firewall</strong> (firewall, 192.168.1.1)</li><li><strong>App Server</strong> (server tower, 10.0.0.20)</li></ul>
+<h2>How does SSH work, step by step?</h2>
 <ol><li><h3>TCP + Version Exchange</h3><p><em>SSH-2.0 banner exchange on port 22.</em> After TCP handshake, both peers send plaintext SSH-2.0 protocol identification banners.</p></li><li><h3>KEXINIT &amp; Curve25519 ECDH</h3><p><em>Diffie-Hellman key exchange + host key verify.</em> Client and server negotiate encryption algorithms and derive shared session keys via Curve25519.</p></li><li><h3>User Authentication</h3><p><em>Ed25519 public-key signature (or password).</em> Encrypted auth request signs a challenge with the user’s Ed25519 private key.</p></li><li><h3>Interactive Shell Channel</h3><p><em>Multiplexed encrypted PTY / SFTP.</em> Client opens session channel, allocates PTY, and runs shell commands over ChaCha20-Poly1305.</p></li></ol>
-<h2>What SSH looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical SSH exchange. Open the animation to inspect each one.</p><ol><li>TCP from 192.168.1.10 to 10.0.0.20: 54200 -&gt; 22 [SYN] Seq=0 (66 bytes)</li><li>SSH from 10.0.0.20 to 192.168.1.10: Server: Protocol (SSH-2.0-OpenSSH_9.6) (98 bytes)</li><li>SSH from 192.168.1.10 to 10.0.0.20: Client: Protocol (SSH-2.0-gg_ssh) (90 bytes)</li><li>SSH from 192.168.1.10 to 10.0.0.20: SSH_MSG_KEXINIT + Curve25519 ECDH Init (720 bytes)</li><li>SSH from 10.0.0.20 to 192.168.1.10: KEX_ECDH_REPLY (Host Key) + NEWKEYS (840 bytes)</li><li>SSH from 192.168.1.10 to 10.0.0.20: Encrypted USERAUTH_REQUEST (publickey ssh-ed25519) (210 bytes)</li><li>SSH from 10.0.0.20 to 192.168.1.10: SSH_MSG_USERAUTH_SUCCESS (88 bytes)</li><li>SSH from 192.168.1.10 to 10.0.0.20: CHANNEL_OPEN (session) + Encrypted Shell Command (164 bytes)</li></ol>
-<h2>SSH security notes</h2><ul><li><strong>Brute-Force Password Guessing.</strong> Automated bots scan port 22 trying thousands of common username/password pairs. <em>Defense:</em> Disable PasswordAuthentication, require Ed25519 public keys, and rate-limit with fail2ban/MFA.</li></ul>
-<h2>Test yourself on SSH</h2><h3>Which default TCP port does SSH listen on?</h3><p><strong>Answer:</strong> 22. SSH uses TCP port 22 (replacing insecure Telnet on port 23).</p><h3>Why does SSH warn on first connection about an unknown host key fingerprint?</h3><p><strong>Answer:</strong> To verify you are connecting to the genuine server and not a MITM proxy. Checking the server’s host key fingerprint (TOFU/known_hosts) prevents man-in-the-middle interception.</p><h3>Which authentication method is strongly recommended over passwords for SSH?</h3><p><strong>Answer:</strong> Public-key authentication (e.g., Ed25519). Ed25519/RSA keypairs resist password brute-forcing and never transmit secrets.</p><h3>Which file-transfer protocol runs natively inside an SSH channel?</h3><p><strong>Answer:</strong> SFTP. SFTP runs as a subsystem over an encrypted SSH channel on port 22.</p><h3>What happens during the SSH KEX_ECDH phase?</h3><p><strong>Answer:</strong> Peers derive shared symmetric session keys using Diffie-Hellman. ECDH key exchange establishes ephemeral symmetric keys for the rest of the session.</p>
-<h2>Related protocols</h2>
+<h2>SSH vs TLS / SSL: what is the difference?</h2>
+<p>SSH and TLS / SSL are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">SSH</th><th scope="col"><a href="/explore/tls/">TLS / SSL</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td><td>Layer 6 (Presentation) / Session Security</td></tr><tr><th scope="row">Default port</th><td>22</td><td>443 (HTTPS), 465/587 (SMTPS), 853 (DoT)</td></tr><tr><th scope="row">Transport</th><td>TCP</td><td>TCP</td></tr><tr><th scope="row">Data format</th><td>Binary Packet Protocol (Encrypted + MAC/AEAD)</td><td>TLS Record Layer (5B header + AEAD encrypted payload)</td></tr><tr><th scope="row">Common methods</th><td>KEXINIT, KEX_ECDH, NEWKEYS, USERAUTH_REQUEST, CHANNEL_OPEN, CHANNEL_DATA</td><td>ClientHello, ServerHello, Certificate, CertificateVerify, Finished, Application Data</td></tr><tr><th scope="row">Specification</th><td>RFC 4253: SSH Transport Layer Protocol</td><td>RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3</td></tr></tbody></table>
+<p>SSH (Secure Shell Protocol (SSH-2)): SSH establishes an encrypted, mutually authenticated channel over untrusted networks for remote shell access, SFTP file transfer, and port tunneling. TLS / SSL (Transport Layer Security (TLS 1.3)): TLS 1.3 provides confidentiality, integrity, and server authentication in a single 1-RTT handshake using ephemeral Diffie-Hellman (ECDHE) for forward secrecy and AEAD…</p>
+<h2>What does SSH look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical SSH exchange. Open the animation to inspect each packet.</p><ol><li>TCP from 192.168.1.10 to 10.0.0.20: 54200 -&gt; 22 [SYN] Seq=0 (66 bytes)</li><li>SSH from 10.0.0.20 to 192.168.1.10: Server: Protocol (SSH-2.0-OpenSSH_9.6) (98 bytes)</li><li>SSH from 192.168.1.10 to 10.0.0.20: Client: Protocol (SSH-2.0-gg_ssh) (90 bytes)</li><li>SSH from 192.168.1.10 to 10.0.0.20: SSH_MSG_KEXINIT + Curve25519 ECDH Init (720 bytes)</li><li>SSH from 10.0.0.20 to 192.168.1.10: KEX_ECDH_REPLY (Host Key) + NEWKEYS (840 bytes)</li><li>SSH from 192.168.1.10 to 10.0.0.20: Encrypted USERAUTH_REQUEST (publickey ssh-ed25519) (210 bytes)</li><li>SSH from 10.0.0.20 to 192.168.1.10: SSH_MSG_USERAUTH_SUCCESS (88 bytes)</li><li>SSH from 192.168.1.10 to 10.0.0.20: CHANNEL_OPEN (session) + Encrypted Shell Command (164 bytes)</li></ol>
+<h2>Is SSH secure? Common attacks and defenses</h2><ul><li><strong>Brute-Force Password Guessing.</strong> Automated bots scan port 22 trying thousands of common username/password pairs. <em>Defense:</em> Disable PasswordAuthentication, require Ed25519 public keys, and rate-limit with fail2ban/MFA.</li></ul>
+<h2>Frequently asked questions about SSH</h2><h3>Which default TCP port does SSH listen on?</h3><p><strong>Answer:</strong> 22. SSH uses TCP port 22 (replacing insecure Telnet on port 23).</p><h3>Why does SSH warn on first connection about an unknown host key fingerprint?</h3><p><strong>Answer:</strong> To verify you are connecting to the genuine server and not a MITM proxy. Checking the server’s host key fingerprint (TOFU/known_hosts) prevents man-in-the-middle interception.</p><h3>Which authentication method is strongly recommended over passwords for SSH?</h3><p><strong>Answer:</strong> Public-key authentication (e.g., Ed25519). Ed25519/RSA keypairs resist password brute-forcing and never transmit secrets.</p><h3>Which file-transfer protocol runs natively inside an SSH channel?</h3><p><strong>Answer:</strong> SFTP. SFTP runs as a subsystem over an encrypted SSH channel on port 22.</p><h3>What happens during the SSH KEX_ECDH phase?</h3><p><strong>Answer:</strong> Peers derive shared symmetric session keys using Diffie-Hellman. ECDH key exchange establishes ephemeral symmetric keys for the rest of the session.</p>
+<h2>Which protocols are related to SSH?</h2>
 <ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

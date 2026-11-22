@@ -20,6 +20,7 @@
     <title>RTSP Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="RTSP acts as a &quot;network remote control&quot; on port 554 for IP cameras and media servers. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/rtsp/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/rtsp/" />
     <meta property="og:title" content="RTSP Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How RTSP works",
       "keywords": "554, camera, cctv, video, rtp, nvr, play",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "RTSP (Real Time Streaming Protocol (CCTV / IP Cameras))"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › RTSP</nav>
 <h1>RTSP (Real Time Streaming Protocol (CCTV / IP Cameras)): how it works, step by step</h1>
+<h2>What is RTSP?</h2>
 <p>RTSP acts as a &quot;network remote control&quot; on port 554 for IP cameras and media servers (DESCRIBE -&gt; SETUP -&gt; PLAY -&gt; TEARDOWN), while video frames stream over RTP.</p>
 <p><a href="/explore/rtsp/"><strong>Open the interactive RTSP animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>RTSP explained simply</h2>
+<h2>What is RTSP, in simple words?</h2>
 <p>RTSP is the Play/Pause/Rewind remote control for a security camera, while RTP is the live video river flowing onto your screen.</p>
 <h2>RTSP at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>554</td></tr><tr><th scope="row">Transport</th><td>TCP (Control) + UDP/TCP (RTP Media)</td></tr><tr><th scope="row">Data format</th><td>HTTP-like Control Commands (DESCRIBE, SETUP, PLAY)</td></tr><tr><th scope="row">Common methods</th><td>OPTIONS, DESCRIBE, SETUP, PLAY, PAUSE, TEARDOWN</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>554</td></tr><tr><th scope="row">Transport</th><td>TCP (Control) + UDP/TCP (RTP Media)</td></tr><tr><th scope="row">Data format</th><td>HTTP-like Control Commands (DESCRIBE, SETUP, PLAY)</td></tr><tr><th scope="row">Common methods</th><td>OPTIONS, DESCRIBE, SETUP, PLAY, PAUSE, TEARDOWN</td></tr><tr><th scope="row">Specification</th><td>RFC 7826: Real-Time Streaming Protocol Version 2.0</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc7826" rel="noopener">RFC 7826: Real-Time Streaming Protocol Version 2.0</a>.</p>
-<h2>Devices in the RTSP exchange</h2><ul><li><strong>VLC / NVR Client</strong> (tv box, 192.168.1.10)</li><li><strong>LAN Switch</strong> (switch, 192.168.1.2)</li><li><strong>IP Camera</strong> (ip camera, 192.168.1.64)</li></ul>
-<h2>How RTSP works, step by step</h2>
+<h2>Which devices take part in a RTSP exchange?</h2><ul><li><strong>VLC / NVR Client</strong> (tv box, 192.168.1.10)</li><li><strong>LAN Switch</strong> (switch, 192.168.1.2)</li><li><strong>IP Camera</strong> (ip camera, 192.168.1.64)</li></ul>
+<h2>How does RTSP work, step by step?</h2>
 <ol><li><h3>OPTIONS &amp; DESCRIBE</h3><p><em>Fetch camera SDP track metadata.</em> Client sends OPTIONS and DESCRIBE rtsp://192.168.1.64:554/stream1; camera returns H.264 SDP.</p></li><li><h3>SETUP &amp; PLAY</h3><p><em>Negotiate RTP ports and start stream.</em> Client configures RTP transport ports with SETUP and triggers PLAY.</p></li><li><h3>RTP Video Stream</h3><p><em>H.264 NAL units streamed over RTP.</em> IP Camera streams real-time H.264 video frames to client.</p></li></ol>
-<h2>What RTSP looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical RTSP exchange. Open the animation to inspect each one.</p><ol><li>RTSP from 192.168.1.10 to 192.168.1.64: DESCRIBE rtsp://192.168.1.64:554/stream1 RTSP/1.0 (175 bytes)</li><li>RTSP from 192.168.1.64 to 192.168.1.10: RTSP/1.0 200 OK (SDP: H.264 1080p) (410 bytes)</li><li>RTSP from 192.168.1.10 to 192.168.1.64: SETUP /track1 (Transport: RTP/AVP;client_port=5000-5001) (185 bytes)</li><li>RTSP from 192.168.1.10 to 192.168.1.64: PLAY rtsp://192.168.1.64:554/stream1 (150 bytes)</li><li>RTP from 192.168.1.64 to 192.168.1.10: RTP H.264 Video Frame (PT=96, Marker=1) (1380 bytes)</li></ol>
-<h2>RTSP security notes</h2><ul><li><strong>Exposed Camera Streams on Port 554.</strong> Many IP cameras ship with default credentials or unencrypted RTSP exposed to the internet. <em>Defense:</em> Isolate cameras on a dedicated VLAN, disable UPnP, and wrap RTSP inside VPN/RTSPS.</li></ul>
-<h2>Test yourself on RTSP</h2><h3>Which default TCP port does RTSP use?</h3><p><strong>Answer:</strong> 554. RTSP listens on port 554 (and 322 for RTSPS).</p><h3>Which RTSP command actually begins media transmission?</h3><p><strong>Answer:</strong> PLAY. PLAY instructs the server to begin sending RTP packets.</p><h3>Does RTSP carry the video pixels itself or control the stream?</h3><p><strong>Answer:</strong> It controls the stream; RTP carries media. RTSP is a VCR-style control channel; RTP carries the media frames.</p>
-<h2>Related protocols</h2>
+<h2>RTSP vs RTMP: what is the difference?</h2>
+<p>RTSP and RTMP are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">RTSP</th><th scope="col"><a href="/explore/rtmp/">RTMP</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>554</td><td>1935 (RTMP), 443 (RTMPS)</td></tr><tr><th scope="row">Transport</th><td>TCP (Control) + UDP/TCP (RTP Media)</td><td>TCP</td></tr><tr><th scope="row">Data format</th><td>HTTP-like Control Commands (DESCRIBE, SETUP, PLAY)</td><td>Chunked Binary Audio/Video/AMF0 Messages</td></tr><tr><th scope="row">Common methods</th><td>OPTIONS, DESCRIBE, SETUP, PLAY, PAUSE, TEARDOWN</td><td>C0/C1/C2 Handshake, connect, createStream, publish, Video/Audio Chunks</td></tr><tr><th scope="row">Specification</th><td>RFC 7826: Real-Time Streaming Protocol Version 2.0</td><td>RTMP 1.0: Adobe RTMP Specification</td></tr></tbody></table>
+<p>RTSP (Real Time Streaming Protocol (CCTV / IP Cameras)): RTSP acts as a &quot;network remote control&quot; on port 554 for IP cameras and media servers (DESCRIBE -&gt; SETUP -&gt; PLAY -&gt; TEARDOWN), while video frames stream over RTP. RTMP (Real-Time Messaging Protocol (Live Ingest)): RTMP is the persistent TCP-based ingest protocol used by OBS Studio and encoders to push low-latency live audio/video streams to ingest servers (port 1935) before…</p>
+<h2>What does RTSP look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical RTSP exchange. Open the animation to inspect each packet.</p><ol><li>RTSP from 192.168.1.10 to 192.168.1.64: DESCRIBE rtsp://192.168.1.64:554/stream1 RTSP/1.0 (175 bytes)</li><li>RTSP from 192.168.1.64 to 192.168.1.10: RTSP/1.0 200 OK (SDP: H.264 1080p) (410 bytes)</li><li>RTSP from 192.168.1.10 to 192.168.1.64: SETUP /track1 (Transport: RTP/AVP;client_port=5000-5001) (185 bytes)</li><li>RTSP from 192.168.1.10 to 192.168.1.64: PLAY rtsp://192.168.1.64:554/stream1 (150 bytes)</li><li>RTP from 192.168.1.64 to 192.168.1.10: RTP H.264 Video Frame (PT=96, Marker=1) (1380 bytes)</li></ol>
+<h2>Is RTSP secure? Common attacks and defenses</h2><ul><li><strong>Exposed Camera Streams on Port 554.</strong> Many IP cameras ship with default credentials or unencrypted RTSP exposed to the internet. <em>Defense:</em> Isolate cameras on a dedicated VLAN, disable UPnP, and wrap RTSP inside VPN/RTSPS.</li></ul>
+<h2>Frequently asked questions about RTSP</h2><h3>Which default TCP port does RTSP use?</h3><p><strong>Answer:</strong> 554. RTSP listens on port 554 (and 322 for RTSPS).</p><h3>Which RTSP command actually begins media transmission?</h3><p><strong>Answer:</strong> PLAY. PLAY instructs the server to begin sending RTP packets.</p><h3>Does RTSP carry the video pixels itself or control the stream?</h3><p><strong>Answer:</strong> It controls the stream; RTP carries media. RTSP is a VCR-style control channel; RTP carries the media frames.</p>
+<h2>Which protocols are related to RTSP?</h2>
 <ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtmp/">RTMP</a>: Real-Time Messaging Protocol (Live Ingest)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

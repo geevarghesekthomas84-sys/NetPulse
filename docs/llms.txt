@@ -8,6 +8,7 @@
 - [Network simulator](https://netpulse.itgg.space/simulator/): IOS-style CLI, VLANs, routing protocols, DHCP, 20 labs
 - [Learn](https://netpulse.itgg.space/learn/): quizzes, games and troubleshooting challenges
 - [About](https://netpulse.itgg.space/about/): author, privacy and source code
+- [Full text of every protocol page](https://netpulse.itgg.space/llms-full.txt)
 
 ## Protocols
 - [TCP](https://netpulse.itgg.space/explore/tcp/): Transmission Control Protocol

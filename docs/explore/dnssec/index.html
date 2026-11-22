@@ -20,6 +20,7 @@
     <title>DNSSEC Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="DNSSEC adds cryptographic digital signatures (RRSIG) and a hierarchical chain of trust. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/dnssec/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/dnssec/" />
     <meta property="og:title" content="DNSSEC Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How DNSSEC works",
       "keywords": "rrsig, dnskey, ds, chain of trust, cache poisoning, ad flag, servfail",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "DNSSEC (Domain Name System Security Extensions)"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › DNSSEC</nav>
 <h1>DNSSEC (Domain Name System Security Extensions): how it works, step by step</h1>
+<h2>What is DNSSEC?</h2>
 <p>DNSSEC adds cryptographic digital signatures (RRSIG) and a hierarchical chain of trust (Root -&gt; TLD DS -&gt; Zone DNSKEY) so validating resolvers detect forged or poisoned DNS answers—note it ensures authenticity, not encryption.</p>
 <p><a href="/explore/dnssec/"><strong>Open the interactive DNSSEC animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>DNSSEC explained simply</h2>
+<h2>What is DNSSEC, in simple words?</h2>
 <p>DNSSEC is a wax royal seal on the phonebook page: anyone can still read the number, but nobody can fake it without breaking the seal.</p>
 <h2>DNSSEC at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (DNS Integrity &amp; Authenticity)</td></tr><tr><th scope="row">Default port</th><td>53</td></tr><tr><th scope="row">Transport</th><td>UDP (EDNS0) / TCP</td></tr><tr><th scope="row">Data format</th><td>DNS RRSIG, DNSKEY, DS, NSEC/NSEC3 Records</td></tr><tr><th scope="row">Common methods</th><td>DO Flag (DNSSEC OK), RRSIG Verification, DNSKEY + DS Chain of Trust</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (DNS Integrity &amp; Authenticity)</td></tr><tr><th scope="row">Default port</th><td>53</td></tr><tr><th scope="row">Transport</th><td>UDP (EDNS0) / TCP</td></tr><tr><th scope="row">Data format</th><td>DNS RRSIG, DNSKEY, DS, NSEC/NSEC3 Records</td></tr><tr><th scope="row">Common methods</th><td>DO Flag (DNSSEC OK), RRSIG Verification, DNSKEY + DS Chain of Trust</td></tr><tr><th scope="row">Specification</th><td>RFC 4033: DNS Security Introduction and Requirements</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc4033" rel="noopener">RFC 4033: DNS Security Introduction and Requirements</a>.</p>
-<h2>Devices in the DNSSEC exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Validating Resolver</strong> (dns server, 8.8.8.8)</li><li><strong>Signed Auth NS</strong> (dns server, 198.51.100.53)</li></ul>
-<h2>How DNSSEC works, step by step</h2>
+<h2>Which devices take part in a DNSSEC exchange?</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Validating Resolver</strong> (dns server, 8.8.8.8)</li><li><strong>Signed Auth NS</strong> (dns server, 198.51.100.53)</li></ul>
+<h2>How does DNSSEC work, step by step?</h2>
 <ol><li><h3>Query with DO=1</h3><p><em>Resolver requests DNSSEC signatures.</em> Validating resolver sets EDNS0 DO (DNSSEC OK) bit requesting RRSIG signatures.</p></li><li><h3>Signed Answer + DNSKEY/DS</h3><p><em>Auth returns A record + RRSIG signature.</em> Authoritative server returns A 203.0.113.10 paired with RRSIG signed by ZSK/KSK.</p></li><li><h3>Chain Verification (AD=1)</h3><p><em>Verify Root -&gt; TLD DS -&gt; Zone DNSKEY.</em> Resolver verifies signature against DS hash in parent zone and sets AD=1 (Authenticated Data).</p></li></ol>
-<h2>What DNSSEC looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical DNSSEC exchange. Open the animation to inspect each one.</p><ol><li>DNSSEC from 192.168.1.10 to 8.8.8.8: Query A bank.example.com (EDNS0 DO=1, AD=1) (86 bytes)</li><li>DNSSEC from 8.8.8.8 to 198.51.100.53: Query A + DNSKEY bank.example.com (DO=1) (86 bytes)</li><li>DNSSEC from 198.51.100.53 to 8.8.8.8: Response: A 203.0.113.10 + RRSIG + DNSKEY (540 bytes)</li><li>DNSSEC from 8.8.8.8 to 192.168.1.10: Validated Response (AD=1): A 203.0.113.10 (112 bytes)</li></ol>
-<h2>DNSSEC security notes</h2><ul><li><strong>Zone Enumeration via NSEC.</strong> Standard NSEC records allow walking every subdomain in a zone. <em>Defense:</em> Use hashed NSEC3 records with opt-out to prevent easy zone walking.</li></ul>
-<h2>Test yourself on DNSSEC</h2><h3>Does DNSSEC encrypt DNS queries from eavesdroppers?</h3><p><strong>Answer:</strong> No, DNSSEC provides cryptographic authenticity/integrity, not encryption. DNSSEC prevents tampering/spoofing via signatures; DoH/DoT provide privacy encryption.</p><h3>Which DNSSEC record holds the digital signature for a record set?</h3><p><strong>Answer:</strong> RRSIG. RRSIG holds the cryptographic signature covering an RRset.</p><h3>What does a validating resolver return when a DNSSEC signature fails verification?</h3><p><strong>Answer:</strong> SERVFAIL. Bogus DNSSEC responses trigger SERVFAIL to protect clients from poisoned data.</p>
-<h2>Related protocols</h2>
+<h2>DNSSEC vs DNS: what is the difference?</h2>
+<p>DNSSEC and DNS are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">DNSSEC</th><th scope="col"><a href="/explore/dns/">DNS</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (DNS Integrity &amp; Authenticity)</td><td>Layer 7 (Application) / TCP-IP Application</td></tr><tr><th scope="row">Default port</th><td>53</td><td>53</td></tr><tr><th scope="row">Transport</th><td>UDP (EDNS0) / TCP</td><td>UDP (queries), TCP (zone transfers / &gt;512B)</td></tr><tr><th scope="row">Data format</th><td>DNS RRSIG, DNSKEY, DS, NSEC/NSEC3 Records</td><td>Binary DNS Wire Format (Header + QNAME labels + RRs)</td></tr><tr><th scope="row">Common methods</th><td>DO Flag (DNSSEC OK), RRSIG Verification, DNSKEY + DS Chain of Trust</td><td>A, AAAA, CNAME, MX, NS, TXT, PTR, SRV</td></tr><tr><th scope="row">Specification</th><td>RFC 4033: DNS Security Introduction and Requirements</td><td>RFC 1034: Domain Names - Concepts and Facilities</td></tr></tbody></table>
+<p>DNSSEC (Domain Name System Security Extensions): DNSSEC adds cryptographic digital signatures (RRSIG) and a hierarchical chain of trust (Root -&gt; TLD DS -&gt; Zone DNSKEY) so validating resolvers detect forged or poisoned… DNS (Domain Name System): DNS translates human-readable domain names into IP addresses using a globally distributed, hierarchical tree of root, TLD, and authoritative nameservers backed by…</p>
+<h2>What does DNSSEC look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical DNSSEC exchange. Open the animation to inspect each packet.</p><ol><li>DNSSEC from 192.168.1.10 to 8.8.8.8: Query A bank.example.com (EDNS0 DO=1, AD=1) (86 bytes)</li><li>DNSSEC from 8.8.8.8 to 198.51.100.53: Query A + DNSKEY bank.example.com (DO=1) (86 bytes)</li><li>DNSSEC from 198.51.100.53 to 8.8.8.8: Response: A 203.0.113.10 + RRSIG + DNSKEY (540 bytes)</li><li>DNSSEC from 8.8.8.8 to 192.168.1.10: Validated Response (AD=1): A 203.0.113.10 (112 bytes)</li></ol>
+<h2>Is DNSSEC secure? Common attacks and defenses</h2><ul><li><strong>Zone Enumeration via NSEC.</strong> Standard NSEC records allow walking every subdomain in a zone. <em>Defense:</em> Use hashed NSEC3 records with opt-out to prevent easy zone walking.</li></ul>
+<h2>Frequently asked questions about DNSSEC</h2><h3>Does DNSSEC encrypt DNS queries from eavesdroppers?</h3><p><strong>Answer:</strong> No, DNSSEC provides cryptographic authenticity/integrity, not encryption. DNSSEC prevents tampering/spoofing via signatures; DoH/DoT provide privacy encryption.</p><h3>Which DNSSEC record holds the digital signature for a record set?</h3><p><strong>Answer:</strong> RRSIG. RRSIG holds the cryptographic signature covering an RRset.</p><h3>What does a validating resolver return when a DNSSEC signature fails verification?</h3><p><strong>Answer:</strong> SERVFAIL. Bogus DNSSEC responses trigger SERVFAIL to protect clients from poisoned data.</p>
+<h2>Which protocols are related to DNSSEC?</h2>
 <ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

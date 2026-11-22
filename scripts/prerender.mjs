@@ -40,6 +40,7 @@ function head({ title, description, path: p, type = 'article', schema }) {
   return `<title>${t}</title>
     <meta name="description" content="${d}" />
     <link rel="canonical" href="${u}" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="${type}" />
     <meta property="og:url" content="${u}" />
     <meta property="og:title" content="${t}" />
@@ -66,7 +67,7 @@ const AUTHOR = {
   url: `${SITE}/about/`,
   sameAs: ['https://github.com/geevarghesekthomas84-sys'],
 };
-const WEBSITE = { '@type': 'WebSite', '@id': `${SITE}/#website`, url: `${SITE}/`, name: 'NetPulse', inLanguage: 'en', publisher: { '@id': `${SITE}/#author` } };
+const WEBSITE = { '@type': 'WebSite', '@id': `${SITE}/#website`, url: `${SITE}/`, name: 'NetPulse', alternateName: 'NetPulse Protocol Visualizer', inLanguage: 'en', publisher: { '@id': `${SITE}/#author` } };
 
 const breadcrumb = (items) => ({
   '@type': 'BreadcrumbList',
@@ -81,51 +82,75 @@ const shell = (inner) => `<main class="seo-shell">${inner}</main>`;
 const protoLink = (p) => `<a href="/explore/${p.id}/">${esc(p.name)}</a>`;
 const footerLinks = `<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p>`;
 
-function protocolBody(p) {
-  const related = (byCategory[p.category] ?? []).filter((x) => x.id !== p.id).slice(0, 6);
-  const facts = [
+const COMPARE = {
+  tcp: 'udp', udp: 'tcp', http: 'https', https: 'http', ip: 'ipv6', ipv6: 'ip', dns: 'doh', doh: 'dns', dnssec: 'dns',
+  imap: 'pop3', pop3: 'imap', smtp: 'imap', ipsec: 'wireguard', wireguard: 'ipsec', wpa2: 'wpa3', wpa3: 'wpa2',
+  quic: 'tcp', websocket: 'http', http_proxy: 'socks5', socks5: 'http_proxy', rtsp: 'rtmp', rtmp: 'rtsp',
+  ftp: 'smb', smb: 'ftp', tls: 'ssh', ssh: 'tls', webrtc: 'websocket', sip: 'rtsp',
+};
+
+function protocolFacts(p) {
+  return [
     ['OSI layer', p.layer],
     ['Default port', p.defaultPort],
     ['Transport', p.transport],
     ['Data format', p.dataFormat],
-    ...(p.methods.length ? [['Common methods', p.methods.join(', ')]] : []),
+    ['Common methods', p.methods.length ? p.methods.join(', ') : 'n/a'],
+    ['Specification', p.rfcs[0] ? `${p.rfcs[0].number}: ${p.rfcs[0].title}` : 'n/a'],
   ];
+}
+
+function comparisonTable(p) {
+  const other = PROTOCOLS.find((x) => x.id === COMPARE[p.id]);
+  if (!other) return '';
+  const a = protocolFacts(p);
+  const b = protocolFacts(other);
+  return `<h2>${esc(p.name)} vs ${esc(other.name)}: what is the difference?</h2>
+<p>${esc(p.name)} and ${esc(other.name)} are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">${esc(p.name)}</th><th scope="col"><a href="/explore/${other.id}/">${esc(other.name)}</a></th></tr></thead><tbody>${a.map(([k, v], i) => `<tr><th scope="row">${esc(k)}</th><td>${esc(v)}</td><td>${esc(b[i][1])}</td></tr>`).join('')}</tbody></table>
+<p>${esc(p.name)} (${esc(p.fullName)}): ${esc(clip(p.description, 170))} ${esc(other.name)} (${esc(other.fullName)}): ${esc(clip(other.description, 170))}</p>`;
+}
+
+function protocolBody(p) {
+  const related = (byCategory[p.category] ?? []).filter((x) => x.id !== p.id).slice(0, 6);
   let sc = null;
   try {
     sc = p.scenario({ seed: 42 });
   } catch {
     sc = null;
   }
-  const devices = sc ? `<h2>Devices in the ${esc(p.name)} exchange</h2><ul>${sc.nodes.map((n) => `<li><strong>${esc(n.label)}</strong> (${esc(String(n.role).replace(/_/g, ' '))}${n.ip ? `, ${esc(n.ip)}` : ''})</li>`).join('')}</ul>` : '';
+  const devices = sc ? `<h2>Which devices take part in a ${esc(p.name)} exchange?</h2><ul>${sc.nodes.map((n) => `<li><strong>${esc(n.label)}</strong> (${esc(String(n.role).replace(/_/g, ' '))}${n.ip ? `, ${esc(n.ip)}` : ''})</li>`).join('')}</ul>` : '';
   const wire = sc
-    ? `<h2>What ${esc(p.name)} looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical ${esc(p.name)} exchange. Open the animation to inspect each one.</p><ol>${sc.packets.slice(0, 24).map((k) => `<li>${esc(k.protocol)} from ${esc(k.srcIp || k.srcMac)} to ${esc(k.dstIp || k.dstMac)}: ${esc(k.info)} (${esc(k.sizeBytes)} bytes)</li>`).join('')}</ol>`
+    ? `<h2>What does ${esc(p.name)} look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical ${esc(p.name)} exchange. Open the animation to inspect each packet.</p><ol>${sc.packets.slice(0, 24).map((k) => `<li>${esc(k.protocol)} from ${esc(k.srcIp || k.srcMac)} to ${esc(k.dstIp || k.dstMac)}: ${esc(k.info)} (${esc(k.sizeBytes)} bytes)</li>`).join('')}</ol>`
     : '';
   const rfcs = p.rfcs.length ? `<p>Specifications: ${p.rfcs.map((r) => `<a href="${esc(r.url)}" rel="noopener">${esc(r.number)}: ${esc(r.title)}</a>`).join('; ')}.</p>` : '';
   return shell(`
 ${crumbs([['NetPulse', '/'], ['Protocols', '/protocols/'], [p.name, null]])}
 <h1>${esc(p.name)} (${esc(p.fullName)}): how it works, step by step</h1>
+<h2>What is ${esc(p.name)}?</h2>
 <p>${esc(p.description)}</p>
 <p><a href="/explore/${p.id}/"><strong>Open the interactive ${esc(p.name)} animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>${esc(p.name)} explained simply</h2>
+<h2>What is ${esc(p.name)}, in simple words?</h2>
 <p>${esc(p.eli5)}</p>
 <h2>${esc(p.name)} at a glance</h2>
-<table><tbody>${facts.map(([k, v]) => `<tr><th scope="row">${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}</tbody></table>
+<table><tbody>${protocolFacts(p).map(([k, v]) => `<tr><th scope="row">${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}</tbody></table>
 ${rfcs}
 ${devices}
-<h2>How ${esc(p.name)} works, step by step</h2>
+<h2>How does ${esc(p.name)} work, step by step?</h2>
 <ol>${p.steps.map((s) => `<li><h3>${esc(s.title)}</h3><p><em>${esc(s.subtitle)}.</em> ${esc(s.caption)}</p></li>`).join('')}</ol>
+${comparisonTable(p)}
 ${wire}
 ${
   p.securityNotes.length
-    ? `<h2>${esc(p.name)} security notes</h2><ul>${p.securityNotes.map((n) => `<li><strong>${esc(n.attack)}.</strong> ${esc(n.description)} <em>Defense:</em> ${esc(n.defense)}</li>`).join('')}</ul>`
+    ? `<h2>Is ${esc(p.name)} secure? Common attacks and defenses</h2><ul>${p.securityNotes.map((n) => `<li><strong>${esc(n.attack)}.</strong> ${esc(n.description)} <em>Defense:</em> ${esc(n.defense)}</li>`).join('')}</ul>`
     : ''
 }
 ${
   p.quiz.length
-    ? `<h2>Test yourself on ${esc(p.name)}</h2>${p.quiz.map((q) => `<h3>${esc(q.question)}</h3><p><strong>Answer:</strong> ${esc(q.options[q.correctIndex])}. ${esc(q.explanation)}</p>`).join('')}`
+    ? `<h2>Frequently asked questions about ${esc(p.name)}</h2>${p.quiz.map((q) => `<h3>${esc(q.question)}</h3><p><strong>Answer:</strong> ${esc(q.options[q.correctIndex])}. ${esc(q.explanation)}</p>`).join('')}`
     : ''
 }
-<h2>Related protocols</h2>
+<h2>Which protocols are related to ${esc(p.name)}?</h2>
 <ul>${related.map((r) => `<li>${protoLink(r)}: ${esc(r.fullName)}</li>`).join('')}</ul>
 ${footerLinks}`);
 }
@@ -265,7 +290,7 @@ for (const p of PROTOCOLS) {
     schema: [
       WEBSITE,
       AUTHOR,
-      webPage(pth, `${p.name} (${p.fullName}) explained`, p.description, { teaches: `How ${p.name} works`, keywords: (p.keywords ?? []).join(', '), learningResourceType: 'interactive simulation' }),
+      webPage(pth, `${p.name} (${p.fullName}) explained`, p.description, { teaches: `How ${p.name} works`, keywords: (p.keywords ?? []).join(', '), educationalLevel: 'Beginner to intermediate', learningResourceType: ['interactive simulation', 'explanation'], about: { '@type': 'Thing', name: `${p.name} (${p.fullName})` } }),
       breadcrumb([['NetPulse', '/'], ['Protocols', '/protocols/'], [p.name, pth]]),
     ],
   });
@@ -319,6 +344,7 @@ const llms = `# NetPulse
 - [Network simulator](${SITE}/simulator/): IOS-style CLI, VLANs, routing protocols, DHCP, ${PRESET_LABS.length} labs
 - [Learn](${SITE}/learn/): quizzes, games and troubleshooting challenges
 - [About](${SITE}/about/): author, privacy and source code
+- [Full text of every protocol page](${SITE}/llms-full.txt)
 
 ## Protocols
 ${PROTOCOLS.map((p) => `- [${p.name}](${SITE}/explore/${p.id}/): ${p.fullName}`).join('\n')}
@@ -328,6 +354,22 @@ ${PROTOCOLS.map((p) => `- [${p.name}](${SITE}/explore/${p.id}/): ${p.fullName}`)
 `;
 fs.writeFileSync(path.join(dist, 'llms.txt'), llms);
 
-fs.writeFileSync(path.join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
+const full = `# NetPulse: full text
+
+> Plain-text version of every protocol page on ${SITE}. NetPulse is also called "NetPulse Protocol Visualizer" to tell it apart from unrelated tools with similar names.
+
+${PROTOCOLS.map((p) => `## ${p.name} (${p.fullName})
+URL: ${SITE}/explore/${p.id}/
+
+${p.description}
+
+In simple words: ${p.eli5}
+
+How it works:
+${p.steps.map((st, i) => `${i + 1}. ${st.title}: ${st.subtitle}. ${st.caption}`).join('\n')}
+`).join('\n')}`;
+fs.writeFileSync(path.join(dist, 'llms-full.txt'), full);
+
+fs.writeFileSync(path.join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nContent-Signal: search=yes, ai-input=yes, ai-train=no\n\nSitemap: ${SITE}/sitemap.xml\n`);
 
 console.log(`prerendered ${pages.length} pages + 404, sitemap.xml, llms.txt, robots.txt`);

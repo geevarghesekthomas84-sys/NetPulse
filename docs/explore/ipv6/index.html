@@ -20,6 +20,7 @@
     <title>IPv6 Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="IPv6 expands address space to 128 bits, eliminates NAT necessity, streamlines routing with a fixed 40-byte. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/ipv6/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/ipv6/" />
     <meta property="og:title" content="IPv6 Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How IPv6 works",
       "keywords": "128-bit, slaac, ndp, icmpv6, ra, rs, fe80, link-local, no nat",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "IPv6 (Internet Protocol Version 6)"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › IPv6</nav>
 <h1>IPv6 (Internet Protocol Version 6): how it works, step by step</h1>
+<h2>What is IPv6?</h2>
 <p>IPv6 expands address space to 128 bits, eliminates NAT necessity, streamlines routing with a fixed 40-byte header (no header checksum), and replaces ARP with ICMPv6 Neighbor Discovery (NDP) and SLAAC.</p>
 <p><a href="/explore/ipv6/"><strong>Open the interactive IPv6 animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>IPv6 explained simply</h2>
+<h2>What is IPv6, in simple words?</h2>
 <p>IPv6 gives every grain of sand on Earth billions of unique street addresses, and lets devices automatically configure their own address without needing a middleman.</p>
 <h2>IPv6 at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 3 (Network)</td></tr><tr><th scope="row">Default port</th><td>N/A (EtherType 0x86DD)</td></tr><tr><th scope="row">Transport</th><td>Layer 2 Framing</td></tr><tr><th scope="row">Data format</th><td>Fixed 40-byte Header + Extension Headers + Payload</td></tr><tr><th scope="row">Common methods</th><td>SLAAC (RS/RA), Neighbor Solicitation (NDP), Neighbor Advertisement, Global Unicast</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 3 (Network)</td></tr><tr><th scope="row">Default port</th><td>N/A (EtherType 0x86DD)</td></tr><tr><th scope="row">Transport</th><td>Layer 2 Framing</td></tr><tr><th scope="row">Data format</th><td>Fixed 40-byte Header + Extension Headers + Payload</td></tr><tr><th scope="row">Common methods</th><td>SLAAC (RS/RA), Neighbor Solicitation (NDP), Neighbor Advertisement, Global Unicast</td></tr><tr><th scope="row">Specification</th><td>RFC 8200: Internet Protocol, Version 6 (IPv6)</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc8200" rel="noopener">RFC 8200: Internet Protocol, Version 6 (IPv6)</a>.</p>
-<h2>Devices in the IPv6 exchange</h2><ul><li><strong>IPv6 Host</strong> (host, 2001:db8:1::10)</li><li><strong>IPv6 Router</strong> (router, 2001:db8:1::1)</li><li><strong>IPv6 Server</strong> (web server, 2001:db8:2::80)</li></ul>
-<h2>How IPv6 works, step by step</h2>
+<h2>Which devices take part in a IPv6 exchange?</h2><ul><li><strong>IPv6 Host</strong> (host, 2001:db8:1::10)</li><li><strong>IPv6 Router</strong> (router, 2001:db8:1::1)</li><li><strong>IPv6 Server</strong> (web server, 2001:db8:2::80)</li></ul>
+<h2>How does IPv6 work, step by step?</h2>
 <ol><li><h3>Router Solicitation / Advertisement</h3><p><em>SLAAC prefix discovery (ICMPv6 133/134).</em> Host queries ff02::2 and Router announces prefix 2001:db8:1::/64 for stateless auto-config.</p></li><li><h3>Neighbor Discovery (NDP)</h3><p><em>Replaces IPv4 ARP using multicast.</em> Host sends ICMPv6 Neighbor Solicitation (135) to resolve next-hop link-layer MAC.</p></li><li><h3>IPv6 Packet Forwarding</h3><p><em>Fixed 40B header, Hop Limit=64-&gt;63.</em> IPv6 traffic flows using 128-bit addresses with Next Header chaining.</p></li></ol>
-<h2>What IPv6 looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical IPv6 exchange. Open the animation to inspect each one.</p><ol><li>ICMPv6 from 2001:db8:1::10 to 2001:db8:1::1: Router Solicitation (ff02::2) (70 bytes)</li><li>ICMPv6 from 2001:db8:1::1 to 2001:db8:1::10: Router Advertisement (Prefix 2001:db8:1::/64, SLAAC) (110 bytes)</li><li>ICMPv6 from 2001:db8:1::10 to 2001:db8:1::1: Neighbor Solicitation for 2001:db8:1::1 (86 bytes)</li><li>ICMPv6 from 2001:db8:1::1 to 2001:db8:1::10: Neighbor Advertisement (MAC 02:42:ac:11:00:0b) (86 bytes)</li><li>IPv6 from 2001:db8:1::10 to 2001:db8:2::80: IPv6 TCP SYN 2001:db8:1::10 -&gt; 2001:db8:2::80 (86 bytes)</li></ol>
-<h2>IPv6 security notes</h2><ul><li><strong>Rogue Router Advertisement (RA Spoofing).</strong> An attacker sends fake ICMPv6 Router Advertisements to hijack default gateway routing on a LAN. <em>Defense:</em> Enable RA Guard on Layer 2 switches to drop RAs on untrusted access ports.</li></ul>
-<h2>Test yourself on IPv6</h2><h3>How many bits is an IPv6 address?</h3><p><strong>Answer:</strong> 128 bits. IPv6 uses 128-bit addresses written as eight 16-bit hexadecimal groups.</p><h3>Which mechanism replaces ARP in IPv6?</h3><p><strong>Answer:</strong> ICMPv6 Neighbor Discovery Protocol (NDP). IPv6 uses ICMPv6 Neighbor Solicitation and Advertisement instead of ARP broadcasts.</p><h3>Do IPv6 routers fragment packets in transit?</h3><p><strong>Answer:</strong> No, only the source host fragments after ICMPv6 Packet Too Big. IPv6 eliminates router fragmentation for faster forwarding.</p>
-<h2>Related protocols</h2>
+<h2>IPv6 vs IP (IPv4): what is the difference?</h2>
+<p>IPv6 and IP (IPv4) are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">IPv6</th><th scope="col"><a href="/explore/ip/">IP (IPv4)</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 3 (Network)</td><td>Layer 3 (Network)</td></tr><tr><th scope="row">Default port</th><td>N/A (EtherType 0x86DD)</td><td>N/A (Layer 3)</td></tr><tr><th scope="row">Transport</th><td>Layer 2 Framing</td><td>Encapsulated in Ethernet / PPP / Fiber frames</td></tr><tr><th scope="row">Data format</th><td>Fixed 40-byte Header + Extension Headers + Payload</td><td>20-byte IPv4 Header + L4 Payload (Max 65,535B)</td></tr><tr><th scope="row">Common methods</th><td>SLAAC (RS/RA), Neighbor Solicitation (NDP), Neighbor Advertisement, Global Unicast</td><td>Longest-Prefix Match, TTL Decrement, Header Checksum, Fragmentation</td></tr><tr><th scope="row">Specification</th><td>RFC 8200: Internet Protocol, Version 6 (IPv6)</td><td>RFC 791: Internet Protocol</td></tr></tbody></table>
+<p>IPv6 (Internet Protocol Version 6): IPv6 expands address space to 128 bits, eliminates NAT necessity, streamlines routing with a fixed 40-byte header (no header checksum), and replaces ARP with ICMPv6… IP (IPv4) (Internet Protocol Version 4): IPv4 is the foundational network-layer protocol that routes packets across interconnected networks using 32-bit addresses, longest-prefix matching, TTL hop limits, and…</p>
+<h2>What does IPv6 look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical IPv6 exchange. Open the animation to inspect each packet.</p><ol><li>ICMPv6 from 2001:db8:1::10 to 2001:db8:1::1: Router Solicitation (ff02::2) (70 bytes)</li><li>ICMPv6 from 2001:db8:1::1 to 2001:db8:1::10: Router Advertisement (Prefix 2001:db8:1::/64, SLAAC) (110 bytes)</li><li>ICMPv6 from 2001:db8:1::10 to 2001:db8:1::1: Neighbor Solicitation for 2001:db8:1::1 (86 bytes)</li><li>ICMPv6 from 2001:db8:1::1 to 2001:db8:1::10: Neighbor Advertisement (MAC 02:42:ac:11:00:0b) (86 bytes)</li><li>IPv6 from 2001:db8:1::10 to 2001:db8:2::80: IPv6 TCP SYN 2001:db8:1::10 -&gt; 2001:db8:2::80 (86 bytes)</li></ol>
+<h2>Is IPv6 secure? Common attacks and defenses</h2><ul><li><strong>Rogue Router Advertisement (RA Spoofing).</strong> An attacker sends fake ICMPv6 Router Advertisements to hijack default gateway routing on a LAN. <em>Defense:</em> Enable RA Guard on Layer 2 switches to drop RAs on untrusted access ports.</li></ul>
+<h2>Frequently asked questions about IPv6</h2><h3>How many bits is an IPv6 address?</h3><p><strong>Answer:</strong> 128 bits. IPv6 uses 128-bit addresses written as eight 16-bit hexadecimal groups.</p><h3>Which mechanism replaces ARP in IPv6?</h3><p><strong>Answer:</strong> ICMPv6 Neighbor Discovery Protocol (NDP). IPv6 uses ICMPv6 Neighbor Solicitation and Advertisement instead of ARP broadcasts.</p><h3>Do IPv6 routers fragment packets in transit?</h3><p><strong>Answer:</strong> No, only the source host fragments after ICMPv6 Packet Too Big. IPv6 eliminates router fragmentation for faster forwarding.</p>
+<h2>Which protocols are related to IPv6?</h2>
 <ul><li><a href="/explore/tcp/">TCP</a>: Transmission Control Protocol</li><li><a href="/explore/udp/">UDP</a>: User Datagram Protocol</li><li><a href="/explore/ip/">IP (IPv4)</a>: Internet Protocol Version 4</li><li><a href="/explore/bgp/">BGP</a>: Border Gateway Protocol (BGP-4)</li><li><a href="/explore/icmp/">ICMP</a>: Internet Control Message Protocol (Ping &amp; Traceroute)</li><li><a href="/explore/igmp/">IGMP</a>: Internet Group Management Protocol (v3)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

@@ -20,6 +20,7 @@
     <title>RADIUS Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="RADIUS centralizes Authentication, Authorization, and Accounting (AAA) for enterprise 802.1X Wi-Fi/wired. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/radius/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/radius/" />
     <meta property="og:title" content="RADIUS Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How RADIUS works",
       "keywords": "802.1x, aaa, 1812, eap, enterprise wifi, nac, access-accept",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "RADIUS (Remote Authentication Dial-In User Service (802.1X))"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,22 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › RADIUS</nav>
 <h1>RADIUS (Remote Authentication Dial-In User Service (802.1X)): how it works, step by step</h1>
+<h2>What is RADIUS?</h2>
 <p>RADIUS centralizes Authentication, Authorization, and Accounting (AAA) for enterprise 802.1X Wi-Fi/wired switches and VPNs, bridging client EAPOL messages to an identity directory.</p>
 <p><a href="/explore/radius/"><strong>Open the interactive RADIUS animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>RADIUS explained simply</h2>
+<h2>What is RADIUS, in simple words?</h2>
 <p>When you plug into an office port or join corporate Wi-Fi, the switch acts like a security guard calling HQ (the RADIUS server) to check your employee badge before opening the gate.</p>
 <h2>RADIUS at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (AAA) / 802.1X EAP</td></tr><tr><th scope="row">Default port</th><td>1812 (Auth), 1813 (Acct)</td></tr><tr><th scope="row">Transport</th><td>UDP (EAP-TLS / PEAP over 802.1X)</td></tr><tr><th scope="row">Data format</th><td>Attribute-Value Pairs (AVPs) + Shared Secret Authenticator</td></tr><tr><th scope="row">Common methods</th><td>Access-Request, Access-Challenge, Access-Accept, Access-Reject, Accounting-Request</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (AAA) / 802.1X EAP</td></tr><tr><th scope="row">Default port</th><td>1812 (Auth), 1813 (Acct)</td></tr><tr><th scope="row">Transport</th><td>UDP (EAP-TLS / PEAP over 802.1X)</td></tr><tr><th scope="row">Data format</th><td>Attribute-Value Pairs (AVPs) + Shared Secret Authenticator</td></tr><tr><th scope="row">Common methods</th><td>Access-Request, Access-Challenge, Access-Accept, Access-Reject, Accounting-Request</td></tr><tr><th scope="row">Specification</th><td>RFC 2865: Remote Authentication Dial In User Service (RADIUS)</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc2865" rel="noopener">RFC 2865: Remote Authentication Dial In User Service (RADIUS)</a>.</p>
-<h2>Devices in the RADIUS exchange</h2><ul><li><strong>Laptop STA</strong> (host, 192.168.1.40)</li><li><strong>WPA3 / 802.1X AP</strong> (access point, 192.168.1.2)</li><li><strong>RADIUS Server</strong> (server rack, 10.0.0.50)</li></ul>
-<h2>How RADIUS works, step by step</h2>
+<h2>Which devices take part in a RADIUS exchange?</h2><ul><li><strong>Laptop STA</strong> (host, 192.168.1.40)</li><li><strong>WPA3 / 802.1X AP</strong> (access point, 192.168.1.2)</li><li><strong>RADIUS Server</strong> (server rack, 10.0.0.50)</li></ul>
+<h2>How does RADIUS work, step by step?</h2>
 <ol><li><h3>EAPOL Start &amp; Identity</h3><p><em>Supplicant sends EAP-Identity to Authenticator AP.</em> 802.1X supplicant connects; AP keeps port unauthorized and requests EAP identity.</p></li><li><h3>RADIUS Access-Request &amp; Challenge</h3><p><em>AP relays EAP inside UDP/1812 to RADIUS.</em> AP wraps EAP payload into RADIUS Access-Request; RADIUS replies Access-Challenge (EAP-TLS).</p></li><li><h3>Access-Accept &amp; Port Open</h3><p><em>RADIUS approves VLAN + MSK key.</em> RADIUS returns Access-Accept with Master Session Key and assigned VLAN; AP authorizes port.</p></li></ol>
-<h2>What RADIUS looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical RADIUS exchange. Open the animation to inspect each one.</p><ol><li>EAPOL from 192.168.1.40 to 192.168.1.2: EAP-Response/Identity (alice@corp.local) (88 bytes)</li><li>RADIUS from 192.168.1.2 to 10.0.0.50: Access-Request (User=alice@corp.local, EAP-Message) (210 bytes)</li><li>RADIUS from 10.0.0.50 to 192.168.1.2: Access-Challenge (EAP-TLS Server Certificate) (820 bytes)</li><li>RADIUS from 192.168.1.40 to 10.0.0.50: EAP-TLS Client Verify -&gt; Access-Request (420 bytes)</li><li>RADIUS from 10.0.0.50 to 192.168.1.2: Access-Accept (VLAN=20, MS-MPPE-Keys) (180 bytes)</li></ol>
-<h2>RADIUS security notes</h2><ul><li><strong>BlastRADIUS (MD5 Collision Forgery).</strong> Legacy RADIUS over UDP relies on MD5 Response Authenticator without Message-Authenticator. <em>Defense:</em> Require Message-Authenticator (RFC 3579) on all packets or run RadSec (RADIUS over TLS, port 2083).</li></ul>
-<h2>Test yourself on RADIUS</h2><h3>Which UDP port does RADIUS use for authentication?</h3><p><strong>Answer:</strong> 1812. RADIUS uses UDP 1812 for authentication/authorization and 1813 for accounting.</p><h3>In 802.1X, what are the three architectural roles?</h3><p><strong>Answer:</strong> Supplicant, Authenticator (Switch/AP), Authentication Server (RADIUS). The Supplicant (device) authenticates via the Authenticator (AP/switch) to the RADIUS server.</p><h3>Which modern extension protects RADIUS traffic with TLS?</h3><p><strong>Answer:</strong> RadSec (TCP 2083). RadSec (RFC 6614) wraps RADIUS inside TLS to eliminate MD5 vulnerabilities.</p>
-<h2>Related protocols</h2>
+
+<h2>What does RADIUS look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical RADIUS exchange. Open the animation to inspect each packet.</p><ol><li>EAPOL from 192.168.1.40 to 192.168.1.2: EAP-Response/Identity (alice@corp.local) (88 bytes)</li><li>RADIUS from 192.168.1.2 to 10.0.0.50: Access-Request (User=alice@corp.local, EAP-Message) (210 bytes)</li><li>RADIUS from 10.0.0.50 to 192.168.1.2: Access-Challenge (EAP-TLS Server Certificate) (820 bytes)</li><li>RADIUS from 192.168.1.40 to 10.0.0.50: EAP-TLS Client Verify -&gt; Access-Request (420 bytes)</li><li>RADIUS from 10.0.0.50 to 192.168.1.2: Access-Accept (VLAN=20, MS-MPPE-Keys) (180 bytes)</li></ol>
+<h2>Is RADIUS secure? Common attacks and defenses</h2><ul><li><strong>BlastRADIUS (MD5 Collision Forgery).</strong> Legacy RADIUS over UDP relies on MD5 Response Authenticator without Message-Authenticator. <em>Defense:</em> Require Message-Authenticator (RFC 3579) on all packets or run RadSec (RADIUS over TLS, port 2083).</li></ul>
+<h2>Frequently asked questions about RADIUS</h2><h3>Which UDP port does RADIUS use for authentication?</h3><p><strong>Answer:</strong> 1812. RADIUS uses UDP 1812 for authentication/authorization and 1813 for accounting.</p><h3>In 802.1X, what are the three architectural roles?</h3><p><strong>Answer:</strong> Supplicant, Authenticator (Switch/AP), Authentication Server (RADIUS). The Supplicant (device) authenticates via the Authenticator (AP/switch) to the RADIUS server.</p><h3>Which modern extension protects RADIUS traffic with TLS?</h3><p><strong>Answer:</strong> RadSec (TCP 2083). RadSec (RFC 6614) wraps RADIUS inside TLS to eliminate MD5 vulnerabilities.</p>
+<h2>Which protocols are related to RADIUS?</h2>
 <ul><li><a href="/explore/tls/">TLS / SSL</a>: Transport Layer Security (TLS 1.3)</li><li><a href="/explore/http_proxy/">HTTP Proxy</a>: HTTP Forward Proxy &amp; CONNECT Tunnel</li><li><a href="/explore/socks5/">SOCKS5</a>: SOCKS Protocol Version 5</li><li><a href="/explore/reverse_proxy/">Reverse Proxy</a>: Reverse Proxy &amp; Load Balancer (TLS Termination)</li><li><a href="/explore/wireguard/">WireGuard</a>: WireGuard Modern Cryptographic VPN</li><li><a href="/explore/ipsec/">IPsec</a>: Internet Protocol Security (IKEv2 + ESP)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +163,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

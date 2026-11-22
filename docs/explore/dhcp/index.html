@@ -20,6 +20,7 @@
     <title>DHCP Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="DHCP automatically assigns IPv4 addresses, subnet masks, default gateways, and DNS servers to devices joining a. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/dhcp/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/dhcp/" />
     <meta property="og:title" content="DHCP Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How DHCP works",
       "keywords": "dora, lease, ip assignment, broadcast, 67, 68, gateway, subnet",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "DHCP (Dynamic Host Configuration Protocol)"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,22 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › DHCP</nav>
 <h1>DHCP (Dynamic Host Configuration Protocol): how it works, step by step</h1>
+<h2>What is DHCP?</h2>
 <p>DHCP automatically assigns IPv4 addresses, subnet masks, default gateways, and DNS servers to devices joining a network through the 4-step DORA handshake.</p>
 <p><a href="/explore/dhcp/"><strong>Open the interactive DHCP animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>DHCP explained simply</h2>
+<h2>What is DHCP, in simple words?</h2>
 <p>When a new kid joins class without a seat, they shout &quot;Does anyone have a spare desk?&quot; (Discover), the teacher points to Desk 50 (Offer), the kid says &quot;I’ll take Desk 50!&quot; (Request), and the teacher writes their name down (Ack).</p>
 <h2>DHCP at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application) / UDP Transport</td></tr><tr><th scope="row">Default port</th><td>67 (Server), 68 (Client)</td></tr><tr><th scope="row">Transport</th><td>UDP</td></tr><tr><th scope="row">Data format</th><td>BOOTP-derived Binary Options (TLV)</td></tr><tr><th scope="row">Common methods</th><td>DISCOVER, OFFER, REQUEST, ACK, NAK, RELEASE, INFORM</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application) / UDP Transport</td></tr><tr><th scope="row">Default port</th><td>67 (Server), 68 (Client)</td></tr><tr><th scope="row">Transport</th><td>UDP</td></tr><tr><th scope="row">Data format</th><td>BOOTP-derived Binary Options (TLV)</td></tr><tr><th scope="row">Common methods</th><td>DISCOVER, OFFER, REQUEST, ACK, NAK, RELEASE, INFORM</td></tr><tr><th scope="row">Specification</th><td>RFC 2131: Dynamic Host Configuration Protocol</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc2131" rel="noopener">RFC 2131: Dynamic Host Configuration Protocol</a>; <a href="https://www.rfc-editor.org/rfc/rfc2132" rel="noopener">RFC 2132: DHCP Options and BOOTP Vendor Extensions</a>.</p>
-<h2>Devices in the DHCP exchange</h2><ul><li><strong>Client (0.0.0.0)</strong> (host, 0.0.0.0)</li><li><strong>LAN Switch</strong> (switch, 192.168.1.2)</li><li><strong>DHCP Server</strong> (dhcp server, 192.168.1.1)</li></ul>
-<h2>How DHCP works, step by step</h2>
+<h2>Which devices take part in a DHCP exchange?</h2><ul><li><strong>Client (0.0.0.0)</strong> (host, 0.0.0.0)</li><li><strong>LAN Switch</strong> (switch, 192.168.1.2)</li><li><strong>DHCP Server</strong> (dhcp server, 192.168.1.1)</li></ul>
+<h2>How does DHCP work, step by step?</h2>
 <ol><li><h3>DISCOVER</h3><p><em>Client broadcasts DHCPDISCOVER.</em> Client with IP 0.0.0.0 sends UDP broadcast (68 -&gt; 67) asking for any DHCP server on the LAN.</p></li><li><h3>OFFER</h3><p><em>Server offers 192.168.1.50.</em> DHCP server reserves 192.168.1.50 from its pool and sends DHCPOFFER with subnet mask, gateway, and DNS.</p></li><li><h3>REQUEST</h3><p><em>Client accepts offered IP.</em> Client broadcasts DHCPREQUEST confirming it accepts 192.168.1.50 from server 192.168.1.1.</p></li><li><h3>ACK</h3><p><em>Server commits lease (86400s).</em> Server sends DHCPACK finalizing the 24-hour lease; client runs gratuitous ARP and configures eth0.</p></li></ol>
-<h2>What DHCP looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical DHCP exchange. Open the animation to inspect each one.</p><ol><li>DHCP from 0.0.0.0 to 192.168.1.2: DHCP Discover - Transaction ID 0x9f12a001 (Broadcast) (342 bytes)</li><li>DHCP from 192.168.1.2 to 192.168.1.1: DHCP Discover (Flooded to Server Port) (342 bytes)</li><li>DHCP from 192.168.1.1 to 192.168.1.2: DHCP Offer - Offered IP 192.168.1.50 (Lease 86400s) (350 bytes)</li><li>DHCP from 192.168.1.2 to 0.0.0.0: DHCP Offer - Offered IP 192.168.1.50 (350 bytes)</li><li>DHCP from 0.0.0.0 to 192.168.1.1: DHCP Request - Requesting 192.168.1.50 from 192.168.1.1 (348 bytes)</li><li>DHCP from 192.168.1.1 to 0.0.0.0: DHCP ACK - Lease confirmed 192.168.1.50/24 (356 bytes)</li></ol>
-<h2>DHCP security notes</h2><ul><li><strong>Rogue DHCP Server.</strong> An attacker answers DISCOVER faster than the real router, handing out their own IP as default gateway/DNS for MITM. <em>Defense:</em> Enable DHCP Snooping on switches to block DHCPOFFER packets on untrusted access ports.</li><li><strong>DHCP Starvation.</strong> Flooding DISCOVER requests with spoofed MAC addresses exhausts the entire IP pool. <em>Defense:</em> Configure port security MAC limits and DHCP snooping rate limits.</li></ul>
-<h2>Test yourself on DHCP</h2><h3>What does the acronym DORA stand for in DHCP?</h3><p><strong>Answer:</strong> Discover, Offer, Request, Acknowledge. DORA represents the four standard DHCP messages: DISCOVER, OFFER, REQUEST, ACK.</p><h3>Which UDP ports do DHCP servers and clients use?</h3><p><strong>Answer:</strong> 67 and 68. Servers listen on UDP port 67 and clients listen on UDP port 68.</p><h3>Why does the client send DHCPREQUEST as a broadcast even after receiving an offer?</h3><p><strong>Answer:</strong> To inform all other DHCP servers whose offers were declined. Broadcasting REQUEST lets competing DHCP servers withdraw their unchosen offers.</p><h3>Which switch feature defends against rogue DHCP servers?</h3><p><strong>Answer:</strong> DHCP Snooping. DHCP Snooping drops server-side DHCP messages arriving on untrusted user ports.</p><h3>What happens if no DHCP server responds on a Windows/macOS host?</h3><p><strong>Answer:</strong> The host assigns an APIPA link-local IP (169.254.x.x). RFC 3927 APIPA assigns a 169.254.0.0/16 address when DHCP times out.</p>
-<h2>Related protocols</h2>
+
+<h2>What does DHCP look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical DHCP exchange. Open the animation to inspect each packet.</p><ol><li>DHCP from 0.0.0.0 to 192.168.1.2: DHCP Discover - Transaction ID 0x9f12a001 (Broadcast) (342 bytes)</li><li>DHCP from 192.168.1.2 to 192.168.1.1: DHCP Discover (Flooded to Server Port) (342 bytes)</li><li>DHCP from 192.168.1.1 to 192.168.1.2: DHCP Offer - Offered IP 192.168.1.50 (Lease 86400s) (350 bytes)</li><li>DHCP from 192.168.1.2 to 0.0.0.0: DHCP Offer - Offered IP 192.168.1.50 (350 bytes)</li><li>DHCP from 0.0.0.0 to 192.168.1.1: DHCP Request - Requesting 192.168.1.50 from 192.168.1.1 (348 bytes)</li><li>DHCP from 192.168.1.1 to 0.0.0.0: DHCP ACK - Lease confirmed 192.168.1.50/24 (356 bytes)</li></ol>
+<h2>Is DHCP secure? Common attacks and defenses</h2><ul><li><strong>Rogue DHCP Server.</strong> An attacker answers DISCOVER faster than the real router, handing out their own IP as default gateway/DNS for MITM. <em>Defense:</em> Enable DHCP Snooping on switches to block DHCPOFFER packets on untrusted access ports.</li><li><strong>DHCP Starvation.</strong> Flooding DISCOVER requests with spoofed MAC addresses exhausts the entire IP pool. <em>Defense:</em> Configure port security MAC limits and DHCP snooping rate limits.</li></ul>
+<h2>Frequently asked questions about DHCP</h2><h3>What does the acronym DORA stand for in DHCP?</h3><p><strong>Answer:</strong> Discover, Offer, Request, Acknowledge. DORA represents the four standard DHCP messages: DISCOVER, OFFER, REQUEST, ACK.</p><h3>Which UDP ports do DHCP servers and clients use?</h3><p><strong>Answer:</strong> 67 and 68. Servers listen on UDP port 67 and clients listen on UDP port 68.</p><h3>Why does the client send DHCPREQUEST as a broadcast even after receiving an offer?</h3><p><strong>Answer:</strong> To inform all other DHCP servers whose offers were declined. Broadcasting REQUEST lets competing DHCP servers withdraw their unchosen offers.</p><h3>Which switch feature defends against rogue DHCP servers?</h3><p><strong>Answer:</strong> DHCP Snooping. DHCP Snooping drops server-side DHCP messages arriving on untrusted user ports.</p><h3>What happens if no DHCP server responds on a Windows/macOS host?</h3><p><strong>Answer:</strong> The host assigns an APIPA link-local IP (169.254.x.x). RFC 3927 APIPA assigns a 169.254.0.0/16 address when DHCP times out.</p>
+<h2>Which protocols are related to DHCP?</h2>
 <ul><li><a href="/explore/tcp/">TCP</a>: Transmission Control Protocol</li><li><a href="/explore/udp/">UDP</a>: User Datagram Protocol</li><li><a href="/explore/ip/">IP (IPv4)</a>: Internet Protocol Version 4</li><li><a href="/explore/bgp/">BGP</a>: Border Gateway Protocol (BGP-4)</li><li><a href="/explore/ipv6/">IPv6</a>: Internet Protocol Version 6</li><li><a href="/explore/icmp/">ICMP</a>: Internet Control Message Protocol (Ping &amp; Traceroute)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +163,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

@@ -20,6 +20,7 @@
     <title>TLS / SSL Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="TLS 1.3 provides confidentiality, integrity, and server authentication in a single 1-RTT handshake using. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/tls/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/tls/" />
     <meta property="og:title" content="TLS / SSL Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How TLS / SSL works",
       "keywords": "ssl, tls 1.3, handshake, certificate, x25519, aes-gcm, sni, alpn, 443, encryption",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "TLS / SSL (Transport Layer Security (TLS 1.3))"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › TLS / SSL</nav>
 <h1>TLS / SSL (Transport Layer Security (TLS 1.3)): how it works, step by step</h1>
+<h2>What is TLS / SSL?</h2>
 <p>TLS 1.3 provides confidentiality, integrity, and server authentication in a single 1-RTT handshake using ephemeral Diffie-Hellman (ECDHE) for forward secrecy and AEAD ciphers.</p>
 <p><a href="/explore/tls/"><strong>Open the interactive TLS / SSL animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>TLS / SSL explained simply</h2>
+<h2>What is TLS / SSL, in simple words?</h2>
 <p>Before whispering secrets, you and the server publicly mix paint colors (key exchange) to create a shared secret key nobody watching can unmix, then verify their ID badge (certificate).</p>
 <h2>TLS / SSL at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 6 (Presentation) / Session Security</td></tr><tr><th scope="row">Default port</th><td>443 (HTTPS), 465/587 (SMTPS), 853 (DoT)</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>TLS Record Layer (5B header + AEAD encrypted payload)</td></tr><tr><th scope="row">Common methods</th><td>ClientHello, ServerHello, Certificate, CertificateVerify, Finished, Application Data</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 6 (Presentation) / Session Security</td></tr><tr><th scope="row">Default port</th><td>443 (HTTPS), 465/587 (SMTPS), 853 (DoT)</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>TLS Record Layer (5B header + AEAD encrypted payload)</td></tr><tr><th scope="row">Common methods</th><td>ClientHello, ServerHello, Certificate, CertificateVerify, Finished, Application Data</td></tr><tr><th scope="row">Specification</th><td>RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc8446" rel="noopener">RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3</a>.</p>
-<h2>Devices in the TLS / SSL exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Edge Proxy</strong> (proxy, 192.0.2.80)</li><li><strong>Web Server</strong> (web server, 203.0.113.10)</li></ul>
-<h2>How TLS / SSL works, step by step</h2>
+<h2>Which devices take part in a TLS / SSL exchange?</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Edge Proxy</strong> (proxy, 192.0.2.80)</li><li><strong>Web Server</strong> (web server, 203.0.113.10)</li></ul>
+<h2>How does TLS / SSL work, step by step?</h2>
 <ol><li><h3>TCP Handshake</h3><p><em>SYN / SYN-ACK / ACK on port 443.</em> Client opens a TCP connection to port 443 before starting TLS.</p></li><li><h3>ClientHello (TLS 1.3)</h3><p><em>Supported ciphers, SNI, X25519 key share.</em> Client sends ClientHello with TLS 1.3 cipher suites, SNI=example.com, and ephemeral ECDHE key share.</p></li><li><h3>ServerHello + Certificate</h3><p><em>1-RTT ServerHello, EncryptedExtensions, Cert, Finished.</em> Server derives handshake keys immediately, sends its X25519 share, encrypted certificate chain, and Finished.</p></li><li><h3>Client Finished &amp; App Data</h3><p><em>Encrypted AEAD Application Data (0x17).</em> Client verifies certificate signature, sends Finished, and streams encrypted HTTP Application Data.</p></li></ol>
-<h2>What TLS / SSL looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical TLS / SSL exchange. Open the animation to inspect each one.</p><ol><li>TCP from 192.168.1.10 to 203.0.113.10: 53100 -&gt; 443 [SYN] Seq=0 (66 bytes)</li><li>TCP from 203.0.113.10 to 192.168.1.10: 443 -&gt; 53100 [SYN, ACK] Seq=0 Ack=1 (66 bytes)</li><li>TCP from 192.168.1.10 to 203.0.113.10: 53100 -&gt; 443 [ACK] Seq=1 Ack=1 (60 bytes)</li><li>TLS from 192.168.1.10 to 203.0.113.10: ClientHello (TLS 1.3, SNI=example.com, X25519 key_share) (517 bytes)</li><li>TLS from 203.0.113.10 to 192.168.1.10: ServerHello, ChangeCipherSpec, EncryptedExtensions, Certificate, Finished (1420 bytes)</li><li>TLS from 192.168.1.10 to 203.0.113.10: Client Finished + Application Data [Encrypted HTTP GET /] (248 bytes)</li><li>TLS from 203.0.113.10 to 192.168.1.10: Application Data [Encrypted 200 OK text/html] (1380 bytes)</li></ol>
-<h2>TLS / SSL security notes</h2><ul><li><strong>TLS Downgrade / POODLE / BEAST.</strong> An active MITM forces peers back to obsolete SSL 3.0 or TLS 1.0 ciphers with padding oracle flaws. <em>Defense:</em> Disable SSL/TLS &lt; 1.2 and rely on TLS 1.3 downgrade sentinel inside ServerHello.random.</li><li><strong>Forged / Untrusted Certificate MITM.</strong> A rogue proxy presents an expired or self-signed certificate. <em>Defense:</em> Strictly verify X.509 chain, expiry, SAN hostname, OCSP stapling, and Certificate Transparency.</li></ul>
-<h2>Test yourself on TLS / SSL</h2><h3>How many round-trips (RTTs) does a standard TLS 1.3 handshake add after TCP connects?</h3><p><strong>Answer:</strong> 1 RTT. TLS 1.3 cuts handshake latency from 2 RTTs (TLS 1.2) down to 1 RTT by sending key shares in ClientHello.</p><h3>Why are certificates encrypted in TLS 1.3?</h3><p><strong>Answer:</strong> To prevent passive observers from seeing server identity/metadata. After ServerHello, TLS 1.3 encrypts the Certificate and CertificateVerify messages with the handshake key.</p><h3>What property guarantees past recorded traffic cannot be decrypted even if the server’s long-term private key leaks later?</h3><p><strong>Answer:</strong> Forward Secrecy (ECDHE). Ephemeral Diffie-Hellman keys are discarded after each session, providing Perfect Forward Secrecy.</p><h3>Which TLS extension tells the server which hostname the client wants when multiple sites share one IP?</h3><p><strong>Answer:</strong> SNI (Server Name Indication). SNI sends the target hostname in ClientHello so the server picks the right certificate.</p><h3>What happens if the server presents an expired X.509 certificate?</h3><p><strong>Answer:</strong> Client sends a Fatal Alert (certificate_expired) and closes the connection. Clients abort the TLS handshake with Alert level=Fatal, description=certificate_expired.</p>
-<h2>Related protocols</h2>
+<h2>TLS / SSL vs SSH: what is the difference?</h2>
+<p>TLS / SSL and SSH are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">TLS / SSL</th><th scope="col"><a href="/explore/ssh/">SSH</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 6 (Presentation) / Session Security</td><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>443 (HTTPS), 465/587 (SMTPS), 853 (DoT)</td><td>22</td></tr><tr><th scope="row">Transport</th><td>TCP</td><td>TCP</td></tr><tr><th scope="row">Data format</th><td>TLS Record Layer (5B header + AEAD encrypted payload)</td><td>Binary Packet Protocol (Encrypted + MAC/AEAD)</td></tr><tr><th scope="row">Common methods</th><td>ClientHello, ServerHello, Certificate, CertificateVerify, Finished, Application Data</td><td>KEXINIT, KEX_ECDH, NEWKEYS, USERAUTH_REQUEST, CHANNEL_OPEN, CHANNEL_DATA</td></tr><tr><th scope="row">Specification</th><td>RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3</td><td>RFC 4253: SSH Transport Layer Protocol</td></tr></tbody></table>
+<p>TLS / SSL (Transport Layer Security (TLS 1.3)): TLS 1.3 provides confidentiality, integrity, and server authentication in a single 1-RTT handshake using ephemeral Diffie-Hellman (ECDHE) for forward secrecy and AEAD… SSH (Secure Shell Protocol (SSH-2)): SSH establishes an encrypted, mutually authenticated channel over untrusted networks for remote shell access, SFTP file transfer, and port tunneling.</p>
+<h2>What does TLS / SSL look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical TLS / SSL exchange. Open the animation to inspect each packet.</p><ol><li>TCP from 192.168.1.10 to 203.0.113.10: 53100 -&gt; 443 [SYN] Seq=0 (66 bytes)</li><li>TCP from 203.0.113.10 to 192.168.1.10: 443 -&gt; 53100 [SYN, ACK] Seq=0 Ack=1 (66 bytes)</li><li>TCP from 192.168.1.10 to 203.0.113.10: 53100 -&gt; 443 [ACK] Seq=1 Ack=1 (60 bytes)</li><li>TLS from 192.168.1.10 to 203.0.113.10: ClientHello (TLS 1.3, SNI=example.com, X25519 key_share) (517 bytes)</li><li>TLS from 203.0.113.10 to 192.168.1.10: ServerHello, ChangeCipherSpec, EncryptedExtensions, Certificate, Finished (1420 bytes)</li><li>TLS from 192.168.1.10 to 203.0.113.10: Client Finished + Application Data [Encrypted HTTP GET /] (248 bytes)</li><li>TLS from 203.0.113.10 to 192.168.1.10: Application Data [Encrypted 200 OK text/html] (1380 bytes)</li></ol>
+<h2>Is TLS / SSL secure? Common attacks and defenses</h2><ul><li><strong>TLS Downgrade / POODLE / BEAST.</strong> An active MITM forces peers back to obsolete SSL 3.0 or TLS 1.0 ciphers with padding oracle flaws. <em>Defense:</em> Disable SSL/TLS &lt; 1.2 and rely on TLS 1.3 downgrade sentinel inside ServerHello.random.</li><li><strong>Forged / Untrusted Certificate MITM.</strong> A rogue proxy presents an expired or self-signed certificate. <em>Defense:</em> Strictly verify X.509 chain, expiry, SAN hostname, OCSP stapling, and Certificate Transparency.</li></ul>
+<h2>Frequently asked questions about TLS / SSL</h2><h3>How many round-trips (RTTs) does a standard TLS 1.3 handshake add after TCP connects?</h3><p><strong>Answer:</strong> 1 RTT. TLS 1.3 cuts handshake latency from 2 RTTs (TLS 1.2) down to 1 RTT by sending key shares in ClientHello.</p><h3>Why are certificates encrypted in TLS 1.3?</h3><p><strong>Answer:</strong> To prevent passive observers from seeing server identity/metadata. After ServerHello, TLS 1.3 encrypts the Certificate and CertificateVerify messages with the handshake key.</p><h3>What property guarantees past recorded traffic cannot be decrypted even if the server’s long-term private key leaks later?</h3><p><strong>Answer:</strong> Forward Secrecy (ECDHE). Ephemeral Diffie-Hellman keys are discarded after each session, providing Perfect Forward Secrecy.</p><h3>Which TLS extension tells the server which hostname the client wants when multiple sites share one IP?</h3><p><strong>Answer:</strong> SNI (Server Name Indication). SNI sends the target hostname in ClientHello so the server picks the right certificate.</p><h3>What happens if the server presents an expired X.509 certificate?</h3><p><strong>Answer:</strong> Client sends a Fatal Alert (certificate_expired) and closes the connection. Clients abort the TLS handshake with Alert level=Fatal, description=certificate_expired.</p>
+<h2>Which protocols are related to TLS / SSL?</h2>
 <ul><li><a href="/explore/http_proxy/">HTTP Proxy</a>: HTTP Forward Proxy &amp; CONNECT Tunnel</li><li><a href="/explore/socks5/">SOCKS5</a>: SOCKS Protocol Version 5</li><li><a href="/explore/reverse_proxy/">Reverse Proxy</a>: Reverse Proxy &amp; Load Balancer (TLS Termination)</li><li><a href="/explore/wireguard/">WireGuard</a>: WireGuard Modern Cryptographic VPN</li><li><a href="/explore/ipsec/">IPsec</a>: Internet Protocol Security (IKEv2 + ESP)</li><li><a href="/explore/wpa2/">Wi-Fi WPA2</a>: IEEE 802.11i WPA2-PSK (4-Way Handshake)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

@@ -20,6 +20,7 @@
     <title>SOCKS5 Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="SOCKS5 is a protocol-agnostic session proxy (port 1080) capable of relaying any TCP or UDP traffic. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/socks5/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/socks5/" />
     <meta property="og:title" content="SOCKS5 Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How SOCKS5 works",
       "keywords": "1080, proxy, tor, ssh -D, udp associate, session",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "SOCKS5 (SOCKS Protocol Version 5)"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › SOCKS5</nav>
 <h1>SOCKS5 (SOCKS Protocol Version 5): how it works, step by step</h1>
+<h2>What is SOCKS5?</h2>
 <p>SOCKS5 is a protocol-agnostic session proxy (port 1080) capable of relaying any TCP or UDP traffic (used by SSH dynamic port forwarding and Tor) without understanding HTTP.</p>
 <p><a href="/explore/socks5/"><strong>Open the interactive SOCKS5 animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>SOCKS5 explained simply</h2>
+<h2>What is SOCKS5, in simple words?</h2>
 <p>SOCKS5 is a universal courier pipe: you tell it the final IP and port, and it passes any kind of TCP or UDP packets through without caring what app created them.</p>
 <h2>SOCKS5 at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 5 (Session)</td></tr><tr><th scope="row">Default port</th><td>1080</td></tr><tr><th scope="row">Transport</th><td>TCP / UDP Associate</td></tr><tr><th scope="row">Data format</th><td>Binary Greeting + Auth + Relay Header</td></tr><tr><th scope="row">Common methods</th><td>Method Negotiation, Username/Password Auth, CONNECT, BIND, UDP ASSOCIATE</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 5 (Session)</td></tr><tr><th scope="row">Default port</th><td>1080</td></tr><tr><th scope="row">Transport</th><td>TCP / UDP Associate</td></tr><tr><th scope="row">Data format</th><td>Binary Greeting + Auth + Relay Header</td></tr><tr><th scope="row">Common methods</th><td>Method Negotiation, Username/Password Auth, CONNECT, BIND, UDP ASSOCIATE</td></tr><tr><th scope="row">Specification</th><td>RFC 1928: SOCKS Protocol Version 5</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc1928" rel="noopener">RFC 1928: SOCKS Protocol Version 5</a>.</p>
-<h2>Devices in the SOCKS5 exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Proxy Server</strong> (proxy, 192.0.2.80)</li><li><strong>Origin Server</strong> (web server, 203.0.113.10)</li></ul>
-<h2>How SOCKS5 works, step by step</h2>
+<h2>Which devices take part in a SOCKS5 exchange?</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Proxy Server</strong> (proxy, 192.0.2.80)</li><li><strong>Origin Server</strong> (web server, 203.0.113.10)</li></ul>
+<h2>How does SOCKS5 work, step by step?</h2>
 <ol><li><h3>Method Greeting</h3><p><em>Ver=5, Methods=[0x00, 0x02].</em> Client offers No-Auth or Username/Password; SOCKS5 server selects method.</p></li><li><h3>CONNECT Request</h3><p><em>CMD=0x01 Dst=example.com:443.</em> Client asks SOCKS5 proxy to connect to domain/IP on port 443; proxy replies Succeeded (0x00).</p></li><li><h3>Transparent Relay</h3><p><em>Arbitrary TCP/UDP payload relayed.</em> All subsequent bytes pass transparently between client and target origin.</p></li></ol>
-<h2>What SOCKS5 looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical SOCKS5 exchange. Open the animation to inspect each one.</p><ol><li>SOCKS5 from 192.168.1.10 to 192.0.2.80: Client Greeting: Ver=5, NMethods=2 (NoAuth, User/Pass) (64 bytes)</li><li>SOCKS5 from 192.0.2.80 to 192.168.1.10: Method Selection: 0x00 (Accepted) (60 bytes)</li><li>SOCKS5 from 192.168.1.10 to 192.0.2.80: CONNECT example.com:443 (ATYP=Domain) (86 bytes)</li><li>TCP from 192.0.2.80 to 203.0.113.10: Proxy -&gt; Origin [SYN] Port 443 (66 bytes)</li><li>SOCKS5 from 192.0.2.80 to 192.168.1.10: Reply: Succeeded (0x00) (70 bytes)</li><li>TLS from 192.168.1.10 to 203.0.113.10: Relayed Application Stream (420 bytes)</li></ol>
-<h2>SOCKS5 security notes</h2><ul><li><strong>Unencrypted SOCKS5 Credentials.</strong> RFC 1929 username/password subnegotiation sends credentials in plaintext unless wrapped inside SSH/TLS. <em>Defense:</em> Tunnel SOCKS5 inside SSH (`ssh -D 1080`) or TLS.</li></ul>
-<h2>Test yourself on SOCKS5</h2><h3>Which default port does SOCKS5 use?</h3><p><strong>Answer:</strong> 1080. IANA assigned port 1080 to SOCKS.</p><h3>Which feature does SOCKS5 add over SOCKS4?</h3><p><strong>Answer:</strong> UDP Associate, IPv6, and authentication. SOCKS5 added UDP relay, IPv6 addressing, domain name resolution, and authentication.</p><h3>Which SSH flag spins up a local SOCKS5 proxy tunnel?</h3><p><strong>Answer:</strong> ssh -D. `ssh -D 1080` starts dynamic SOCKS5 forwarding over the encrypted SSH tunnel.</p>
-<h2>Related protocols</h2>
+<h2>SOCKS5 vs HTTP Proxy: what is the difference?</h2>
+<p>SOCKS5 and HTTP Proxy are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">SOCKS5</th><th scope="col"><a href="/explore/http_proxy/">HTTP Proxy</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 5 (Session)</td><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>1080</td><td>3128 / 8080</td></tr><tr><th scope="row">Transport</th><td>TCP / UDP Associate</td><td>TCP</td></tr><tr><th scope="row">Data format</th><td>Binary Greeting + Auth + Relay Header</td><td>HTTP CONNECT / Absolute-URI Requests</td></tr><tr><th scope="row">Common methods</th><td>Method Negotiation, Username/Password Auth, CONNECT, BIND, UDP ASSOCIATE</td><td>CONNECT, GET http://..., Via, X-Forwarded-For</td></tr><tr><th scope="row">Specification</th><td>RFC 1928: SOCKS Protocol Version 5</td><td>RFC 9110: HTTP Semantics (CONNECT Method)</td></tr></tbody></table>
+<p>SOCKS5 (SOCKS Protocol Version 5): SOCKS5 is a protocol-agnostic session proxy (port 1080) capable of relaying any TCP or UDP traffic (used by SSH dynamic port forwarding and Tor) without understanding… HTTP Proxy (HTTP Forward Proxy &amp; CONNECT Tunnel): An HTTP forward proxy relays client traffic to external servers. For HTTPS, the client sends an HTTP CONNECT host:443 request so the proxy opens a raw opaque TCP tunnel…</p>
+<h2>What does SOCKS5 look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical SOCKS5 exchange. Open the animation to inspect each packet.</p><ol><li>SOCKS5 from 192.168.1.10 to 192.0.2.80: Client Greeting: Ver=5, NMethods=2 (NoAuth, User/Pass) (64 bytes)</li><li>SOCKS5 from 192.0.2.80 to 192.168.1.10: Method Selection: 0x00 (Accepted) (60 bytes)</li><li>SOCKS5 from 192.168.1.10 to 192.0.2.80: CONNECT example.com:443 (ATYP=Domain) (86 bytes)</li><li>TCP from 192.0.2.80 to 203.0.113.10: Proxy -&gt; Origin [SYN] Port 443 (66 bytes)</li><li>SOCKS5 from 192.0.2.80 to 192.168.1.10: Reply: Succeeded (0x00) (70 bytes)</li><li>TLS from 192.168.1.10 to 203.0.113.10: Relayed Application Stream (420 bytes)</li></ol>
+<h2>Is SOCKS5 secure? Common attacks and defenses</h2><ul><li><strong>Unencrypted SOCKS5 Credentials.</strong> RFC 1929 username/password subnegotiation sends credentials in plaintext unless wrapped inside SSH/TLS. <em>Defense:</em> Tunnel SOCKS5 inside SSH (`ssh -D 1080`) or TLS.</li></ul>
+<h2>Frequently asked questions about SOCKS5</h2><h3>Which default port does SOCKS5 use?</h3><p><strong>Answer:</strong> 1080. IANA assigned port 1080 to SOCKS.</p><h3>Which feature does SOCKS5 add over SOCKS4?</h3><p><strong>Answer:</strong> UDP Associate, IPv6, and authentication. SOCKS5 added UDP relay, IPv6 addressing, domain name resolution, and authentication.</p><h3>Which SSH flag spins up a local SOCKS5 proxy tunnel?</h3><p><strong>Answer:</strong> ssh -D. `ssh -D 1080` starts dynamic SOCKS5 forwarding over the encrypted SSH tunnel.</p>
+<h2>Which protocols are related to SOCKS5?</h2>
 <ul><li><a href="/explore/tls/">TLS / SSL</a>: Transport Layer Security (TLS 1.3)</li><li><a href="/explore/http_proxy/">HTTP Proxy</a>: HTTP Forward Proxy &amp; CONNECT Tunnel</li><li><a href="/explore/reverse_proxy/">Reverse Proxy</a>: Reverse Proxy &amp; Load Balancer (TLS Termination)</li><li><a href="/explore/wireguard/">WireGuard</a>: WireGuard Modern Cryptographic VPN</li><li><a href="/explore/ipsec/">IPsec</a>: Internet Protocol Security (IKEv2 + ESP)</li><li><a href="/explore/wpa2/">Wi-Fi WPA2</a>: IEEE 802.11i WPA2-PSK (4-Way Handshake)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

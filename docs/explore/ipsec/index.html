@@ -20,6 +20,7 @@
     <title>IPsec Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="IPsec secures IP traffic at Layer 3 using IKEv2 (UDP 500/4500) to negotiate Security Associations (SAs) and ESP. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/ipsec/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/ipsec/" />
     <meta property="og:title" content="IPsec Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How IPsec works",
       "keywords": "ikev2, esp, spi, 500, 4500, site-to-site, vpn, tunnel mode",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "IPsec (Internet Protocol Security (IKEv2 + ESP))"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › IPsec</nav>
 <h1>IPsec (Internet Protocol Security (IKEv2 + ESP)): how it works, step by step</h1>
+<h2>What is IPsec?</h2>
 <p>IPsec secures IP traffic at Layer 3 using IKEv2 (UDP 500/4500) to negotiate Security Associations (SAs) and ESP (IP protocol 50) to encrypt and authenticate entire IP packets in Tunnel Mode.</p>
 <p><a href="/explore/ipsec/"><strong>Open the interactive IPsec animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>IPsec explained simply</h2>
+<h2>What is IPsec, in simple words?</h2>
 <p>IPsec is the classic corporate armored truck system: two gateways first sign contracts (IKEv2), then wrap entire internal packets inside an ESP armored outer envelope.</p>
 <h2>IPsec at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 3 (Network)</td></tr><tr><th scope="row">Default port</th><td>500 (IKE), 4500 (NAT-T)</td></tr><tr><th scope="row">Transport</th><td>UDP (IKEv2) + IP Proto 50 (ESP)</td></tr><tr><th scope="row">Data format</th><td>IKEv2 SA Payloads + ESP Tunnel Header (SPI, Seq, IV, AEAD)</td></tr><tr><th scope="row">Common methods</th><td>IKE_SA_INIT, IKE_AUTH, ESP Tunnel Mode, AH Transport</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 3 (Network)</td></tr><tr><th scope="row">Default port</th><td>500 (IKE), 4500 (NAT-T)</td></tr><tr><th scope="row">Transport</th><td>UDP (IKEv2) + IP Proto 50 (ESP)</td></tr><tr><th scope="row">Data format</th><td>IKEv2 SA Payloads + ESP Tunnel Header (SPI, Seq, IV, AEAD)</td></tr><tr><th scope="row">Common methods</th><td>IKE_SA_INIT, IKE_AUTH, ESP Tunnel Mode, AH Transport</td></tr><tr><th scope="row">Specification</th><td>RFC 7296: Internet Key Exchange Protocol Version 2 (IKEv2)</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc7296" rel="noopener">RFC 7296: Internet Key Exchange Protocol Version 2 (IKEv2)</a>; <a href="https://www.rfc-editor.org/rfc/rfc4303" rel="noopener">RFC 4303: IP Encapsulating Security Payload (ESP)</a>.</p>
-<h2>Devices in the IPsec exchange</h2><ul><li><strong>Office A Host</strong> (host, 10.1.0.10)</li><li><strong>VPN Gateway A</strong> (vpn gateway, 198.51.100.1)</li><li><strong>VPN Gateway B</strong> (vpn gateway, 203.0.113.1)</li><li><strong>Office B Server</strong> (file server, 10.2.0.20)</li></ul>
-<h2>How IPsec works, step by step</h2>
+<h2>Which devices take part in a IPsec exchange?</h2><ul><li><strong>Office A Host</strong> (host, 10.1.0.10)</li><li><strong>VPN Gateway A</strong> (vpn gateway, 198.51.100.1)</li><li><strong>VPN Gateway B</strong> (vpn gateway, 203.0.113.1)</li><li><strong>Office B Server</strong> (file server, 10.2.0.20)</li></ul>
+<h2>How does IPsec work, step by step?</h2>
 <ol><li><h3>IKE_SA_INIT (UDP/500)</h3><p><em>Negotiate Diffie-Hellman &amp; crypto suite.</em> VPN gateways negotiate IKE Security Association parameters over UDP port 500.</p></li><li><h3>IKE_AUTH (UDP/4500 NAT-T)</h3><p><em>Authenticate peers &amp; create Child ESP SA.</em> Gateways verify certificates/PSK and install inbound/outbound ESP SPI keys.</p></li><li><h3>ESP Tunnel Encapsulation</h3><p><em>IP Proto 50 encrypts inner IP packet.</em> Inner packet (10.1.0.10 -&gt; 10.2.0.20) is encrypted and wrapped with a new outer IP header.</p></li></ol>
-<h2>What IPsec looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical IPsec exchange. Open the animation to inspect each one.</p><ol><li>IKEv2 from 198.51.100.1 to 203.0.113.1: IKE_SA_INIT Request (DH Group 14, AES-GCM-256) (340 bytes)</li><li>IKEv2 from 203.0.113.1 to 198.51.100.1: IKE_SA_INIT Response (320 bytes)</li><li>IKEv2 from 198.51.100.1 to 203.0.113.1: IKE_AUTH (Cert/PSK + Child SA 10.1.0.0/24 &lt;-&gt; 10.2.0.0/24) (420 bytes)</li><li>IKEv2 from 203.0.113.1 to 198.51.100.1: IKE_AUTH Response (Child SA Established, SPI=0x9a41) (380 bytes)</li><li>ESP from 198.51.100.1 to 203.0.113.1: ESP (SPI=0x9a41, Seq=1) [Encrypted 10.1.0.10 -&gt; 10.2.0.20] (296 bytes)</li><li>TCP from 203.0.113.1 to 10.2.0.20: Decrypted Inner Packet -&gt; 10.2.0.20 (220 bytes)</li></ol>
-<h2>IPsec security notes</h2><ul><li><strong>IKEv1 Aggressive Mode PSK Cracking.</strong> Weak pre-shared keys in legacy IKEv1 aggressive mode expose hashes to offline brute force. <em>Defense:</em> Use IKEv2 with X.509 certificates or high-entropy keys and AES-GCM.</li></ul>
-<h2>Test yourself on IPsec</h2><h3>Which UDP ports are used by IKEv2 and NAT Traversal?</h3><p><strong>Answer:</strong> 500 and 4500. IKE uses UDP 500 and switches to UDP 4500 when NAT-Traversal is detected.</p><h3>Which IPsec sub-protocol provides both confidentiality (encryption) and integrity?</h3><p><strong>Answer:</strong> ESP (Encapsulating Security Payload). AH only authenticates headers; ESP provides encryption + authentication.</p><h3>In ESP Tunnel Mode, what gets encrypted?</h3><p><strong>Answer:</strong> The entire original inner IP packet (header + payload). Tunnel Mode wraps and encrypts the full original IP packet inside a new outer IP header.</p>
-<h2>Related protocols</h2>
+<h2>IPsec vs WireGuard: what is the difference?</h2>
+<p>IPsec and WireGuard are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">IPsec</th><th scope="col"><a href="/explore/wireguard/">WireGuard</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 3 (Network)</td><td>Layer 3 (Network Tunnel over UDP)</td></tr><tr><th scope="row">Default port</th><td>500 (IKE), 4500 (NAT-T)</td><td>51820</td></tr><tr><th scope="row">Transport</th><td>UDP (IKEv2) + IP Proto 50 (ESP)</td><td>UDP</td></tr><tr><th scope="row">Data format</th><td>IKEv2 SA Payloads + ESP Tunnel Header (SPI, Seq, IV, AEAD)</td><td>Noise_IKpsk2 Handshake + ChaCha20-Poly1305 Encrypted IP Packets</td></tr><tr><th scope="row">Common methods</th><td>IKE_SA_INIT, IKE_AUTH, ESP Tunnel Mode, AH Transport</td><td>Handshake Initiation, Handshake Response, Encrypted Transport Data, Cryptokey Routing</td></tr><tr><th scope="row">Specification</th><td>RFC 7296: Internet Key Exchange Protocol Version 2 (IKEv2)</td><td>Noise IK: WireGuard Whitepaper / Noise Protocol</td></tr></tbody></table>
+<p>IPsec (Internet Protocol Security (IKEv2 + ESP)): IPsec secures IP traffic at Layer 3 using IKEv2 (UDP 500/4500) to negotiate Security Associations (SAs) and ESP (IP protocol 50) to encrypt and authenticate entire IP… WireGuard (WireGuard Modern Cryptographic VPN): WireGuard is a lean, kernel-space Layer 3 VPN tunnel running over UDP/51820 using Curve25519, ChaCha20-Poly1305, and BLAKE2s with a single 1-RTT Noise handshake and…</p>
+<h2>What does IPsec look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical IPsec exchange. Open the animation to inspect each packet.</p><ol><li>IKEv2 from 198.51.100.1 to 203.0.113.1: IKE_SA_INIT Request (DH Group 14, AES-GCM-256) (340 bytes)</li><li>IKEv2 from 203.0.113.1 to 198.51.100.1: IKE_SA_INIT Response (320 bytes)</li><li>IKEv2 from 198.51.100.1 to 203.0.113.1: IKE_AUTH (Cert/PSK + Child SA 10.1.0.0/24 &lt;-&gt; 10.2.0.0/24) (420 bytes)</li><li>IKEv2 from 203.0.113.1 to 198.51.100.1: IKE_AUTH Response (Child SA Established, SPI=0x9a41) (380 bytes)</li><li>ESP from 198.51.100.1 to 203.0.113.1: ESP (SPI=0x9a41, Seq=1) [Encrypted 10.1.0.10 -&gt; 10.2.0.20] (296 bytes)</li><li>TCP from 203.0.113.1 to 10.2.0.20: Decrypted Inner Packet -&gt; 10.2.0.20 (220 bytes)</li></ol>
+<h2>Is IPsec secure? Common attacks and defenses</h2><ul><li><strong>IKEv1 Aggressive Mode PSK Cracking.</strong> Weak pre-shared keys in legacy IKEv1 aggressive mode expose hashes to offline brute force. <em>Defense:</em> Use IKEv2 with X.509 certificates or high-entropy keys and AES-GCM.</li></ul>
+<h2>Frequently asked questions about IPsec</h2><h3>Which UDP ports are used by IKEv2 and NAT Traversal?</h3><p><strong>Answer:</strong> 500 and 4500. IKE uses UDP 500 and switches to UDP 4500 when NAT-Traversal is detected.</p><h3>Which IPsec sub-protocol provides both confidentiality (encryption) and integrity?</h3><p><strong>Answer:</strong> ESP (Encapsulating Security Payload). AH only authenticates headers; ESP provides encryption + authentication.</p><h3>In ESP Tunnel Mode, what gets encrypted?</h3><p><strong>Answer:</strong> The entire original inner IP packet (header + payload). Tunnel Mode wraps and encrypts the full original IP packet inside a new outer IP header.</p>
+<h2>Which protocols are related to IPsec?</h2>
 <ul><li><a href="/explore/tls/">TLS / SSL</a>: Transport Layer Security (TLS 1.3)</li><li><a href="/explore/http_proxy/">HTTP Proxy</a>: HTTP Forward Proxy &amp; CONNECT Tunnel</li><li><a href="/explore/socks5/">SOCKS5</a>: SOCKS Protocol Version 5</li><li><a href="/explore/reverse_proxy/">Reverse Proxy</a>: Reverse Proxy &amp; Load Balancer (TLS Termination)</li><li><a href="/explore/wireguard/">WireGuard</a>: WireGuard Modern Cryptographic VPN</li><li><a href="/explore/wpa2/">Wi-Fi WPA2</a>: IEEE 802.11i WPA2-PSK (4-Way Handshake)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

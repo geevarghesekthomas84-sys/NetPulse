@@ -20,6 +20,7 @@
     <title>Captive Portal Explained: Step-by-Step Packet… | NetPulse</title>
     <meta name="description" content="Captive portals intercept unauthenticated guest Wi-Fi devices. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/captive_portal/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/captive_portal/" />
     <meta property="og:title" content="Captive Portal Explained: Step-by-Step Packet… | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How Captive Portal works",
       "keywords": "hotel wifi, airport, login page, 302, dhcp 114, splash page, walled garden",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "Captive Portal (Wi-Fi Captive Portal (RFC 8910 / HTTP 302 Redirect))"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,22 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › Captive Portal</nav>
 <h1>Captive Portal (Wi-Fi Captive Portal (RFC 8910 / HTTP 302 Redirect)): how it works, step by step</h1>
+<h2>What is Captive Portal?</h2>
 <p>Captive portals intercept unauthenticated guest Wi-Fi devices (using DHCP Option 114 or OS connectivity probes like /generate_204) and redirect them via HTTP 302 to a login/terms page before opening the firewall.</p>
 <p><a href="/explore/captive_portal/"><strong>Open the interactive Captive Portal animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>Captive Portal explained simply</h2>
+<h2>What is Captive Portal, in simple words?</h2>
 <p>When you join hotel Wi-Fi, the gateway holds your internet gate shut and points your browser to the check-in desk (&quot;Accept Terms&quot;) before letting packets out.</p>
 <h2>Captive Portal at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (HTTP/DHCP Intercept)</td></tr><tr><th scope="row">Default port</th><td>80 / 443</td></tr><tr><th scope="row">Transport</th><td>UDP (DHCP/DNS) + TCP (HTTP 302)</td></tr><tr><th scope="row">Data format</th><td>DHCP Option 114 / HTTP 302 Redirect + Firewall MAC Allowlist</td></tr><tr><th scope="row">Common methods</th><td>DHCP Option 114, Captive Probe (generate_204), 302 Redirect, Auth Submit, MAC Allowlist</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (HTTP/DHCP Intercept)</td></tr><tr><th scope="row">Default port</th><td>80 / 443</td></tr><tr><th scope="row">Transport</th><td>UDP (DHCP/DNS) + TCP (HTTP 302)</td></tr><tr><th scope="row">Data format</th><td>DHCP Option 114 / HTTP 302 Redirect + Firewall MAC Allowlist</td></tr><tr><th scope="row">Common methods</th><td>DHCP Option 114, Captive Probe (generate_204), 302 Redirect, Auth Submit, MAC Allowlist</td></tr><tr><th scope="row">Specification</th><td>RFC 8910: Captive-Portal Identification in DHCP and RAs</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc8910" rel="noopener">RFC 8910: Captive-Portal Identification in DHCP and RAs</a>.</p>
-<h2>Devices in the Captive Portal exchange</h2><ul><li><strong>Guest Phone</strong> (phone, 192.168.10.25)</li><li><strong>Captive Gateway</strong> (access point, 192.168.10.1)</li><li><strong>Internet Web</strong> (web server, 203.0.113.10)</li></ul>
-<h2>How Captive Portal works, step by step</h2>
+<h2>Which devices take part in a Captive Portal exchange?</h2><ul><li><strong>Guest Phone</strong> (phone, 192.168.10.25)</li><li><strong>Captive Gateway</strong> (access point, 192.168.10.1)</li><li><strong>Internet Web</strong> (web server, 203.0.113.10)</li></ul>
+<h2>How does Captive Portal work, step by step?</h2>
 <ol><li><h3>DHCP + OS Probe</h3><p><em>Phone probes /generate_204 or reads DHCP Option 114.</em> OS detects captive network because probe receives HTTP 302 instead of 204 No Content.</p></li><li><h3>HTTP 302 Redirect to Login</h3><p><em>Gateway redirects to splash login page.</em> Guest sees hotel/airport terms &amp; sign-in portal hosted inside the walled garden.</p></li><li><h3>Firewall Allow &amp; Internet Open</h3><p><em>MAC/IP allowlisted -&gt; 204 probe passes.</em> After sign-in, gateway permits guest MAC through NAT to the open internet.</p></li></ol>
-<h2>What Captive Portal looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical Captive Portal exchange. Open the animation to inspect each one.</p><ol><li>HTTP from 192.168.10.25 to 192.168.10.1: GET /generate_204 HTTP/1.1 (OS Captive Check) (140 bytes)</li><li>HTTP from 192.168.10.1 to 192.168.10.25: HTTP/1.1 302 Found -&gt; Location: http://portal.wifi.local/login (240 bytes)</li><li>HTTP from 192.168.10.25 to 192.168.10.1: POST /login (accept_terms=true&amp;voucher=GUEST26) (220 bytes)</li><li>HTTP from 192.168.10.1 to 192.168.10.25: 200 OK (MAC Allowlisted in Firewall) (160 bytes)</li><li>HTTPS from 192.168.10.25 to 203.0.113.10: Internet Traffic Permitted -&gt; 203.0.113.10:443 (480 bytes)</li></ol>
-<h2>Captive Portal security notes</h2><ul><li><strong>HTTPS Interception Warnings &amp; MAC Spoofing.</strong> Redirecting HTTPS causes cert errors; simple MAC-based allowlists can be bypassed by cloning an authenticated guest’s MAC. <em>Defense:</em> Use DHCP Option 114 (RFC 8910) with HTTP probes and pair with per-user Passpoint/802.1X.</li></ul>
-<h2>Test yourself on Captive Portal</h2><h3>How do phones automatically pop up a hotel Wi-Fi login sheet?</h3><p><strong>Answer:</strong> They probe a known plain-HTTP URL (e.g. /generate_204) or read DHCP Option 114. OS captive network assistants detect redirects on known probe URLs or RFC 8910 DHCP Option 114.</p><h3>Why do captive portals redirect plain HTTP rather than HTTPS?</h3><p><strong>Answer:</strong> Intercepting HTTPS triggers a TLS certificate mismatch error in browsers. A gateway cannot forge a valid TLS certificate for google.com, so browsers block MITM redirects on HTTPS.</p><h3>Which RFC standardizes announcing the captive portal URL directly in DHCP?</h3><p><strong>Answer:</strong> RFC 8910. RFC 8910 defines DHCP Option 114 for Captive-Portal API discovery.</p>
-<h2>Related protocols</h2>
+
+<h2>What does Captive Portal look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical Captive Portal exchange. Open the animation to inspect each packet.</p><ol><li>HTTP from 192.168.10.25 to 192.168.10.1: GET /generate_204 HTTP/1.1 (OS Captive Check) (140 bytes)</li><li>HTTP from 192.168.10.1 to 192.168.10.25: HTTP/1.1 302 Found -&gt; Location: http://portal.wifi.local/login (240 bytes)</li><li>HTTP from 192.168.10.25 to 192.168.10.1: POST /login (accept_terms=true&amp;voucher=GUEST26) (220 bytes)</li><li>HTTP from 192.168.10.1 to 192.168.10.25: 200 OK (MAC Allowlisted in Firewall) (160 bytes)</li><li>HTTPS from 192.168.10.25 to 203.0.113.10: Internet Traffic Permitted -&gt; 203.0.113.10:443 (480 bytes)</li></ol>
+<h2>Is Captive Portal secure? Common attacks and defenses</h2><ul><li><strong>HTTPS Interception Warnings &amp; MAC Spoofing.</strong> Redirecting HTTPS causes cert errors; simple MAC-based allowlists can be bypassed by cloning an authenticated guest’s MAC. <em>Defense:</em> Use DHCP Option 114 (RFC 8910) with HTTP probes and pair with per-user Passpoint/802.1X.</li></ul>
+<h2>Frequently asked questions about Captive Portal</h2><h3>How do phones automatically pop up a hotel Wi-Fi login sheet?</h3><p><strong>Answer:</strong> They probe a known plain-HTTP URL (e.g. /generate_204) or read DHCP Option 114. OS captive network assistants detect redirects on known probe URLs or RFC 8910 DHCP Option 114.</p><h3>Why do captive portals redirect plain HTTP rather than HTTPS?</h3><p><strong>Answer:</strong> Intercepting HTTPS triggers a TLS certificate mismatch error in browsers. A gateway cannot forge a valid TLS certificate for google.com, so browsers block MITM redirects on HTTPS.</p><h3>Which RFC standardizes announcing the captive portal URL directly in DHCP?</h3><p><strong>Answer:</strong> RFC 8910. RFC 8910 defines DHCP Option 114 for Captive-Portal API discovery.</p>
+<h2>Which protocols are related to Captive Portal?</h2>
 <ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +163,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

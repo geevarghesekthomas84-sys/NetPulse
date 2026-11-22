@@ -20,6 +20,7 @@
     <title>DNS Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="DNS translates human-readable domain names into IP addresses using a globally distributed, hierarchical tree of. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/dns/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/dns/" />
     <meta property="og:title" content="DNS Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How DNS works",
       "keywords": "domain, resolver, root, tld, authoritative, ttl, cache, 53, a record",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "DNS (Domain Name System)"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › DNS</nav>
 <h1>DNS (Domain Name System): how it works, step by step</h1>
+<h2>What is DNS?</h2>
 <p>DNS translates human-readable domain names into IP addresses using a globally distributed, hierarchical tree of root, TLD, and authoritative nameservers backed by TTL-based caching.</p>
 <p><a href="/explore/dns/"><strong>Open the interactive DNS animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>DNS explained simply</h2>
+<h2>What is DNS, in simple words?</h2>
 <p>DNS is the internet’s phonebook: you ask for &quot;example.com&quot; and it walks from the country directory (root) to the city book (.com) to find the exact street number (203.0.113.10).</p>
 <h2>DNS at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application) / TCP-IP Application</td></tr><tr><th scope="row">Default port</th><td>53</td></tr><tr><th scope="row">Transport</th><td>UDP (queries), TCP (zone transfers / &gt;512B)</td></tr><tr><th scope="row">Data format</th><td>Binary DNS Wire Format (Header + QNAME labels + RRs)</td></tr><tr><th scope="row">Common methods</th><td>A, AAAA, CNAME, MX, NS, TXT, PTR, SRV</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application) / TCP-IP Application</td></tr><tr><th scope="row">Default port</th><td>53</td></tr><tr><th scope="row">Transport</th><td>UDP (queries), TCP (zone transfers / &gt;512B)</td></tr><tr><th scope="row">Data format</th><td>Binary DNS Wire Format (Header + QNAME labels + RRs)</td></tr><tr><th scope="row">Common methods</th><td>A, AAAA, CNAME, MX, NS, TXT, PTR, SRV</td></tr><tr><th scope="row">Specification</th><td>RFC 1034: Domain Names - Concepts and Facilities</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc1034" rel="noopener">RFC 1034: Domain Names - Concepts and Facilities</a>; <a href="https://www.rfc-editor.org/rfc/rfc1035" rel="noopener">RFC 1035: Domain Names - Implementation and Specification</a>.</p>
-<h2>Devices in the DNS exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Recursive 8.8.8.8</strong> (dns server, 8.8.8.8)</li><li><strong>Root (.)</strong> (dns server, 198.41.0.4)</li><li><strong>.com TLD</strong> (dns server, 192.5.6.30)</li><li><strong>Authoritative NS</strong> (dns server, 198.51.100.53)</li></ul>
-<h2>How DNS works, step by step</h2>
+<h2>Which devices take part in a DNS exchange?</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Recursive 8.8.8.8</strong> (dns server, 8.8.8.8)</li><li><strong>Root (.)</strong> (dns server, 198.41.0.4)</li><li><strong>.com TLD</strong> (dns server, 192.5.6.30)</li><li><strong>Authoritative NS</strong> (dns server, 198.51.100.53)</li></ul>
+<h2>How does DNS work, step by step?</h2>
 <ol><li><h3>Stub Query</h3><p><em>Client sends recursive query to 8.8.8.8.</em> OS stub resolver checks local cache, misses, and sends a UDP/53 recursive query (RD=1).</p></li><li><h3>Root Referral</h3><p><em>Root server refers to .com TLD.</em> Root nameserver (a.root-servers.net) responds with NS delegation for the .com top-level domain.</p></li><li><h3>TLD Referral</h3><p><em>.com TLD refers to example.com NS.</em> .com TLD nameserver returns the authoritative nameserver IP 198.51.100.53.</p></li><li><h3>Authoritative Answer</h3><p><em>Authoritative NS returns A record + TTL.</em> Authoritative server returns A 203.0.113.10 with AA=1 and TTL=300 seconds.</p></li><li><h3>Cache &amp; Reply</h3><p><em>Resolver caches &amp; replies to Client.</em> Recursive resolver caches the answer for 300s and delivers it to the client.</p></li></ol>
-<h2>What DNS looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical DNS exchange. Open the animation to inspect each one.</p><ol><li>DNS from 192.168.1.10 to 8.8.8.8: Standard query 0x7c21 A api.example.com (RD=1) (75 bytes)</li><li>DNS from 8.8.8.8 to 198.41.0.4: Iterative query A api.example.com (RD=0) (75 bytes)</li><li>DNS from 198.41.0.4 to 8.8.8.8: Referral: .com TLD NS -&gt; 192.5.6.30 (118 bytes)</li><li>DNS from 8.8.8.8 to 192.5.6.30: Iterative query A api.example.com (75 bytes)</li><li>DNS from 192.5.6.30 to 8.8.8.8: Referral: example.com NS -&gt; 198.51.100.53 (124 bytes)</li><li>DNS from 8.8.8.8 to 198.51.100.53: Iterative query A api.example.com (75 bytes)</li><li>DNS from 198.51.100.53 to 8.8.8.8: Authoritative answer (AA=1): A 203.0.113.10 (TTL 300s) (91 bytes)</li><li>DNS from 8.8.8.8 to 192.168.1.10: Standard query response 0x7c21 A 203.0.113.10 (TTL 300s) (91 bytes)</li></ol>
-<h2>DNS security notes</h2><ul><li><strong>DNS Cache Poisoning.</strong> An attacker races spoofed UDP replies with guessed transaction IDs to inject rogue IP records into a resolver cache. <em>Defense:</em> Use DNSSEC cryptographic signatures, source port randomization, and DoH/DoT.</li><li><strong>DNS Amplification DDoS.</strong> Spoofing a victim’s source IP in small ANY/TXT queries triggers huge responses directed at the victim. <em>Defense:</em> Deploy BCP 38 egress filtering and Response Rate Limiting (RRL) on resolvers.</li></ul>
-<h2>Test yourself on DNS</h2><h3>Which port and transport protocol does standard DNS use for short queries?</h3><p><strong>Answer:</strong> UDP 53. DNS uses UDP port 53 for low-latency single-packet queries, falling back to TCP 53 for large responses.</p><h3>What does the TTL value in a DNS record control?</h3><p><strong>Answer:</strong> How long resolvers may cache the record. Time To Live in DNS tells caches how many seconds to store the record before re-querying.</p><h3>Which DNS server sits at the very top of the hierarchy?</h3><p><strong>Answer:</strong> Root server (.). Root nameservers answer referrals for top-level domains like .com, .org, and .net.</p><h3>Which DNS record type maps a domain name to an IPv6 address?</h3><p><strong>Answer:</strong> AAAA. AAAA (&quot;quad-A&quot;) records store 128-bit IPv6 addresses.</p><h3>What is the difference between a recursive query and an iterative query?</h3><p><strong>Answer:</strong> Recursive asks the server to return the final answer; iterative may return referrals. Stub clients send recursive queries (RD=1) to 8.8.8.8, which then sends iterative queries to root/TLD/auth.</p>
-<h2>Related protocols</h2>
+<h2>DNS vs DNS over HTTPS: what is the difference?</h2>
+<p>DNS and DNS over HTTPS are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">DNS</th><th scope="col"><a href="/explore/doh/">DNS over HTTPS</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application) / TCP-IP Application</td><td>Layer 7 (Encrypted DNS inside HTTPS)</td></tr><tr><th scope="row">Default port</th><td>53</td><td>443</td></tr><tr><th scope="row">Transport</th><td>UDP (queries), TCP (zone transfers / &gt;512B)</td><td>TCP + TLS (or QUIC)</td></tr><tr><th scope="row">Data format</th><td>Binary DNS Wire Format (Header + QNAME labels + RRs)</td><td>application/dns-message (POST/GET over HTTPS)</td></tr><tr><th scope="row">Common methods</th><td>A, AAAA, CNAME, MX, NS, TXT, PTR, SRV</td><td>GET /dns-query?dns=..., POST /dns-query, TLS 1.3</td></tr><tr><th scope="row">Specification</th><td>RFC 1034: Domain Names - Concepts and Facilities</td><td>RFC 8484: DNS Queries over HTTPS (DoH)</td></tr></tbody></table>
+<p>DNS (Domain Name System): DNS translates human-readable domain names into IP addresses using a globally distributed, hierarchical tree of root, TLD, and authoritative nameservers backed by… DNS over HTTPS (DNS Queries over HTTPS (DoH)): DNS over HTTPS (DoH) wraps binary DNS queries inside standard HTTPS port-443 traffic so ISPs and local Wi-Fi observers cannot snoop or tamper with the websites you look…</p>
+<h2>What does DNS look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical DNS exchange. Open the animation to inspect each packet.</p><ol><li>DNS from 192.168.1.10 to 8.8.8.8: Standard query 0x7c21 A api.example.com (RD=1) (75 bytes)</li><li>DNS from 8.8.8.8 to 198.41.0.4: Iterative query A api.example.com (RD=0) (75 bytes)</li><li>DNS from 198.41.0.4 to 8.8.8.8: Referral: .com TLD NS -&gt; 192.5.6.30 (118 bytes)</li><li>DNS from 8.8.8.8 to 192.5.6.30: Iterative query A api.example.com (75 bytes)</li><li>DNS from 192.5.6.30 to 8.8.8.8: Referral: example.com NS -&gt; 198.51.100.53 (124 bytes)</li><li>DNS from 8.8.8.8 to 198.51.100.53: Iterative query A api.example.com (75 bytes)</li><li>DNS from 198.51.100.53 to 8.8.8.8: Authoritative answer (AA=1): A 203.0.113.10 (TTL 300s) (91 bytes)</li><li>DNS from 8.8.8.8 to 192.168.1.10: Standard query response 0x7c21 A 203.0.113.10 (TTL 300s) (91 bytes)</li></ol>
+<h2>Is DNS secure? Common attacks and defenses</h2><ul><li><strong>DNS Cache Poisoning.</strong> An attacker races spoofed UDP replies with guessed transaction IDs to inject rogue IP records into a resolver cache. <em>Defense:</em> Use DNSSEC cryptographic signatures, source port randomization, and DoH/DoT.</li><li><strong>DNS Amplification DDoS.</strong> Spoofing a victim’s source IP in small ANY/TXT queries triggers huge responses directed at the victim. <em>Defense:</em> Deploy BCP 38 egress filtering and Response Rate Limiting (RRL) on resolvers.</li></ul>
+<h2>Frequently asked questions about DNS</h2><h3>Which port and transport protocol does standard DNS use for short queries?</h3><p><strong>Answer:</strong> UDP 53. DNS uses UDP port 53 for low-latency single-packet queries, falling back to TCP 53 for large responses.</p><h3>What does the TTL value in a DNS record control?</h3><p><strong>Answer:</strong> How long resolvers may cache the record. Time To Live in DNS tells caches how many seconds to store the record before re-querying.</p><h3>Which DNS server sits at the very top of the hierarchy?</h3><p><strong>Answer:</strong> Root server (.). Root nameservers answer referrals for top-level domains like .com, .org, and .net.</p><h3>Which DNS record type maps a domain name to an IPv6 address?</h3><p><strong>Answer:</strong> AAAA. AAAA (&quot;quad-A&quot;) records store 128-bit IPv6 addresses.</p><h3>What is the difference between a recursive query and an iterative query?</h3><p><strong>Answer:</strong> Recursive asks the server to return the final answer; iterative may return referrals. Stub clients send recursive queries (RD=1) to 8.8.8.8, which then sends iterative queries to root/TLD/auth.</p>
+<h2>Which protocols are related to DNS?</h2>
 <ul><li><a href="/explore/tcp/">TCP</a>: Transmission Control Protocol</li><li><a href="/explore/udp/">UDP</a>: User Datagram Protocol</li><li><a href="/explore/ip/">IP (IPv4)</a>: Internet Protocol Version 4</li><li><a href="/explore/bgp/">BGP</a>: Border Gateway Protocol (BGP-4)</li><li><a href="/explore/ipv6/">IPv6</a>: Internet Protocol Version 6</li><li><a href="/explore/icmp/">ICMP</a>: Internet Control Message Protocol (Ping &amp; Traceroute)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

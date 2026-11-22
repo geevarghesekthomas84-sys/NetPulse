@@ -20,6 +20,7 @@
     <title>WebSocket Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="WebSocket upgrades a standard HTTP/1.1 TCP connection into a persistent, full-duplex, low-overhead. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/websocket/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/websocket/" />
     <meta property="og:title" content="WebSocket Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How WebSocket works",
       "keywords": "realtime, duplex, 101, upgrade, chat, ws, wss, socket",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "WebSocket (The WebSocket Protocol (WS / WSS))"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › WebSocket</nav>
 <h1>WebSocket (The WebSocket Protocol (WS / WSS)): how it works, step by step</h1>
+<h2>What is WebSocket?</h2>
 <p>WebSocket upgrades a standard HTTP/1.1 TCP connection into a persistent, full-duplex, low-overhead bidirectional message channel for live chat, trading feeds, and multiplayer games.</p>
 <p><a href="/explore/websocket/"><strong>Open the interactive WebSocket animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>WebSocket explained simply</h2>
+<h2>What is WebSocket, in simple words?</h2>
 <p>Instead of mailing letters back and forth every second (HTTP polling), WebSocket knocks once via HTTP (&quot;Upgrade?&quot;) and leaves the walkie-talkie channel open both ways.</p>
 <h2>WebSocket at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>80 (WS), 443 (WSS)</td></tr><tr><th scope="row">Transport</th><td>TCP (+ TLS for WSS)</td></tr><tr><th scope="row">Data format</th><td>HTTP Upgrade Handshake -&gt; Binary Masked Frames (RFC 6455)</td></tr><tr><th scope="row">Common methods</th><td>GET Upgrade: websocket, 101 Switching Protocols, Text/Binary Frame, Ping/Pong, Close</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>80 (WS), 443 (WSS)</td></tr><tr><th scope="row">Transport</th><td>TCP (+ TLS for WSS)</td></tr><tr><th scope="row">Data format</th><td>HTTP Upgrade Handshake -&gt; Binary Masked Frames (RFC 6455)</td></tr><tr><th scope="row">Common methods</th><td>GET Upgrade: websocket, 101 Switching Protocols, Text/Binary Frame, Ping/Pong, Close</td></tr><tr><th scope="row">Specification</th><td>RFC 6455: The WebSocket Protocol</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc6455" rel="noopener">RFC 6455: The WebSocket Protocol</a>.</p>
-<h2>Devices in the WebSocket exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Gateway</strong> (router, 192.168.1.1)</li><li><strong>Service Server</strong> (server rack, 203.0.113.10)</li></ul>
-<h2>How WebSocket works, step by step</h2>
+<h2>Which devices take part in a WebSocket exchange?</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Gateway</strong> (router, 192.168.1.1)</li><li><strong>Service Server</strong> (server rack, 203.0.113.10)</li></ul>
+<h2>How does WebSocket work, step by step?</h2>
 <ol><li><h3>HTTP Upgrade Request</h3><p><em>Upgrade: websocket + Sec-WebSocket-Key.</em> Client sends HTTP GET with Connection: Upgrade and a random base64 Sec-WebSocket-Key.</p></li><li><h3>101 Switching Protocols</h3><p><em>Server computes Sec-WebSocket-Accept.</em> Server hashes key + GUID, responds HTTP/1.1 101 Switching Protocols, switching socket framing.</p></li><li><h3>Full-Duplex Frames</h3><p><em>Server pushes frames without client polling.</em> Tiny 2–6 byte framed messages flow bidirectionally; client frames are XOR-masked.</p></li></ol>
-<h2>What WebSocket looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical WebSocket exchange. Open the animation to inspect each one.</p><ol><li>HTTP from 192.168.1.10 to 203.0.113.10: GET /ws HTTP/1.1 (Upgrade: websocket, Sec-WebSocket-Key) (260 bytes)</li><li>HTTP from 203.0.113.10 to 192.168.1.10: HTTP/1.1 101 Switching Protocols (Upgrade: websocket) (185 bytes)</li><li>WebSocket from 203.0.113.10 to 192.168.1.10: WS Text Frame [FIN=1, Len=42] {&quot;tick&quot;:&quot;BTC 98420&quot;} (98 bytes)</li><li>WebSocket from 192.168.1.10 to 203.0.113.10: WS Masked Frame [FIN=1, Mask=1] {&quot;msg&quot;:&quot;ping&quot;} (82 bytes)</li></ol>
-<h2>WebSocket security notes</h2><ul><li><strong>Cross-Site WebSocket Hijacking (CSWSH).</strong> Browsers send cookies on WS upgrade; servers that skip Origin checks can be hijacked. <em>Defense:</em> Validate the HTTP Origin header and use WSS (TLS) with CSRF tokens.</li></ul>
-<h2>Test yourself on WebSocket</h2><h3>Which HTTP status code confirms a successful WebSocket handshake?</h3><p><strong>Answer:</strong> 101 Switching Protocols. 101 Switching Protocols transitions the TCP socket from HTTP to WebSocket framing.</p><h3>Why must WebSocket frames sent from a browser client be masked?</h3><p><strong>Answer:</strong> To prevent cache poisoning of legacy transparent HTTP proxies. Client-to-server XOR masking stops malicious scripts from crafting fake HTTP requests inside WebSocket frames.</p><h3>Which heartbeat opcodes keep idle WebSocket connections alive?</h3><p><strong>Answer:</strong> Ping (0x9) and Pong (0xA). WebSocket includes native Ping and Pong control frames.</p>
-<h2>Related protocols</h2>
+<h2>WebSocket vs HTTP: what is the difference?</h2>
+<p>WebSocket and HTTP are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">WebSocket</th><th scope="col"><a href="/explore/http/">HTTP</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td><td>Layer 7 (Application) / TCP-IP Application</td></tr><tr><th scope="row">Default port</th><td>80 (WS), 443 (WSS)</td><td>80</td></tr><tr><th scope="row">Transport</th><td>TCP (+ TLS for WSS)</td><td>TCP (HTTP/1.1, HTTP/2) / QUIC (HTTP/3)</td></tr><tr><th scope="row">Data format</th><td>HTTP Upgrade Handshake -&gt; Binary Masked Frames (RFC 6455)</td><td>Plaintext ASCII Headers + Body (MIME)</td></tr><tr><th scope="row">Common methods</th><td>GET Upgrade: websocket, 101 Switching Protocols, Text/Binary Frame, Ping/Pong, Close</td><td>GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH</td></tr><tr><th scope="row">Specification</th><td>RFC 6455: The WebSocket Protocol</td><td>RFC 9110: HTTP Semantics</td></tr></tbody></table>
+<p>WebSocket (The WebSocket Protocol (WS / WSS)): WebSocket upgrades a standard HTTP/1.1 TCP connection into a persistent, full-duplex, low-overhead bidirectional message channel for live chat, trading feeds, and… HTTP (Hypertext Transfer Protocol): HTTP is the stateless request-response protocol that powers the World Wide Web. A client opens a TCP connection (after DNS resolution), sends a structured method and…</p>
+<h2>What does WebSocket look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical WebSocket exchange. Open the animation to inspect each packet.</p><ol><li>HTTP from 192.168.1.10 to 203.0.113.10: GET /ws HTTP/1.1 (Upgrade: websocket, Sec-WebSocket-Key) (260 bytes)</li><li>HTTP from 203.0.113.10 to 192.168.1.10: HTTP/1.1 101 Switching Protocols (Upgrade: websocket) (185 bytes)</li><li>WebSocket from 203.0.113.10 to 192.168.1.10: WS Text Frame [FIN=1, Len=42] {&quot;tick&quot;:&quot;BTC 98420&quot;} (98 bytes)</li><li>WebSocket from 192.168.1.10 to 203.0.113.10: WS Masked Frame [FIN=1, Mask=1] {&quot;msg&quot;:&quot;ping&quot;} (82 bytes)</li></ol>
+<h2>Is WebSocket secure? Common attacks and defenses</h2><ul><li><strong>Cross-Site WebSocket Hijacking (CSWSH).</strong> Browsers send cookies on WS upgrade; servers that skip Origin checks can be hijacked. <em>Defense:</em> Validate the HTTP Origin header and use WSS (TLS) with CSRF tokens.</li></ul>
+<h2>Frequently asked questions about WebSocket</h2><h3>Which HTTP status code confirms a successful WebSocket handshake?</h3><p><strong>Answer:</strong> 101 Switching Protocols. 101 Switching Protocols transitions the TCP socket from HTTP to WebSocket framing.</p><h3>Why must WebSocket frames sent from a browser client be masked?</h3><p><strong>Answer:</strong> To prevent cache poisoning of legacy transparent HTTP proxies. Client-to-server XOR masking stops malicious scripts from crafting fake HTTP requests inside WebSocket frames.</p><h3>Which heartbeat opcodes keep idle WebSocket connections alive?</h3><p><strong>Answer:</strong> Ping (0x9) and Pong (0xA). WebSocket includes native Ping and Pong control frames.</p>
+<h2>Which protocols are related to WebSocket?</h2>
 <ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li><li><a href="/explore/rtmp/">RTMP</a>: Real-Time Messaging Protocol (Live Ingest)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

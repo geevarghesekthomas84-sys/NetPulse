@@ -20,6 +20,7 @@
     <title>SMB Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="SMB (port 445) powers Windows and NAS network file shares, printers, and named pipes. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/smb/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/smb/" />
     <meta property="og:title" content="SMB Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How SMB works",
       "keywords": "445, windows share, nas, cifs, smbv3, ntlm, kerberos, relay",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "SMB (Server Message Block (SMBv3 File Sharing))"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › SMB</nav>
 <h1>SMB (Server Message Block (SMBv3 File Sharing)): how it works, step by step</h1>
+<h2>What is SMB?</h2>
 <p>SMB (port 445) powers Windows and NAS network file shares, printers, and named pipes. SMBv3 adds AES-128-GCM encryption, multichannel throughput, and signing to block relay attacks.</p>
 <p><a href="/explore/smb/"><strong>Open the interactive SMB animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>SMB explained simply</h2>
+<h2>What is SMB, in simple words?</h2>
 <p>SMB makes a folder on a remote server look like a normal hard drive letter (Z:) on your own computer.</p>
 <h2>SMB at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>445</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>Binary SMB2/3 Header + AES-GCM Encrypted Payloads</td></tr><tr><th scope="row">Common methods</th><td>Negotiate, Session Setup (Kerberos/NTLM), Tree Connect, Create/Open, Read/Write</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>445</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>Binary SMB2/3 Header + AES-GCM Encrypted Payloads</td></tr><tr><th scope="row">Common methods</th><td>Negotiate, Session Setup (Kerberos/NTLM), Tree Connect, Create/Open, Read/Write</td></tr><tr><th scope="row">Specification</th><td>MS-SMB2: SMB2/3 Protocol Specification</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc1001" rel="noopener">MS-SMB2: SMB2/3 Protocol Specification</a>.</p>
-<h2>Devices in the SMB exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Firewall (NAT)</strong> (firewall, 192.168.1.1)</li><li><strong>File Server</strong> (file server, 203.0.113.20)</li></ul>
-<h2>How SMB works, step by step</h2>
+<h2>Which devices take part in a SMB exchange?</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Firewall (NAT)</strong> (firewall, 192.168.1.1)</li><li><strong>File Server</strong> (file server, 203.0.113.20)</li></ul>
+<h2>How does SMB work, step by step?</h2>
 <ol><li><h3>Negotiate Dialect (SMBv3.1.1)</h3><p><em>Agree encryption &amp; signing capabilities.</em> Client and File Server negotiate SMB 3.1.1 with preauth integrity and AES-GCM.</p></li><li><h3>Session Setup &amp; Tree Connect</h3><p><em>Authenticate + mount \\filesrv\shared.</em> Client authenticates via Kerberos/NTLMv2 and connects to the shared folder tree.</p></li><li><h3>Create, Read &amp; Close</h3><p><em>Encrypted file read over port 445.</em> Client opens report.xlsx and reads encrypted SMB3 data chunks.</p></li></ol>
-<h2>What SMB looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical SMB exchange. Open the animation to inspect each one.</p><ol><li>SMB3 from 192.168.1.10 to 203.0.113.20: Negotiate Protocol Request (Dialects: 3.0, 3.1.1) (214 bytes)</li><li>SMB3 from 203.0.113.20 to 192.168.1.10: Negotiate Response (Dialect=3.1.1, Cipher=AES-128-GCM) (248 bytes)</li><li>SMB3 from 192.168.1.10 to 203.0.113.20: Session Setup Request (Kerberos Ticket) (640 bytes)</li><li>SMB3 from 203.0.113.20 to 192.168.1.10: Session Setup OK + Tree Connect \\filesrv\shared (180 bytes)</li><li>SMB3 from 192.168.1.10 to 203.0.113.20: Encrypted Create &amp; Read Request (report.xlsx) (196 bytes)</li><li>SMB3 from 203.0.113.20 to 192.168.1.10: Encrypted Read Response (4096 Bytes) (1460 bytes)</li></ol>
-<h2>SMB security notes</h2><ul><li><strong>SMB Relay &amp; WannaCry (SMBv1 EternalBlue).</strong> Legacy SMBv1 had critical RCE flaws and unsigned SMBv2 allows NTLM credential relay. <em>Defense:</em> Disable SMBv1 completely, block port 445 at internet perimeters, and require SMB Signing + Encryption.</li></ul>
-<h2>Test yourself on SMB</h2><h3>Which TCP port does modern SMB (direct-hosted) use?</h3><p><strong>Answer:</strong> 445. Modern SMB runs directly over TCP port 445.</p><h3>Which SMB security setting prevents NTLM SMB Relay attacks?</h3><p><strong>Answer:</strong> Requiring SMB Signing. SMB Signing cryptographically signs every SMB packet so relayed tokens fail.</p><h3>Why should SMBv1 always be disabled?</h3><p><strong>Answer:</strong> It lacks modern encryption and suffered catastrophic RCE flaws like EternalBlue. SMBv1 is deprecated and insecure; SMBv3 provides modern security and performance.</p>
-<h2>Related protocols</h2>
+<h2>SMB vs FTP: what is the difference?</h2>
+<p>SMB and FTP are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">SMB</th><th scope="col"><a href="/explore/ftp/">FTP</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>445</td><td>21 (Control), 20 (Active Data)</td></tr><tr><th scope="row">Transport</th><td>TCP</td><td>TCP (Dual Channels)</td></tr><tr><th scope="row">Data format</th><td>Binary SMB2/3 Header + AES-GCM Encrypted Payloads</td><td>ASCII Control Channel + Raw Binary Data Channel</td></tr><tr><th scope="row">Common methods</th><td>Negotiate, Session Setup (Kerberos/NTLM), Tree Connect, Create/Open, Read/Write</td><td>USER/PASS, PASV, PORT, LIST, RETR, STOR</td></tr><tr><th scope="row">Specification</th><td>MS-SMB2: SMB2/3 Protocol Specification</td><td>RFC 959: File Transfer Protocol</td></tr></tbody></table>
+<p>SMB (Server Message Block (SMBv3 File Sharing)): SMB (port 445) powers Windows and NAS network file shares, printers, and named pipes. SMBv3 adds AES-128-GCM encryption, multichannel throughput, and signing to block… FTP (File Transfer Protocol (Active &amp; Passive)): FTP uses two separate TCP connections: a Control channel on port 21 for commands, and a Data channel for file transfers. Passive mode (PASV) lets clients behind NAT…</p>
+<h2>What does SMB look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical SMB exchange. Open the animation to inspect each packet.</p><ol><li>SMB3 from 192.168.1.10 to 203.0.113.20: Negotiate Protocol Request (Dialects: 3.0, 3.1.1) (214 bytes)</li><li>SMB3 from 203.0.113.20 to 192.168.1.10: Negotiate Response (Dialect=3.1.1, Cipher=AES-128-GCM) (248 bytes)</li><li>SMB3 from 192.168.1.10 to 203.0.113.20: Session Setup Request (Kerberos Ticket) (640 bytes)</li><li>SMB3 from 203.0.113.20 to 192.168.1.10: Session Setup OK + Tree Connect \\filesrv\shared (180 bytes)</li><li>SMB3 from 192.168.1.10 to 203.0.113.20: Encrypted Create &amp; Read Request (report.xlsx) (196 bytes)</li><li>SMB3 from 203.0.113.20 to 192.168.1.10: Encrypted Read Response (4096 Bytes) (1460 bytes)</li></ol>
+<h2>Is SMB secure? Common attacks and defenses</h2><ul><li><strong>SMB Relay &amp; WannaCry (SMBv1 EternalBlue).</strong> Legacy SMBv1 had critical RCE flaws and unsigned SMBv2 allows NTLM credential relay. <em>Defense:</em> Disable SMBv1 completely, block port 445 at internet perimeters, and require SMB Signing + Encryption.</li></ul>
+<h2>Frequently asked questions about SMB</h2><h3>Which TCP port does modern SMB (direct-hosted) use?</h3><p><strong>Answer:</strong> 445. Modern SMB runs directly over TCP port 445.</p><h3>Which SMB security setting prevents NTLM SMB Relay attacks?</h3><p><strong>Answer:</strong> Requiring SMB Signing. SMB Signing cryptographically signs every SMB packet so relayed tokens fail.</p><h3>Why should SMBv1 always be disabled?</h3><p><strong>Answer:</strong> It lacks modern encryption and suffered catastrophic RCE flaws like EternalBlue. SMBv1 is deprecated and insecure; SMBv3 provides modern security and performance.</p>
+<h2>Which protocols are related to SMB?</h2>
 <ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

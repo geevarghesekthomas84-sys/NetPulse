@@ -20,6 +20,7 @@
     <title>IP (IPv4) Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="IPv4 is the foundational network-layer protocol that routes packets across interconnected networks using 32-bit. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/ip/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/ip/" />
     <meta property="og:title" content="IP (IPv4) Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How IP (IPv4) works",
       "keywords": "ipv4, routing, ttl, cidr, subnet, fragmentation, mtu, lpm, checksum",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "IP (IPv4) (Internet Protocol Version 4)"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › IP (IPv4)</nav>
 <h1>IP (IPv4) (Internet Protocol Version 4): how it works, step by step</h1>
+<h2>What is IP (IPv4)?</h2>
 <p>IPv4 is the foundational network-layer protocol that routes packets across interconnected networks using 32-bit addresses, longest-prefix matching, TTL hop limits, and optional MTU fragmentation.</p>
 <p><a href="/explore/ip/"><strong>Open the interactive IP (IPv4) animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>IP (IPv4) explained simply</h2>
+<h2>What is IP (IPv4), in simple words?</h2>
 <p>IPv4 puts a ZIP code and street address on every envelope and gives it 64 hops to reach its destination; each post office decrements the hop counter and picks the best next road.</p>
 <h2>IP (IPv4) at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 3 (Network)</td></tr><tr><th scope="row">Default port</th><td>N/A (Layer 3)</td></tr><tr><th scope="row">Transport</th><td>Encapsulated in Ethernet / PPP / Fiber frames</td></tr><tr><th scope="row">Data format</th><td>20-byte IPv4 Header + L4 Payload (Max 65,535B)</td></tr><tr><th scope="row">Common methods</th><td>Longest-Prefix Match, TTL Decrement, Header Checksum, Fragmentation</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 3 (Network)</td></tr><tr><th scope="row">Default port</th><td>N/A (Layer 3)</td></tr><tr><th scope="row">Transport</th><td>Encapsulated in Ethernet / PPP / Fiber frames</td></tr><tr><th scope="row">Data format</th><td>20-byte IPv4 Header + L4 Payload (Max 65,535B)</td></tr><tr><th scope="row">Common methods</th><td>Longest-Prefix Match, TTL Decrement, Header Checksum, Fragmentation</td></tr><tr><th scope="row">Specification</th><td>RFC 791: Internet Protocol</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc791" rel="noopener">RFC 791: Internet Protocol</a>.</p>
-<h2>Devices in the IP (IPv4) exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Router</strong> (router, 192.168.1.1)</li><li><strong>App Server</strong> (web server, 203.0.113.10)</li></ul>
-<h2>How IP (IPv4) works, step by step</h2>
+<h2>Which devices take part in a IP (IPv4) exchange?</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Router</strong> (router, 192.168.1.1)</li><li><strong>App Server</strong> (web server, 203.0.113.10)</li></ul>
+<h2>How does IP (IPv4) work, step by step?</h2>
 <ol><li><h3>IPv4 Encapsulation</h3><p><em>20B Header + RFC 1071 Checksum.</em> Host sets Src/Dst IP, TTL=64, DF flag, and computes the 16-bit IPv4 header checksum.</p></li><li><h3>Router LPM &amp; TTL-1</h3><p><em>Longest-prefix lookup &amp; checksum update.</em> Router decrements TTL (64 -&gt; 63), updates header checksum, and forwards to next hop.</p></li><li><h3>MTU Check / Delivery</h3><p><em>Packet arrives or fragments if &gt; MTU.</em> Packet arrives at destination; if larger than link MTU, it fragments or returns ICMP Frag Needed.</p></li></ol>
-<h2>What IP (IPv4) looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical IP (IPv4) exchange. Open the animation to inspect each one.</p><ol><li>IPv4 from 192.168.1.10 to 192.168.1.1: IPv4 Src=192.168.1.10 Dst=203.0.113.10 TTL=64 Len=1400 (1400 bytes)</li><li>IPv4 from 192.168.1.1 to 203.0.113.10: IPv4 Forwarded TTL=63 Len=1400 (1400 bytes)</li></ol>
-<h2>IP (IPv4) security notes</h2><ul><li><strong>IP Source Spoofing.</strong> Senders can forge the 32-bit Source IP header field unless edge networks filter egress traffic. <em>Defense:</em> Deploy uRPF (Unicast Reverse Path Forwarding) and BCP 38 ingress filtering.</li></ul>
-<h2>Test yourself on IP (IPv4)</h2><h3>How many bits are in an IPv4 address?</h3><p><strong>Answer:</strong> 32 bits. IPv4 addresses are 32-bit integers usually written as four dotted octets.</p><h3>What happens at every Layer 3 router as an IPv4 packet is forwarded?</h3><p><strong>Answer:</strong> TTL is decremented by 1 and header checksum is recomputed. Routers decrement TTL to prevent infinite loops and update the IPv4 header checksum.</p><h3>Which matching rule do routers use when multiple routes match a destination IP?</h3><p><strong>Answer:</strong> Longest-Prefix Match (most specific mask). LPM picks the route with the highest prefix length (e.g. /24 beats /16).</p>
-<h2>Related protocols</h2>
+<h2>IP (IPv4) vs IPv6: what is the difference?</h2>
+<p>IP (IPv4) and IPv6 are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">IP (IPv4)</th><th scope="col"><a href="/explore/ipv6/">IPv6</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 3 (Network)</td><td>Layer 3 (Network)</td></tr><tr><th scope="row">Default port</th><td>N/A (Layer 3)</td><td>N/A (EtherType 0x86DD)</td></tr><tr><th scope="row">Transport</th><td>Encapsulated in Ethernet / PPP / Fiber frames</td><td>Layer 2 Framing</td></tr><tr><th scope="row">Data format</th><td>20-byte IPv4 Header + L4 Payload (Max 65,535B)</td><td>Fixed 40-byte Header + Extension Headers + Payload</td></tr><tr><th scope="row">Common methods</th><td>Longest-Prefix Match, TTL Decrement, Header Checksum, Fragmentation</td><td>SLAAC (RS/RA), Neighbor Solicitation (NDP), Neighbor Advertisement, Global Unicast</td></tr><tr><th scope="row">Specification</th><td>RFC 791: Internet Protocol</td><td>RFC 8200: Internet Protocol, Version 6 (IPv6)</td></tr></tbody></table>
+<p>IP (IPv4) (Internet Protocol Version 4): IPv4 is the foundational network-layer protocol that routes packets across interconnected networks using 32-bit addresses, longest-prefix matching, TTL hop limits, and… IPv6 (Internet Protocol Version 6): IPv6 expands address space to 128 bits, eliminates NAT necessity, streamlines routing with a fixed 40-byte header (no header checksum), and replaces ARP with ICMPv6…</p>
+<h2>What does IP (IPv4) look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical IP (IPv4) exchange. Open the animation to inspect each packet.</p><ol><li>IPv4 from 192.168.1.10 to 192.168.1.1: IPv4 Src=192.168.1.10 Dst=203.0.113.10 TTL=64 Len=1400 (1400 bytes)</li><li>IPv4 from 192.168.1.1 to 203.0.113.10: IPv4 Forwarded TTL=63 Len=1400 (1400 bytes)</li></ol>
+<h2>Is IP (IPv4) secure? Common attacks and defenses</h2><ul><li><strong>IP Source Spoofing.</strong> Senders can forge the 32-bit Source IP header field unless edge networks filter egress traffic. <em>Defense:</em> Deploy uRPF (Unicast Reverse Path Forwarding) and BCP 38 ingress filtering.</li></ul>
+<h2>Frequently asked questions about IP (IPv4)</h2><h3>How many bits are in an IPv4 address?</h3><p><strong>Answer:</strong> 32 bits. IPv4 addresses are 32-bit integers usually written as four dotted octets.</p><h3>What happens at every Layer 3 router as an IPv4 packet is forwarded?</h3><p><strong>Answer:</strong> TTL is decremented by 1 and header checksum is recomputed. Routers decrement TTL to prevent infinite loops and update the IPv4 header checksum.</p><h3>Which matching rule do routers use when multiple routes match a destination IP?</h3><p><strong>Answer:</strong> Longest-Prefix Match (most specific mask). LPM picks the route with the highest prefix length (e.g. /24 beats /16).</p>
+<h2>Which protocols are related to IP (IPv4)?</h2>
 <ul><li><a href="/explore/tcp/">TCP</a>: Transmission Control Protocol</li><li><a href="/explore/udp/">UDP</a>: User Datagram Protocol</li><li><a href="/explore/bgp/">BGP</a>: Border Gateway Protocol (BGP-4)</li><li><a href="/explore/ipv6/">IPv6</a>: Internet Protocol Version 6</li><li><a href="/explore/icmp/">ICMP</a>: Internet Control Message Protocol (Ping &amp; Traceroute)</li><li><a href="/explore/igmp/">IGMP</a>: Internet Group Management Protocol (v3)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

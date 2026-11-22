@@ -20,6 +20,7 @@
     <title>HTTPS Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="HTTPS wraps HTTP inside TLS encryption, protecting URLs, headers, cookies, and payloads against eavesdropping. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/https/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/https/" />
     <meta property="og:title" content="HTTPS Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How HTTPS works",
       "keywords": "tls, ssl, 443, padlock, encrypted, hsts, alpn, http/2",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "HTTPS (HTTP over TLS (Secure Hypertext Transfer Protocol))"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › HTTPS</nav>
 <h1>HTTPS (HTTP over TLS (Secure Hypertext Transfer Protocol)): how it works, step by step</h1>
+<h2>What is HTTPS?</h2>
 <p>HTTPS wraps HTTP inside TLS encryption, protecting URLs, headers, cookies, and payloads against eavesdropping and tampering while authenticating the server via X.509 certificates.</p>
 <p><a href="/explore/https/"><strong>Open the interactive HTTPS animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>HTTPS explained simply</h2>
+<h2>What is HTTPS, in simple words?</h2>
 <p>HTTPS is HTTP inside a locked armored briefcase: the postal worker still sees which building address you’re sending to (IP/SNI), but nobody can read or alter the letter inside.</p>
 <h2>HTTPS at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application) over TLS (Layer 6)</td></tr><tr><th scope="row">Default port</th><td>443</td></tr><tr><th scope="row">Transport</th><td>TCP + TLS 1.2/1.3 (or QUIC for HTTP/3)</td></tr><tr><th scope="row">Data format</th><td>TLS AEAD Encrypted HTTP/1.1 or Binary HTTP/2 Frames</td></tr><tr><th scope="row">Common methods</th><td>GET, POST, PUT, DELETE, HEAD, HSTS</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application) over TLS (Layer 6)</td></tr><tr><th scope="row">Default port</th><td>443</td></tr><tr><th scope="row">Transport</th><td>TCP + TLS 1.2/1.3 (or QUIC for HTTP/3)</td></tr><tr><th scope="row">Data format</th><td>TLS AEAD Encrypted HTTP/1.1 or Binary HTTP/2 Frames</td></tr><tr><th scope="row">Common methods</th><td>GET, POST, PUT, DELETE, HEAD, HSTS</td></tr><tr><th scope="row">Specification</th><td>RFC 9110: HTTP Semantics (HTTPS URI Scheme)</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc9110" rel="noopener">RFC 9110: HTTP Semantics (HTTPS URI Scheme)</a>; <a href="https://www.rfc-editor.org/rfc/rfc8446" rel="noopener">RFC 8446: TLS 1.3</a>.</p>
-<h2>Devices in the HTTPS exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>DNS 8.8.8.8</strong> (dns server, 8.8.8.8)</li><li><strong>HTTPS Server</strong> (web server, 203.0.113.10)</li></ul>
-<h2>How HTTPS works, step by step</h2>
+<h2>Which devices take part in a HTTPS exchange?</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>DNS 8.8.8.8</strong> (dns server, 8.8.8.8)</li><li><strong>HTTPS Server</strong> (web server, 203.0.113.10)</li></ul>
+<h2>How does HTTPS work, step by step?</h2>
 <ol><li><h3>DNS Lookup</h3><p><em>Resolve example.com -&gt; 203.0.113.10.</em> Client resolves the target domain to an IP address via DNS.</p></li><li><h3>TCP Handshake</h3><p><em>Connect to port 443.</em> 3-way TCP handshake establishes the reliable byte stream to port 443.</p></li><li><h3>TLS 1.3 Handshake</h3><p><em>ECDHE + Certificate + ALPN h2.</em> Peers negotiate TLS 1.3 encryption keys and select HTTP/2 via ALPN.</p></li><li><h3>Encrypted HTTP/2 Exchange</h3><p><em>Encrypted GET / -&gt; 200 OK.</em> HTTP headers, cookies, and HTML payload are encrypted end-to-end inside TLS records.</p></li></ol>
-<h2>What HTTPS looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical HTTPS exchange. Open the animation to inspect each one.</p><ol><li>DNS from 192.168.1.10 to 8.8.8.8: Standard query A secure.example.com (76 bytes)</li><li>DNS from 8.8.8.8 to 192.168.1.10: Standard query response A 203.0.113.10 (92 bytes)</li><li>TCP from 192.168.1.10 to 203.0.113.10: 54120 -&gt; 443 [SYN] Seq=0 (66 bytes)</li><li>TCP from 203.0.113.10 to 192.168.1.10: 443 -&gt; 54120 [SYN, ACK] Seq=0 Ack=1 (66 bytes)</li><li>TCP from 192.168.1.10 to 203.0.113.10: 54120 -&gt; 443 [ACK] Seq=1 Ack=1 (60 bytes)</li><li>TLS from 192.168.1.10 to 203.0.113.10: ClientHello (TLS 1.3, ALPN=h2, SNI=secure.example.com) (517 bytes)</li><li>TLS from 203.0.113.10 to 192.168.1.10: ServerHello + Encrypted Certificate + Finished (1390 bytes)</li><li>HTTPS from 192.168.1.10 to 203.0.113.10: Application Data [Encrypted HTTP/2 HEADERS GET /] (210 bytes)</li><li>HTTPS from 203.0.113.10 to 192.168.1.10: Application Data [Encrypted HTTP/2 DATA 200 OK] (4200 bytes)</li></ol>
-<h2>HTTPS security notes</h2><ul><li><strong>SSL Stripping.</strong> An on-path attacker intercepts an initial plain HTTP request and prevents the redirect to HTTPS. <em>Defense:</em> Enable HSTS (Strict-Transport-Security) with preload so browsers refuse plain HTTP.</li></ul>
-<h2>Test yourself on HTTPS</h2><h3>Which default port does HTTPS use?</h3><p><strong>Answer:</strong> 443. HTTPS runs on TCP (or UDP/QUIC) port 443 by default.</p><h3>In HTTPS, which part of an HTTP request is hidden from network sniffers?</h3><p><strong>Answer:</strong> Path, query string, headers, cookies, and body. Everything inside the HTTP layer (URI path, headers, cookies, body) is encrypted by TLS.</p><h3>What header prevents SSL-stripping attacks after a user’s first visit?</h3><p><strong>Answer:</strong> Strict-Transport-Security (HSTS). HSTS forces browsers to upgrade all future requests to HTTPS automatically.</p><h3>Which TLS extension negotiates HTTP/2 vs HTTP/1.1 during the handshake?</h3><p><strong>Answer:</strong> ALPN. Application-Layer Protocol Negotiation (ALPN) picks &quot;h2&quot; or &quot;http/1.1&quot; in 0 extra round-trips.</p><h3>Why does HTTPS require a Certificate Authority (CA)?</h3><p><strong>Answer:</strong> To sign certificates so browsers trust the server’s public key. CAs vouch that a public key genuinely belongs to the domain name.</p>
-<h2>Related protocols</h2>
+<h2>HTTPS vs HTTP: what is the difference?</h2>
+<p>HTTPS and HTTP are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">HTTPS</th><th scope="col"><a href="/explore/http/">HTTP</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application) over TLS (Layer 6)</td><td>Layer 7 (Application) / TCP-IP Application</td></tr><tr><th scope="row">Default port</th><td>443</td><td>80</td></tr><tr><th scope="row">Transport</th><td>TCP + TLS 1.2/1.3 (or QUIC for HTTP/3)</td><td>TCP (HTTP/1.1, HTTP/2) / QUIC (HTTP/3)</td></tr><tr><th scope="row">Data format</th><td>TLS AEAD Encrypted HTTP/1.1 or Binary HTTP/2 Frames</td><td>Plaintext ASCII Headers + Body (MIME)</td></tr><tr><th scope="row">Common methods</th><td>GET, POST, PUT, DELETE, HEAD, HSTS</td><td>GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH</td></tr><tr><th scope="row">Specification</th><td>RFC 9110: HTTP Semantics (HTTPS URI Scheme)</td><td>RFC 9110: HTTP Semantics</td></tr></tbody></table>
+<p>HTTPS (HTTP over TLS (Secure Hypertext Transfer Protocol)): HTTPS wraps HTTP inside TLS encryption, protecting URLs, headers, cookies, and payloads against eavesdropping and tampering while authenticating the server via X.509… HTTP (Hypertext Transfer Protocol): HTTP is the stateless request-response protocol that powers the World Wide Web. A client opens a TCP connection (after DNS resolution), sends a structured method and…</p>
+<h2>What does HTTPS look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical HTTPS exchange. Open the animation to inspect each packet.</p><ol><li>DNS from 192.168.1.10 to 8.8.8.8: Standard query A secure.example.com (76 bytes)</li><li>DNS from 8.8.8.8 to 192.168.1.10: Standard query response A 203.0.113.10 (92 bytes)</li><li>TCP from 192.168.1.10 to 203.0.113.10: 54120 -&gt; 443 [SYN] Seq=0 (66 bytes)</li><li>TCP from 203.0.113.10 to 192.168.1.10: 443 -&gt; 54120 [SYN, ACK] Seq=0 Ack=1 (66 bytes)</li><li>TCP from 192.168.1.10 to 203.0.113.10: 54120 -&gt; 443 [ACK] Seq=1 Ack=1 (60 bytes)</li><li>TLS from 192.168.1.10 to 203.0.113.10: ClientHello (TLS 1.3, ALPN=h2, SNI=secure.example.com) (517 bytes)</li><li>TLS from 203.0.113.10 to 192.168.1.10: ServerHello + Encrypted Certificate + Finished (1390 bytes)</li><li>HTTPS from 192.168.1.10 to 203.0.113.10: Application Data [Encrypted HTTP/2 HEADERS GET /] (210 bytes)</li><li>HTTPS from 203.0.113.10 to 192.168.1.10: Application Data [Encrypted HTTP/2 DATA 200 OK] (4200 bytes)</li></ol>
+<h2>Is HTTPS secure? Common attacks and defenses</h2><ul><li><strong>SSL Stripping.</strong> An on-path attacker intercepts an initial plain HTTP request and prevents the redirect to HTTPS. <em>Defense:</em> Enable HSTS (Strict-Transport-Security) with preload so browsers refuse plain HTTP.</li></ul>
+<h2>Frequently asked questions about HTTPS</h2><h3>Which default port does HTTPS use?</h3><p><strong>Answer:</strong> 443. HTTPS runs on TCP (or UDP/QUIC) port 443 by default.</p><h3>In HTTPS, which part of an HTTP request is hidden from network sniffers?</h3><p><strong>Answer:</strong> Path, query string, headers, cookies, and body. Everything inside the HTTP layer (URI path, headers, cookies, body) is encrypted by TLS.</p><h3>What header prevents SSL-stripping attacks after a user’s first visit?</h3><p><strong>Answer:</strong> Strict-Transport-Security (HSTS). HSTS forces browsers to upgrade all future requests to HTTPS automatically.</p><h3>Which TLS extension negotiates HTTP/2 vs HTTP/1.1 during the handshake?</h3><p><strong>Answer:</strong> ALPN. Application-Layer Protocol Negotiation (ALPN) picks &quot;h2&quot; or &quot;http/1.1&quot; in 0 extra round-trips.</p><h3>Why does HTTPS require a Certificate Authority (CA)?</h3><p><strong>Answer:</strong> To sign certificates so browsers trust the server’s public key. CAs vouch that a public key genuinely belongs to the domain name.</p>
+<h2>Which protocols are related to HTTPS?</h2>
 <ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li><li><a href="/explore/rtmp/">RTMP</a>: Real-Time Messaging Protocol (Live Ingest)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

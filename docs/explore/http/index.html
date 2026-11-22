@@ -20,6 +20,7 @@
     <title>HTTP Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="HTTP is the stateless request-response protocol that powers the World Wide Web. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/http/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/http/" />
     <meta property="og:title" content="HTTP Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How HTTP works",
       "keywords": "web, browser, get, post, rest, html, status code, 200, 404, 80",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "HTTP (Hypertext Transfer Protocol)"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › HTTP</nav>
 <h1>HTTP (Hypertext Transfer Protocol): how it works, step by step</h1>
+<h2>What is HTTP?</h2>
 <p>HTTP is the stateless request-response protocol that powers the World Wide Web. A client opens a TCP connection (after DNS resolution), sends a structured method and headers, and receives status codes, headers, and a payload.</p>
 <p><a href="/explore/http/"><strong>Open the interactive HTTP animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>HTTP explained simply</h2>
+<h2>What is HTTP, in simple words?</h2>
 <p>Imagine mailing a postcard saying &quot;Please send me page 1 of your menu&quot; (GET /), and the restaurant mails back the menu printed on paper anyone along the route could read.</p>
 <h2>HTTP at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application) / TCP-IP Application</td></tr><tr><th scope="row">Default port</th><td>80</td></tr><tr><th scope="row">Transport</th><td>TCP (HTTP/1.1, HTTP/2) / QUIC (HTTP/3)</td></tr><tr><th scope="row">Data format</th><td>Plaintext ASCII Headers + Body (MIME)</td></tr><tr><th scope="row">Common methods</th><td>GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application) / TCP-IP Application</td></tr><tr><th scope="row">Default port</th><td>80</td></tr><tr><th scope="row">Transport</th><td>TCP (HTTP/1.1, HTTP/2) / QUIC (HTTP/3)</td></tr><tr><th scope="row">Data format</th><td>Plaintext ASCII Headers + Body (MIME)</td></tr><tr><th scope="row">Common methods</th><td>GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH</td></tr><tr><th scope="row">Specification</th><td>RFC 9110: HTTP Semantics</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc9110" rel="noopener">RFC 9110: HTTP Semantics</a>; <a href="https://www.rfc-editor.org/rfc/rfc9112" rel="noopener">RFC 9112: HTTP/1.1</a>.</p>
-<h2>Devices in the HTTP exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>DNS Resolver</strong> (dns server, 8.8.8.8)</li><li><strong>Root DNS</strong> (dns server, 198.41.0.4)</li><li><strong>.com TLD</strong> (dns server, 192.5.6.30)</li><li><strong>Authoritative</strong> (dns server, 198.51.100.53)</li><li><strong>Web Server</strong> (web server, 203.0.113.10)</li></ul>
-<h2>How HTTP works, step by step</h2>
+<h2>Which devices take part in a HTTP exchange?</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>DNS Resolver</strong> (dns server, 8.8.8.8)</li><li><strong>Root DNS</strong> (dns server, 198.41.0.4)</li><li><strong>.com TLD</strong> (dns server, 192.5.6.30)</li><li><strong>Authoritative</strong> (dns server, 198.51.100.53)</li><li><strong>Web Server</strong> (web server, 203.0.113.10)</li></ul>
+<h2>How does HTTP work, step by step?</h2>
 <ol><li><h3>Client Request</h3><p><em>Browser parses URL &amp; builds HTTP GET.</em> Browser parses http://www.example.com/ and prepares a GET request before resolving the hostname.</p></li><li><h3>DNS Resolution</h3><p><em>Recursive lookup: Resolver -&gt; Root -&gt; .com TLD -&gt; Auth.</em> Stub resolver queries 8.8.8.8, which walks the DNS hierarchy to resolve www.example.com to 203.0.113.10.</p></li><li><h3>TCP Connection</h3><p><em>3-Way Handshake (SYN / SYN-ACK / ACK).</em> Client opens ephemeral port 52344 and establishes a reliable TCP stream to port 80 on 203.0.113.10.</p></li><li><h3>HTTP Exchange</h3><p><em>GET / HTTP/1.1 -&gt; 200 OK (12.8 KB).</em> Client sends GET / HTTP/1.1 (484 B) and Web Server streams back HTTP/1.1 200 OK text/html (12.8 KB).</p></li><li><h3>Page Rendering</h3><p><em>HTML parse, subresource fetch &amp; paint.</em> Browser parses HTML DOM, fetches linked CSS/JS assets over keep-alive, and renders the page.</p></li></ol>
-<h2>What HTTP looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical HTTP exchange. Open the animation to inspect each one.</p><ol><li>DNS from 192.168.1.10 to 8.8.8.8: Standard query 0x4a1f A www.example.com (75 bytes)</li><li>DNS from 8.8.8.8 to 198.41.0.4: Iterative query A www.example.com (75 bytes)</li><li>DNS from 198.41.0.4 to 8.8.8.8: Referral: NS .com -&gt; 192.5.6.30 (118 bytes)</li><li>DNS from 8.8.8.8 to 192.5.6.30: Iterative query A www.example.com (75 bytes)</li><li>DNS from 192.5.6.30 to 8.8.8.8: Referral: NS example.com -&gt; 198.51.100.53 (124 bytes)</li><li>DNS from 8.8.8.8 to 198.51.100.53: Iterative query A www.example.com (75 bytes)</li><li>DNS from 198.51.100.53 to 8.8.8.8: Authoritative A www.example.com -&gt; 203.0.113.10 (91 bytes)</li><li>DNS from 8.8.8.8 to 192.168.1.10: Standard query response 0x4a1f A www.example.com -&gt; 203.0.113.10 (91 bytes)</li><li>TCP from 192.168.1.10 to 203.0.113.10: 52344 -&gt; 80 [SYN] Seq=0 Win=65535 Len=0 MSS=1460 (66 bytes)</li><li>TCP from 203.0.113.10 to 192.168.1.10: 80 -&gt; 52344 [SYN, ACK] Seq=0 Ack=1 Win=65535 Len=0 MSS=1460 (66 bytes)</li><li>TCP from 192.168.1.10 to 203.0.113.10: 52344 -&gt; 80 [ACK] Seq=1 Ack=1 Win=65535 Len=0 (60 bytes)</li><li>HTTP from 192.168.1.10 to 203.0.113.10: GET / HTTP/1.1 (484 bytes)</li><li>HTTP from 203.0.113.10 to 192.168.1.10: HTTP/1.1 200 OK (text/html) [9 TCP segments] (12800 bytes)</li><li>HTTP from 192.168.1.10 to 203.0.113.10: GET /app.css HTTP/1.1 (keep-alive reuse) (412 bytes)</li><li>HTTP from 203.0.113.10 to 192.168.1.10: HTTP/1.1 200 OK (text/css) (2450 bytes)</li></ol>
-<h2>HTTP security notes</h2><ul><li><strong>Eavesdropping / Credential Sniffing.</strong> Plaintext HTTP headers, cookies, and form bodies can be read by any router or Wi-Fi sniffer in transit. <em>Defense:</em> Always upgrade to HTTPS (TLS 1.3) and enforce HSTS (Strict-Transport-Security).</li><li><strong>HTTP Request Smuggling &amp; Header Injection.</strong> Ambiguous Content-Length vs Transfer-Encoding headers trick proxies and backends into desync. <em>Defense:</em> Use strict RFC 9112 parsing, reject duplicate headers, or adopt HTTP/2 end-to-end.</li></ul>
-<h2>Test yourself on HTTP</h2><h3>Which transport protocol does HTTP/1.1 use by default on port 80?</h3><p><strong>Answer:</strong> TCP. HTTP/1.1 relies on TCP for ordered, reliable byte delivery.</p><h3>What happens before the browser sends an HTTP GET to www.example.com if the IP is unknown?</h3><p><strong>Answer:</strong> It performs a DNS lookup. The hostname must first be resolved to an IP address via DNS.</p><h3>Which HTTP status code indicates a resource was successfully returned?</h3><p><strong>Answer:</strong> 200 OK. 200 OK means the request succeeded and the response body contains the representation.</p><h3>Why is plain HTTP unsafe on public Wi-Fi?</h3><p><strong>Answer:</strong> Headers and cookies travel in cleartext. HTTP has no encryption layer, exposing session tokens and passwords to sniffers.</p><h3>Which HTTP method is idempotent and retrieves a resource without modifying server state?</h3><p><strong>Answer:</strong> GET. GET requests only retrieve representations and are safe/idempotent.</p>
-<h2>Related protocols</h2>
+<h2>HTTP vs HTTPS: what is the difference?</h2>
+<p>HTTP and HTTPS are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">HTTP</th><th scope="col"><a href="/explore/https/">HTTPS</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application) / TCP-IP Application</td><td>Layer 7 (Application) over TLS (Layer 6)</td></tr><tr><th scope="row">Default port</th><td>80</td><td>443</td></tr><tr><th scope="row">Transport</th><td>TCP (HTTP/1.1, HTTP/2) / QUIC (HTTP/3)</td><td>TCP + TLS 1.2/1.3 (or QUIC for HTTP/3)</td></tr><tr><th scope="row">Data format</th><td>Plaintext ASCII Headers + Body (MIME)</td><td>TLS AEAD Encrypted HTTP/1.1 or Binary HTTP/2 Frames</td></tr><tr><th scope="row">Common methods</th><td>GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH</td><td>GET, POST, PUT, DELETE, HEAD, HSTS</td></tr><tr><th scope="row">Specification</th><td>RFC 9110: HTTP Semantics</td><td>RFC 9110: HTTP Semantics (HTTPS URI Scheme)</td></tr></tbody></table>
+<p>HTTP (Hypertext Transfer Protocol): HTTP is the stateless request-response protocol that powers the World Wide Web. A client opens a TCP connection (after DNS resolution), sends a structured method and… HTTPS (HTTP over TLS (Secure Hypertext Transfer Protocol)): HTTPS wraps HTTP inside TLS encryption, protecting URLs, headers, cookies, and payloads against eavesdropping and tampering while authenticating the server via X.509…</p>
+<h2>What does HTTP look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical HTTP exchange. Open the animation to inspect each packet.</p><ol><li>DNS from 192.168.1.10 to 8.8.8.8: Standard query 0x4a1f A www.example.com (75 bytes)</li><li>DNS from 8.8.8.8 to 198.41.0.4: Iterative query A www.example.com (75 bytes)</li><li>DNS from 198.41.0.4 to 8.8.8.8: Referral: NS .com -&gt; 192.5.6.30 (118 bytes)</li><li>DNS from 8.8.8.8 to 192.5.6.30: Iterative query A www.example.com (75 bytes)</li><li>DNS from 192.5.6.30 to 8.8.8.8: Referral: NS example.com -&gt; 198.51.100.53 (124 bytes)</li><li>DNS from 8.8.8.8 to 198.51.100.53: Iterative query A www.example.com (75 bytes)</li><li>DNS from 198.51.100.53 to 8.8.8.8: Authoritative A www.example.com -&gt; 203.0.113.10 (91 bytes)</li><li>DNS from 8.8.8.8 to 192.168.1.10: Standard query response 0x4a1f A www.example.com -&gt; 203.0.113.10 (91 bytes)</li><li>TCP from 192.168.1.10 to 203.0.113.10: 52344 -&gt; 80 [SYN] Seq=0 Win=65535 Len=0 MSS=1460 (66 bytes)</li><li>TCP from 203.0.113.10 to 192.168.1.10: 80 -&gt; 52344 [SYN, ACK] Seq=0 Ack=1 Win=65535 Len=0 MSS=1460 (66 bytes)</li><li>TCP from 192.168.1.10 to 203.0.113.10: 52344 -&gt; 80 [ACK] Seq=1 Ack=1 Win=65535 Len=0 (60 bytes)</li><li>HTTP from 192.168.1.10 to 203.0.113.10: GET / HTTP/1.1 (484 bytes)</li><li>HTTP from 203.0.113.10 to 192.168.1.10: HTTP/1.1 200 OK (text/html) [9 TCP segments] (12800 bytes)</li><li>HTTP from 192.168.1.10 to 203.0.113.10: GET /app.css HTTP/1.1 (keep-alive reuse) (412 bytes)</li><li>HTTP from 203.0.113.10 to 192.168.1.10: HTTP/1.1 200 OK (text/css) (2450 bytes)</li></ol>
+<h2>Is HTTP secure? Common attacks and defenses</h2><ul><li><strong>Eavesdropping / Credential Sniffing.</strong> Plaintext HTTP headers, cookies, and form bodies can be read by any router or Wi-Fi sniffer in transit. <em>Defense:</em> Always upgrade to HTTPS (TLS 1.3) and enforce HSTS (Strict-Transport-Security).</li><li><strong>HTTP Request Smuggling &amp; Header Injection.</strong> Ambiguous Content-Length vs Transfer-Encoding headers trick proxies and backends into desync. <em>Defense:</em> Use strict RFC 9112 parsing, reject duplicate headers, or adopt HTTP/2 end-to-end.</li></ul>
+<h2>Frequently asked questions about HTTP</h2><h3>Which transport protocol does HTTP/1.1 use by default on port 80?</h3><p><strong>Answer:</strong> TCP. HTTP/1.1 relies on TCP for ordered, reliable byte delivery.</p><h3>What happens before the browser sends an HTTP GET to www.example.com if the IP is unknown?</h3><p><strong>Answer:</strong> It performs a DNS lookup. The hostname must first be resolved to an IP address via DNS.</p><h3>Which HTTP status code indicates a resource was successfully returned?</h3><p><strong>Answer:</strong> 200 OK. 200 OK means the request succeeded and the response body contains the representation.</p><h3>Why is plain HTTP unsafe on public Wi-Fi?</h3><p><strong>Answer:</strong> Headers and cookies travel in cleartext. HTTP has no encryption layer, exposing session tokens and passwords to sniffers.</p><h3>Which HTTP method is idempotent and retrieves a resource without modifying server state?</h3><p><strong>Answer:</strong> GET. GET requests only retrieve representations and are safe/idempotent.</p>
+<h2>Which protocols are related to HTTP?</h2>
 <ul><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li><li><a href="/explore/rtmp/">RTMP</a>: Real-Time Messaging Protocol (Live Ingest)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

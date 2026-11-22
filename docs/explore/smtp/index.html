@@ -20,6 +20,7 @@
     <title>SMTP Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="SMTP pushes outbound email from mail clients to submission servers (port 587) and between domain Mail Transfer. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/smtp/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/smtp/" />
     <meta property="og:title" content="SMTP Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How SMTP works",
       "keywords": "email, mail, mx, mta, 25, 587, starttls, spf, dkim, dmarc",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "SMTP (Simple Mail Transfer Protocol)"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › SMTP</nav>
 <h1>SMTP (Simple Mail Transfer Protocol): how it works, step by step</h1>
+<h2>What is SMTP?</h2>
 <p>SMTP pushes outbound email from mail clients to submission servers (port 587) and between domain Mail Transfer Agents (port 25) after resolving DNS MX records.</p>
 <p><a href="/explore/smtp/"><strong>Open the interactive SMTP animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>SMTP explained simply</h2>
+<h2>What is SMTP, in simple words?</h2>
 <p>SMTP is the postal truck that drops letters at the recipient’s post office (found by checking the MX address book). You announce who it’s from, who it’s for, and hand over the letter.</p>
 <h2>SMTP at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>25 (Relay), 587 (Submission), 465 (SMTPS)</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>ASCII Commands + RFC 5322 MIME Message</td></tr><tr><th scope="row">Common methods</th><td>EHLO, STARTTLS, AUTH, MAIL FROM, RCPT TO, DATA, QUIT</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>25 (Relay), 587 (Submission), 465 (SMTPS)</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>ASCII Commands + RFC 5322 MIME Message</td></tr><tr><th scope="row">Common methods</th><td>EHLO, STARTTLS, AUTH, MAIL FROM, RCPT TO, DATA, QUIT</td></tr><tr><th scope="row">Specification</th><td>RFC 5321: Simple Mail Transfer Protocol</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc5321" rel="noopener">RFC 5321: Simple Mail Transfer Protocol</a>.</p>
-<h2>Devices in the SMTP exchange</h2><ul><li><strong>Mail Client</strong> (host, 192.168.1.10)</li><li><strong>DNS MX Lookup</strong> (dns server, 8.8.8.8)</li><li><strong>Mail Server (MTA)</strong> (mail server, 198.51.100.25)</li></ul>
-<h2>How SMTP works, step by step</h2>
+<h2>Which devices take part in a SMTP exchange?</h2><ul><li><strong>Mail Client</strong> (host, 192.168.1.10)</li><li><strong>DNS MX Lookup</strong> (dns server, 8.8.8.8)</li><li><strong>Mail Server (MTA)</strong> (mail server, 198.51.100.25)</li></ul>
+<h2>How does SMTP work, step by step?</h2>
 <ol><li><h3>MX Record Lookup</h3><p><em>Find mail server for recipient domain.</em> Sender queries DNS for the MX record of recipient.org -&gt; mail.recipient.org (198.51.100.25).</p></li><li><h3>TCP + Greeting + EHLO</h3><p><em>220 Ready -&gt; EHLO -&gt; 250 Capabilities.</em> MTA sends 220 banner; sender issues EHLO and learns STARTTLS &amp; AUTH extensions.</p></li><li><h3>STARTTLS Upgrade</h3><p><em>Encrypt SMTP session with TLS.</em> STARTTLS upgrades the plaintext TCP socket to encrypted TLS before transferring email content.</p></li><li><h3>MAIL FROM / RCPT TO / DATA</h3><p><em>Envelope &amp; message body delivery.</em> Sender transmits envelope addresses, email headers/MIME body, ending with &lt;CRLF&gt;.&lt;CRLF&gt; -&gt; 250 OK.</p></li></ol>
-<h2>What SMTP looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical SMTP exchange. Open the animation to inspect each one.</p><ol><li>DNS from 192.168.1.10 to 8.8.8.8: Standard query MX recipient.org (72 bytes)</li><li>DNS from 8.8.8.8 to 192.168.1.10: MX 10 mail.recipient.org (198.51.100.25) (98 bytes)</li><li>SMTP from 198.51.100.25 to 192.168.1.10: S: 220 mail.recipient.org ESMTP Ready (94 bytes)</li><li>SMTP from 192.168.1.10 to 198.51.100.25: C: EHLO client.example.com (82 bytes)</li><li>SMTP from 192.168.1.10 to 198.51.100.25: C: STARTTLS -&gt; TLS 1.3 Tunnel Established (180 bytes)</li><li>SMTP from 192.168.1.10 to 198.51.100.25: C: MAIL FROM:&lt;alice@example.com&gt; / RCPT TO:&lt;bob@recipient.org&gt; (145 bytes)</li><li>SMTP from 192.168.1.10 to 198.51.100.25: C: DATA [Subject: Hello] &lt;CRLF&gt;.&lt;CRLF&gt; (860 bytes)</li><li>SMTP from 198.51.100.25 to 192.168.1.10: S: 250 2.0.0 Ok: queued as 9F81A2B (92 bytes)</li></ol>
-<h2>SMTP security notes</h2><ul><li><strong>Email Spoofing &amp; Open Relay Abuse.</strong> Plain SMTP trusts the MAIL FROM header unless authenticated, letting spammers forge sender domains. <em>Defense:</em> Publish SPF, DKIM, and DMARC DNS policies and require authenticated submission on port 587 with TLS.</li></ul>
-<h2>Test yourself on SMTP</h2><h3>Which DNS record tells an SMTP server where to deliver mail for a domain?</h3><p><strong>Answer:</strong> MX. Mail Exchanger (MX) records specify the hostnames handling email for a domain.</p><h3>Which TCP port is the modern standard for authenticated client email submission?</h3><p><strong>Answer:</strong> 587. Port 587 is dedicated to authenticated MSA mail submission; port 25 is server-to-server relay.</p><h3>What does the STARTTLS command do in SMTP?</h3><p><strong>Answer:</strong> Upgrades the plaintext TCP connection to TLS encryption. STARTTLS negotiates TLS encryption over the existing socket before AUTH or DATA.</p><h3>Which sequence terminates an SMTP DATA message body?</h3><p><strong>Answer:</strong> A single period on its own line (&lt;CRLF&gt;.&lt;CRLF&gt;). RFC 5321 ends the DATA stream with a line containing only &quot;.&quot;.</p><h3>Which trio of DNS/email standards combats domain spoofing?</h3><p><strong>Answer:</strong> SPF, DKIM, DMARC. SPF authorizes sender IPs, DKIM cryptographically signs headers/body, and DMARC sets enforcement policy.</p>
-<h2>Related protocols</h2>
+<h2>SMTP vs IMAP: what is the difference?</h2>
+<p>SMTP and IMAP are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">SMTP</th><th scope="col"><a href="/explore/imap/">IMAP</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>25 (Relay), 587 (Submission), 465 (SMTPS)</td><td>143 (Plain), 993 (IMAPS/TLS)</td></tr><tr><th scope="row">Transport</th><td>TCP</td><td>TCP</td></tr><tr><th scope="row">Data format</th><td>ASCII Commands + RFC 5322 MIME Message</td><td>Tagged Bidirectional Commands + MIME Body Parts</td></tr><tr><th scope="row">Common methods</th><td>EHLO, STARTTLS, AUTH, MAIL FROM, RCPT TO, DATA, QUIT</td><td>LOGIN, SELECT INBOX, FETCH, UID SEARCH, IDLE, LOGOUT</td></tr><tr><th scope="row">Specification</th><td>RFC 5321: Simple Mail Transfer Protocol</td><td>RFC 9051: IMAP4rev2</td></tr></tbody></table>
+<p>SMTP (Simple Mail Transfer Protocol): SMTP pushes outbound email from mail clients to submission servers (port 587) and between domain Mail Transfer Agents (port 25) after resolving DNS MX records. IMAP (Internet Message Access Protocol (IMAP4rev1)): IMAP synchronizes mail folders, read/starred flags, and partial MIME attachments across multiple devices while keeping authoritative state on the mail server.</p>
+<h2>What does SMTP look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical SMTP exchange. Open the animation to inspect each packet.</p><ol><li>DNS from 192.168.1.10 to 8.8.8.8: Standard query MX recipient.org (72 bytes)</li><li>DNS from 8.8.8.8 to 192.168.1.10: MX 10 mail.recipient.org (198.51.100.25) (98 bytes)</li><li>SMTP from 198.51.100.25 to 192.168.1.10: S: 220 mail.recipient.org ESMTP Ready (94 bytes)</li><li>SMTP from 192.168.1.10 to 198.51.100.25: C: EHLO client.example.com (82 bytes)</li><li>SMTP from 192.168.1.10 to 198.51.100.25: C: STARTTLS -&gt; TLS 1.3 Tunnel Established (180 bytes)</li><li>SMTP from 192.168.1.10 to 198.51.100.25: C: MAIL FROM:&lt;alice@example.com&gt; / RCPT TO:&lt;bob@recipient.org&gt; (145 bytes)</li><li>SMTP from 192.168.1.10 to 198.51.100.25: C: DATA [Subject: Hello] &lt;CRLF&gt;.&lt;CRLF&gt; (860 bytes)</li><li>SMTP from 198.51.100.25 to 192.168.1.10: S: 250 2.0.0 Ok: queued as 9F81A2B (92 bytes)</li></ol>
+<h2>Is SMTP secure? Common attacks and defenses</h2><ul><li><strong>Email Spoofing &amp; Open Relay Abuse.</strong> Plain SMTP trusts the MAIL FROM header unless authenticated, letting spammers forge sender domains. <em>Defense:</em> Publish SPF, DKIM, and DMARC DNS policies and require authenticated submission on port 587 with TLS.</li></ul>
+<h2>Frequently asked questions about SMTP</h2><h3>Which DNS record tells an SMTP server where to deliver mail for a domain?</h3><p><strong>Answer:</strong> MX. Mail Exchanger (MX) records specify the hostnames handling email for a domain.</p><h3>Which TCP port is the modern standard for authenticated client email submission?</h3><p><strong>Answer:</strong> 587. Port 587 is dedicated to authenticated MSA mail submission; port 25 is server-to-server relay.</p><h3>What does the STARTTLS command do in SMTP?</h3><p><strong>Answer:</strong> Upgrades the plaintext TCP connection to TLS encryption. STARTTLS negotiates TLS encryption over the existing socket before AUTH or DATA.</p><h3>Which sequence terminates an SMTP DATA message body?</h3><p><strong>Answer:</strong> A single period on its own line (&lt;CRLF&gt;.&lt;CRLF&gt;). RFC 5321 ends the DATA stream with a line containing only &quot;.&quot;.</p><h3>Which trio of DNS/email standards combats domain spoofing?</h3><p><strong>Answer:</strong> SPF, DKIM, DMARC. SPF authorizes sender IPs, DKIM cryptographically signs headers/body, and DMARC sets enforcement policy.</p>
+<h2>Which protocols are related to SMTP?</h2>
 <ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

@@ -20,6 +20,7 @@
     <title>WPA3 Explained: Step-by-Step Packet Animation | NetPulse</title>
     <meta name="description" content="WPA3 replaces WPA2’s vulnerable PSK derivation with SAE (Dragonfly) password-authenticated key exchange. Watch every packet, free." />
     <link rel="canonical" href="https://netpulse.itgg.space/explore/wpa3/" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://netpulse.itgg.space/explore/wpa3/" />
     <meta property="og:title" content="WPA3 Explained: Step-by-Step Packet Animation | NetPulse" />
@@ -43,6 +44,7 @@
       "@id": "https://netpulse.itgg.space/#website",
       "url": "https://netpulse.itgg.space/",
       "name": "NetPulse",
+      "alternateName": "NetPulse Protocol Visualizer",
       "inLanguage": "en",
       "publisher": {
         "@id": "https://netpulse.itgg.space/#author"
@@ -77,7 +79,15 @@
       "dateModified": "2026-11-22",
       "teaches": "How WPA3 works",
       "keywords": "sae, dragonfly, wpa3, pmf, forward secrecy, offline attack, wifi",
-      "learningResourceType": "interactive simulation"
+      "educationalLevel": "Beginner to intermediate",
+      "learningResourceType": [
+        "interactive simulation",
+        "explanation"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "WPA3 (Wi-Fi Protected Access 3 (SAE Dragonfly))"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -128,20 +138,25 @@
     <div id="root"><main class="seo-shell">
 <nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › WPA3</nav>
 <h1>WPA3 (Wi-Fi Protected Access 3 (SAE Dragonfly)): how it works, step by step</h1>
+<h2>What is WPA3?</h2>
 <p>WPA3 replaces WPA2’s vulnerable PSK derivation with SAE (Dragonfly) password-authenticated key exchange, providing forward secrecy and neutralizing offline dictionary cracking, plus mandatory Protected Management Frames (PMF).</p>
 <p><a href="/explore/wpa3/"><strong>Open the interactive WPA3 animation</strong></a> to watch each packet move and inspect its headers.</p>
-<h2>WPA3 explained simply</h2>
+<h2>What is WPA3, in simple words?</h2>
 <p>In WPA3, even if a hacker records your entire Wi-Fi login, they cannot test password guesses at home—they only get one live try per connection with the router.</p>
 <h2>WPA3 at a glance</h2>
-<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 2 (Wireless Data Link)</td></tr><tr><th scope="row">Default port</th><td>N/A (802.11 Auth + EAPOL)</td></tr><tr><th scope="row">Transport</th><td>IEEE 802.11 Frames</td></tr><tr><th scope="row">Data format</th><td>SAE Commit/Confirm + Protected Management Frames (PMF)</td></tr><tr><th scope="row">Common methods</th><td>SAE Commit, SAE Confirm, 4-Way Handshake, PMF (802.11w)</td></tr></tbody></table>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 2 (Wireless Data Link)</td></tr><tr><th scope="row">Default port</th><td>N/A (802.11 Auth + EAPOL)</td></tr><tr><th scope="row">Transport</th><td>IEEE 802.11 Frames</td></tr><tr><th scope="row">Data format</th><td>SAE Commit/Confirm + Protected Management Frames (PMF)</td></tr><tr><th scope="row">Common methods</th><td>SAE Commit, SAE Confirm, 4-Way Handshake, PMF (802.11w)</td></tr><tr><th scope="row">Specification</th><td>RFC 7664: Dragonfly Key Exchange</td></tr></tbody></table>
 <p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc7664" rel="noopener">RFC 7664: Dragonfly Key Exchange</a>.</p>
-<h2>Devices in the WPA3 exchange</h2><ul><li><strong>Laptop STA</strong> (host, 192.168.1.40)</li><li><strong>WPA3 / 802.1X AP</strong> (access point, 192.168.1.2)</li></ul>
-<h2>How WPA3 works, step by step</h2>
+<h2>Which devices take part in a WPA3 exchange?</h2><ul><li><strong>Laptop STA</strong> (host, 192.168.1.40)</li><li><strong>WPA3 / 802.1X AP</strong> (access point, 192.168.1.2)</li></ul>
+<h2>How does WPA3 work, step by step?</h2>
 <ol><li><h3>SAE Commit (Dragonfly)</h3><p><em>Scalar + Elliptic Curve Element exchange.</em> STA and AP exchange Dragonfly Commit messages derived from password + elliptic curve.</p></li><li><h3>SAE Confirm</h3><p><em>Zero-knowledge proof of shared PMK.</em> Both verify Confirm tokens, proving both know the passphrase with Forward Secrecy.</p></li><li><h3>4-Way Handshake + PMF</h3><p><em>Install AES-CCMP/GCMP keys + 802.11w PMF.</em> Protected Management Frames block spoofed deauthentication floods.</p></li></ol>
-<h2>What WPA3 looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical WPA3 exchange. Open the animation to inspect each one.</p><ol><li>802.11 SAE from 192.168.1.40 to 192.168.1.2: Authentication: SAE Commit (Scalar, Element) (128 bytes)</li><li>802.11 SAE from 192.168.1.2 to 192.168.1.40: Authentication: SAE Commit (Scalar, Element) (128 bytes)</li><li>802.11 SAE from 192.168.1.40 to 192.168.1.2: Authentication: SAE Confirm (Send-Confirm=1) (102 bytes)</li><li>802.11 SAE from 192.168.1.2 to 192.168.1.40: Authentication: SAE Confirm (PMK Verified!) (102 bytes)</li><li>EAPOL from 192.168.1.2 to 192.168.1.40: 4-Way Handshake + PMF Enabled (AES-GCMP-256) (160 bytes)</li></ol>
-<h2>WPA3 security notes</h2><ul><li><strong>Dragonblood Side-Channel / Downgrade.</strong> Mixed WPA2/WPA3 transition mode can allow downgrades back to WPA2 unless transition disable is signaled. <em>Defense:</em> Enable WPA3-only mode where supported and keep AP firmware patched.</li></ul>
-<h2>Test yourself on WPA3</h2><h3>What key exchange replaces PSK in WPA3-Personal?</h3><p><strong>Answer:</strong> SAE (Dragonfly). Simultaneous Authentication of Equals (SAE / Dragonfly) resists offline brute force.</p><h3>What does mandatory PMF (802.11w) in WPA3 prevent?</h3><p><strong>Answer:</strong> Unauthenticated deauthentication/disassociation attacks. Protected Management Frames sign management frames so attackers cannot kick clients off Wi-Fi.</p><h3>Does WPA3-SAE provide Forward Secrecy?</h3><p><strong>Answer:</strong> Yes, every SAE session produces a fresh ephemeral PMK. Even if the Wi-Fi password leaks later, previously captured sessions cannot be decrypted.</p>
-<h2>Related protocols</h2>
+<h2>WPA3 vs Wi-Fi WPA2: what is the difference?</h2>
+<p>WPA3 and Wi-Fi WPA2 are often used together or confused. This table compares them.</p>
+<table><thead><tr><th scope="col"></th><th scope="col">WPA3</th><th scope="col"><a href="/explore/wpa2/">Wi-Fi WPA2</a></th></tr></thead><tbody><tr><th scope="row">OSI layer</th><td>Layer 2 (Wireless Data Link)</td><td>Layer 2 (Wireless Data Link)</td></tr><tr><th scope="row">Default port</th><td>N/A (802.11 Auth + EAPOL)</td><td>N/A (EtherType 0x888E EAPOL)</td></tr><tr><th scope="row">Transport</th><td>IEEE 802.11 Frames</td><td>IEEE 802.11 Wireless Frames</td></tr><tr><th scope="row">Data format</th><td>SAE Commit/Confirm + Protected Management Frames (PMF)</td><td>EAPOL-Key Frames + AES-CCMP Encrypted MPDUs</td></tr><tr><th scope="row">Common methods</th><td>SAE Commit, SAE Confirm, 4-Way Handshake, PMF (802.11w)</td><td>Probe, Auth, Assoc, EAPOL Msg 1, EAPOL Msg 2, EAPOL Msg 3, EAPOL Msg 4</td></tr><tr><th scope="row">Specification</th><td>RFC 7664: Dragonfly Key Exchange</td><td>IEEE 802.11i: Wireless LAN Medium Access Control Security</td></tr></tbody></table>
+<p>WPA3 (Wi-Fi Protected Access 3 (SAE Dragonfly)): WPA3 replaces WPA2’s vulnerable PSK derivation with SAE (Dragonfly) password-authenticated key exchange, providing forward secrecy and neutralizing offline dictionary… Wi-Fi WPA2 (IEEE 802.11i WPA2-PSK (4-Way Handshake)): WPA2 secures Wi-Fi networks using a 4-way EAPOL-Key handshake between the client and Access Point to prove both know the PSK without ever transmitting it over the air…</p>
+<h2>What does WPA3 look like on the wire?</h2><p>This is the packet sequence NetPulse replays for a typical WPA3 exchange. Open the animation to inspect each packet.</p><ol><li>802.11 SAE from 192.168.1.40 to 192.168.1.2: Authentication: SAE Commit (Scalar, Element) (128 bytes)</li><li>802.11 SAE from 192.168.1.2 to 192.168.1.40: Authentication: SAE Commit (Scalar, Element) (128 bytes)</li><li>802.11 SAE from 192.168.1.40 to 192.168.1.2: Authentication: SAE Confirm (Send-Confirm=1) (102 bytes)</li><li>802.11 SAE from 192.168.1.2 to 192.168.1.40: Authentication: SAE Confirm (PMK Verified!) (102 bytes)</li><li>EAPOL from 192.168.1.2 to 192.168.1.40: 4-Way Handshake + PMF Enabled (AES-GCMP-256) (160 bytes)</li></ol>
+<h2>Is WPA3 secure? Common attacks and defenses</h2><ul><li><strong>Dragonblood Side-Channel / Downgrade.</strong> Mixed WPA2/WPA3 transition mode can allow downgrades back to WPA2 unless transition disable is signaled. <em>Defense:</em> Enable WPA3-only mode where supported and keep AP firmware patched.</li></ul>
+<h2>Frequently asked questions about WPA3</h2><h3>What key exchange replaces PSK in WPA3-Personal?</h3><p><strong>Answer:</strong> SAE (Dragonfly). Simultaneous Authentication of Equals (SAE / Dragonfly) resists offline brute force.</p><h3>What does mandatory PMF (802.11w) in WPA3 prevent?</h3><p><strong>Answer:</strong> Unauthenticated deauthentication/disassociation attacks. Protected Management Frames sign management frames so attackers cannot kick clients off Wi-Fi.</p><h3>Does WPA3-SAE provide Forward Secrecy?</h3><p><strong>Answer:</strong> Yes, every SAE session produces a fresh ephemeral PMK. Even if the Wi-Fi password leaks later, previously captured sessions cannot be decrypted.</p>
+<h2>Which protocols are related to WPA3?</h2>
 <ul><li><a href="/explore/tls/">TLS / SSL</a>: Transport Layer Security (TLS 1.3)</li><li><a href="/explore/http_proxy/">HTTP Proxy</a>: HTTP Forward Proxy &amp; CONNECT Tunnel</li><li><a href="/explore/socks5/">SOCKS5</a>: SOCKS Protocol Version 5</li><li><a href="/explore/reverse_proxy/">Reverse Proxy</a>: Reverse Proxy &amp; Load Balancer (TLS Termination)</li><li><a href="/explore/wireguard/">WireGuard</a>: WireGuard Modern Cryptographic VPN</li><li><a href="/explore/ipsec/">IPsec</a>: Internet Protocol Security (IKEv2 + ESP)</li></ul>
 <p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
     <noscript>
@@ -151,6 +166,6 @@
         <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
         <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
       </p>
-    </noscript>
+    </noscript>
   </body>
 </html>

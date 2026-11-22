@@ -1,0 +1,487 @@
+# NetPulse: full text
+
+> Plain-text version of every protocol page on https://netpulse.itgg.space. NetPulse is also called "NetPulse Protocol Visualizer" to tell it apart from unrelated tools with similar names.
+
+## TCP (Transmission Control Protocol)
+URL: https://netpulse.itgg.space/explore/tcp/
+
+TCP provides reliable, ordered, congestion-controlled byte-stream delivery over unreliable IP networks using sequence numbers, acknowledgments, sliding windows, and adaptive congestion control.
+
+In simple words: TCP is like a registered phone call: first both say "Can you hear me? / Yes, can you hear me? / Yes!" then number every sentence and repeat any part that broke up.
+
+How it works:
+1. 3-Way Handshake: SYN -> SYN-ACK -> ACK (Seq/Ack sync). Client and Server exchange initial sequence numbers (ISN) and negotiate MSS=1460.
+2. Slow Start: cwnd grows exponentially (2 -> 4 -> 8 MSS). Congestion window doubles each RTT while cwnd < ssthresh.
+3. Loss & Recovery: Segment loss triggers Reno/CUBIC backoff. Simulated loss or congestion reduces ssthresh and triggers fast retransmit / RTO recovery.
+4. Congestion Avoidance: Linear AIMD growth after ssthresh. TCP probes bandwidth cautiously (+1 MSS per RTT) to avoid saturating queues.
+5. 4-Way Teardown: FIN-ACK -> FIN-ACK -> TIME_WAIT. Both sides cleanly close their half-duplex byte streams with FIN and final ACK.
+
+## UDP (User Datagram Protocol)
+URL: https://netpulse.itgg.space/explore/udp/
+
+UDP is a lightweight, connectionless transport protocol with an 8-byte header and zero handshake or retransmission overhead, ideal for real-time audio/video, DNS, and QUIC.
+
+In simple words: UDP is like tossing postcards into a mailbox as fast as you can: no phone call first, no waiting for receipts—fast and lightweight, even if one card blows away in the wind.
+
+How it works:
+1. Zero-Handshake Send: Immediate datagram emission (8B header). Application hands data to UDP; no SYN handshake occurs—datagram #1 leaves immediately.
+2. Independent Datagrams: Datagrams #2 & #3 travel without ACK blocking. Each datagram is self-contained; packet loss does not stall later packets (no head-of-line blocking).
+3. App-Level Handling: Receiver processes arriving datagrams. Receiver reads datagrams from socket buffer; optional app-level sequence checks handle loss.
+
+## IP (IPv4) (Internet Protocol Version 4)
+URL: https://netpulse.itgg.space/explore/ip/
+
+IPv4 is the foundational network-layer protocol that routes packets across interconnected networks using 32-bit addresses, longest-prefix matching, TTL hop limits, and optional MTU fragmentation.
+
+In simple words: IPv4 puts a ZIP code and street address on every envelope and gives it 64 hops to reach its destination; each post office decrements the hop counter and picks the best next road.
+
+How it works:
+1. IPv4 Encapsulation: 20B Header + RFC 1071 Checksum. Host sets Src/Dst IP, TTL=64, DF flag, and computes the 16-bit IPv4 header checksum.
+2. Router LPM & TTL-1: Longest-prefix lookup & checksum update. Router decrements TTL (64 -> 63), updates header checksum, and forwards to next hop.
+3. MTU Check / Delivery: Packet arrives or fragments if > MTU. Packet arrives at destination; if larger than link MTU, it fragments or returns ICMP Frag Needed.
+
+## BGP (Border Gateway Protocol (BGP-4))
+URL: https://netpulse.itgg.space/explore/bgp/
+
+BGP is the exterior routing protocol that glues together the global internet’s Autonomous Systems (ISPs, clouds, CDNs) by exchanging reachable IP prefixes and AS_PATH loop-free attributes.
+
+In simple words: BGP is how postal hubs across different countries tell each other: "To reach ZIP code 203.0.113.0/24, pass the letter through Hub 64510 and Hub 64511."
+
+How it works:
+1. TCP Port 179 Session: BGP peers establish TCP connection. Autonomous Systems open a reliable TCP session on port 179 before exchanging BGP messages.
+2. OPEN & KEEPALIVE: Peers negotiate ASN & capabilities. AS64500 and AS64510 exchange OPEN messages with hold timers and confirm with KEEPALIVE.
+3. UPDATE (Prefix Announcement): AS64511 advertises 203.0.113.0/24. Hosting AS64511 sends BGP UPDATE carrying NLRI 203.0.113.0/24 and AS_PATH [64511].
+4. Path Selection & Propagation: AS64510 prepends ASN & forwards. Transit AS64510 prepends 64510 -> AS_PATH [64510, 64511] and compares against direct link.
+
+## IPv6 (Internet Protocol Version 6)
+URL: https://netpulse.itgg.space/explore/ipv6/
+
+IPv6 expands address space to 128 bits, eliminates NAT necessity, streamlines routing with a fixed 40-byte header (no header checksum), and replaces ARP with ICMPv6 Neighbor Discovery (NDP) and SLAAC.
+
+In simple words: IPv6 gives every grain of sand on Earth billions of unique street addresses, and lets devices automatically configure their own address without needing a middleman.
+
+How it works:
+1. Router Solicitation / Advertisement: SLAAC prefix discovery (ICMPv6 133/134). Host queries ff02::2 and Router announces prefix 2001:db8:1::/64 for stateless auto-config.
+2. Neighbor Discovery (NDP): Replaces IPv4 ARP using multicast. Host sends ICMPv6 Neighbor Solicitation (135) to resolve next-hop link-layer MAC.
+3. IPv6 Packet Forwarding: Fixed 40B header, Hop Limit=64->63. IPv6 traffic flows using 128-bit addresses with Next Header chaining.
+
+## ICMP (Internet Control Message Protocol (Ping & Traceroute))
+URL: https://netpulse.itgg.space/explore/icmp/
+
+ICMP delivers network-layer diagnostics and error reporting. Tools like ping (Echo Request/Reply) and traceroute (TTL expiration probes) rely on ICMP control messages.
+
+In simple words: ICMP is like shouting "Marco!" across a canyon and timing how fast "Polo!" bounces back—or having each relay runner tell you when your message ran out of steps.
+
+How it works:
+1. Echo Request (Ping): Type 8 Echo Request reaches target. Client sends ICMP Type 8 Echo Request (TTL=64) across two routers to 203.0.113.10.
+2. Echo Reply: Type 0 Echo Reply measures RTT. Web Server replies with ICMP Type 0 Echo Reply; Client calculates round-trip latency.
+3. Traceroute Hop 1 (TTL=1): Router 1 decrements TTL to 0 -> Time Exceeded. Traceroute sends TTL=1; Home Router drops it and returns ICMP Type 11 Time Exceeded.
+4. Traceroute Hop 2 (TTL=2): ISP Router returns Time Exceeded. Client increments TTL=2; ISP Router reveals its hop IP via ICMP Type 11.
+5. Destination Reached: TTL=3 reaches 203.0.113.10. Final probe arrives at destination which returns Echo Reply / Port Unreachable.
+
+## IGMP (Internet Group Management Protocol (v3))
+URL: https://netpulse.itgg.space/explore/igmp/
+
+IGMP lets IPv4 hosts join and leave IP multicast groups (224.0.0.0/4) so routers and IGMP-snooping switches only forward live video/IPTV streams to interested receivers.
+
+In simple words: Instead of mailing 1,000 copies of a TV broadcast to everyone on the street, IGMP lets houses put up a flag saying "Deliver Channel 5 here!"
+
+How it works:
+1. Router Query: Router polls 224.0.0.1 for active listeners. Multicast router sends periodic IGMP General Query to all-hosts 224.0.0.1.
+2. Host Join Report: Host joins multicast group 239.1.1.5. TV Box / Client sends IGMPv3 Membership Report joining 239.1.1.5.
+3. Multicast Stream & Leave: Stream flows until host sends Leave. Server streams multicast UDP to 239.1.1.5; host later sends Leave to prune traffic.
+
+## NTP (Network Time Protocol (v4))
+URL: https://netpulse.itgg.space/explore/ntp/
+
+NTP synchronizes computer clocks across variable-latency networks down to milliseconds by exchanging four timestamps (T1, T2, T3, T4) to separate network delay from true clock offset.
+
+In simple words: You write down when you sent a text (T1), your friend writes when they got it (T2) and replied (T3), and you note when you got the reply (T4) so you can cancel out delivery delay and set your watch accurately.
+
+How it works:
+1. Client Transmit (T1): Mode 3 Client request stamps T1. Client records local originate timestamp T1 and sends 48-byte UDP/123 packet.
+2. Server Timestamps (T2, T3): Mode 4 Server stamps receive & transmit. Stratum-1 server records arrival T2 and departure T3 in 64-bit NTP fixed-point format.
+3. Offset Calculation (T4): Offset = ((T2-T1)+(T3-T4))/2. Client records T4, computes symmetric round-trip delay and slews system clock smoothly.
+
+## Ethernet / ARP (IEEE 802.3 Ethernet & Address Resolution Protocol)
+URL: https://netpulse.itgg.space/explore/ethernet/
+
+Ethernet frames carry packets across local links using 48-bit MAC addresses. Switches dynamically learn MAC-to-port mappings, while ARP maps IPv4 addresses to MAC addresses.
+
+In simple words: IP addresses are like names on an envelope, while MAC addresses are the exact apartment mailbox numbers in the building. ARP shouts "Who lives in 192.168.1.20?" so the mail carrier knows which mailbox to use.
+
+How it works:
+1. ARP Broadcast: Who has 192.168.1.20? -> ff:ff:ff:ff:ff:ff. Laptop A needs File Server’s MAC address and emits an Ethernet broadcast ARP Request.
+2. Switch Flood & Learn: Switch learns MAC-A on Port 1 & floods. Switch records 02:42:ac:11:00:10 on Port 1 and floods the broadcast frame to Ports 2 and 3.
+3. ARP Unicast Reply: File Server replies with its MAC address. File Server sends an ARP Reply directly to Laptop A’s MAC; Switch learns MAC-B on Port 2.
+4. Unicast Ethernet Frame: Switched directly Port 1 -> Port 2. Subsequent Ethernet frames (802.1Q / IPv4) are forwarded only to Port 2, never flooded to Host C.
+
+## DHCP (Dynamic Host Configuration Protocol)
+URL: https://netpulse.itgg.space/explore/dhcp/
+
+DHCP automatically assigns IPv4 addresses, subnet masks, default gateways, and DNS servers to devices joining a network through the 4-step DORA handshake.
+
+In simple words: When a new kid joins class without a seat, they shout "Does anyone have a spare desk?" (Discover), the teacher points to Desk 50 (Offer), the kid says "I’ll take Desk 50!" (Request), and the teacher writes their name down (Ack).
+
+How it works:
+1. DISCOVER: Client broadcasts DHCPDISCOVER. Client with IP 0.0.0.0 sends UDP broadcast (68 -> 67) asking for any DHCP server on the LAN.
+2. OFFER: Server offers 192.168.1.50. DHCP server reserves 192.168.1.50 from its pool and sends DHCPOFFER with subnet mask, gateway, and DNS.
+3. REQUEST: Client accepts offered IP. Client broadcasts DHCPREQUEST confirming it accepts 192.168.1.50 from server 192.168.1.1.
+4. ACK: Server commits lease (86400s). Server sends DHCPACK finalizing the 24-hour lease; client runs gratuitous ARP and configures eth0.
+
+## DNS (Domain Name System)
+URL: https://netpulse.itgg.space/explore/dns/
+
+DNS translates human-readable domain names into IP addresses using a globally distributed, hierarchical tree of root, TLD, and authoritative nameservers backed by TTL-based caching.
+
+In simple words: DNS is the internet’s phonebook: you ask for "example.com" and it walks from the country directory (root) to the city book (.com) to find the exact street number (203.0.113.10).
+
+How it works:
+1. Stub Query: Client sends recursive query to 8.8.8.8. OS stub resolver checks local cache, misses, and sends a UDP/53 recursive query (RD=1).
+2. Root Referral: Root server refers to .com TLD. Root nameserver (a.root-servers.net) responds with NS delegation for the .com top-level domain.
+3. TLD Referral: .com TLD refers to example.com NS. .com TLD nameserver returns the authoritative nameserver IP 198.51.100.53.
+4. Authoritative Answer: Authoritative NS returns A record + TTL. Authoritative server returns A 203.0.113.10 with AA=1 and TTL=300 seconds.
+5. Cache & Reply: Resolver caches & replies to Client. Recursive resolver caches the answer for 300s and delivers it to the client.
+
+## HTTP (Hypertext Transfer Protocol)
+URL: https://netpulse.itgg.space/explore/http/
+
+HTTP is the stateless request-response protocol that powers the World Wide Web. A client opens a TCP connection (after DNS resolution), sends a structured method and headers, and receives status codes, headers, and a payload.
+
+In simple words: Imagine mailing a postcard saying "Please send me page 1 of your menu" (GET /), and the restaurant mails back the menu printed on paper anyone along the route could read.
+
+How it works:
+1. Client Request: Browser parses URL & builds HTTP GET. Browser parses http://www.example.com/ and prepares a GET request before resolving the hostname.
+2. DNS Resolution: Recursive lookup: Resolver -> Root -> .com TLD -> Auth. Stub resolver queries 8.8.8.8, which walks the DNS hierarchy to resolve www.example.com to 203.0.113.10.
+3. TCP Connection: 3-Way Handshake (SYN / SYN-ACK / ACK). Client opens ephemeral port 52344 and establishes a reliable TCP stream to port 80 on 203.0.113.10.
+4. HTTP Exchange: GET / HTTP/1.1 -> 200 OK (12.8 KB). Client sends GET / HTTP/1.1 (484 B) and Web Server streams back HTTP/1.1 200 OK text/html (12.8 KB).
+5. Page Rendering: HTML parse, subresource fetch & paint. Browser parses HTML DOM, fetches linked CSS/JS assets over keep-alive, and renders the page.
+
+## HTTPS (HTTP over TLS (Secure Hypertext Transfer Protocol))
+URL: https://netpulse.itgg.space/explore/https/
+
+HTTPS wraps HTTP inside TLS encryption, protecting URLs, headers, cookies, and payloads against eavesdropping and tampering while authenticating the server via X.509 certificates.
+
+In simple words: HTTPS is HTTP inside a locked armored briefcase: the postal worker still sees which building address you’re sending to (IP/SNI), but nobody can read or alter the letter inside.
+
+How it works:
+1. DNS Lookup: Resolve example.com -> 203.0.113.10. Client resolves the target domain to an IP address via DNS.
+2. TCP Handshake: Connect to port 443. 3-way TCP handshake establishes the reliable byte stream to port 443.
+3. TLS 1.3 Handshake: ECDHE + Certificate + ALPN h2. Peers negotiate TLS 1.3 encryption keys and select HTTP/2 via ALPN.
+4. Encrypted HTTP/2 Exchange: Encrypted GET / -> 200 OK. HTTP headers, cookies, and HTML payload are encrypted end-to-end inside TLS records.
+
+## WebSocket (The WebSocket Protocol (WS / WSS))
+URL: https://netpulse.itgg.space/explore/websocket/
+
+WebSocket upgrades a standard HTTP/1.1 TCP connection into a persistent, full-duplex, low-overhead bidirectional message channel for live chat, trading feeds, and multiplayer games.
+
+In simple words: Instead of mailing letters back and forth every second (HTTP polling), WebSocket knocks once via HTTP ("Upgrade?") and leaves the walkie-talkie channel open both ways.
+
+How it works:
+1. HTTP Upgrade Request: Upgrade: websocket + Sec-WebSocket-Key. Client sends HTTP GET with Connection: Upgrade and a random base64 Sec-WebSocket-Key.
+2. 101 Switching Protocols: Server computes Sec-WebSocket-Accept. Server hashes key + GUID, responds HTTP/1.1 101 Switching Protocols, switching socket framing.
+3. Full-Duplex Frames: Server pushes frames without client polling. Tiny 2–6 byte framed messages flow bidirectionally; client frames are XOR-masked.
+
+## WebRTC (Web Real-Time Communication (ICE / STUN / DTLS / SRTP))
+URL: https://netpulse.itgg.space/explore/webrtc/
+
+WebRTC enables sub-second peer-to-peer browser video, audio, and data channels by discovering public NAT mappings via STUN/TURN, punching holes with ICE, securing keys via DTLS, and streaming encrypted SRTP.
+
+In simple words: Two friends behind locked apartment gates (NATs) ask a lookout tower (STUN) what their outside gate numbers are, trade those numbers, and then throw video balls directly between gates.
+
+How it works:
+1. STUN Public IP Discovery: Binding Request discovers NAT external IP:port. Peer A queries STUN (UDP 3478) to learn its public reflexive address.
+2. SDP Offer / ICE Candidates: Exchange codecs & candidate IPs via signaling. Peers swap SDP descriptions and ICE candidate lists through the signaling server.
+3. ICE Hole Punch + DTLS-SRTP: Direct P2P UDP + encrypted media stream. ICE connectivity checks succeed; DTLS establishes keys for encrypted SRTP audio/video.
+
+## SIP (Session Initiation Protocol (VoIP Signaling))
+URL: https://netpulse.itgg.space/explore/sip/
+
+SIP sets up, modifies, and tears down voice and video VoIP calls (INVITE / 180 Ringing / 200 OK / ACK) while actual voice packets travel separately over RTP.
+
+In simple words: SIP is the telephone operator that rings the other phone ("INVITE", "Ringing!", "Picked up!"), and once connected, both people talk directly over RTP.
+
+How it works:
+1. INVITE -> 180 Ringing: Caller sends INVITE with SDP codecs. Phone A sends SIP INVITE via SIP Proxy; Phone B alerts user with 180 Ringing.
+2. 200 OK & ACK: Call answered; media parameters agreed. Phone B answers with 200 OK; Phone A confirms with ACK.
+3. RTP Media & BYE: Voice flows over RTP; BYE hangs up. Bidirectional RTP audio packets flow directly until one party sends SIP BYE.
+
+## RTSP (Real Time Streaming Protocol (CCTV / IP Cameras))
+URL: https://netpulse.itgg.space/explore/rtsp/
+
+RTSP acts as a "network remote control" on port 554 for IP cameras and media servers (DESCRIBE -> SETUP -> PLAY -> TEARDOWN), while video frames stream over RTP.
+
+In simple words: RTSP is the Play/Pause/Rewind remote control for a security camera, while RTP is the live video river flowing onto your screen.
+
+How it works:
+1. OPTIONS & DESCRIBE: Fetch camera SDP track metadata. Client sends OPTIONS and DESCRIBE rtsp://192.168.1.64:554/stream1; camera returns H.264 SDP.
+2. SETUP & PLAY: Negotiate RTP ports and start stream. Client configures RTP transport ports with SETUP and triggers PLAY.
+3. RTP Video Stream: H.264 NAL units streamed over RTP. IP Camera streams real-time H.264 video frames to client.
+
+## RTMP (Real-Time Messaging Protocol (Live Ingest))
+URL: https://netpulse.itgg.space/explore/rtmp/
+
+RTMP is the persistent TCP-based ingest protocol used by OBS Studio and encoders to push low-latency live audio/video streams to ingest servers (port 1935) before HLS/DASH distribution.
+
+In simple words: RTMP is the backstage camera cable connecting a streamer’s OBS studio directly to Twitch or YouTube’s broadcast booth.
+
+How it works:
+1. C0/C1/C2 + S0/S1/S2 Handshake: Fixed-size binary handshake on TCP 1935. Encoder and Ingest Server exchange random 1536-byte C1/S1 blocks to sync timestamps.
+2. connect & publish: AMF0 NetConnection.connect + publish(streamKey). Encoder authenticates with stream key and requests publish rights.
+3. Multiplexed Media Chunks: H.264 video & AAC audio chunks. Audio, video, and metadata packets are interleaved into 128-byte/4KB RTMP chunks.
+
+## QUIC (HTTP/3) (QUIC Transport & HTTP/3)
+URL: https://netpulse.itgg.space/explore/quic/
+
+QUIC reimagines transport over UDP port 443 with TLS 1.3 baked in from packet #1 (1-RTT or 0-RTT resume), independent streams that eliminate TCP head-of-line blocking, and Connection IDs that survive Wi-Fi-to-5G handoffs.
+
+In simple words: TCP puts every webpage item on one single-lane train track—if one boxcar stalls, all cars behind it wait. QUIC gives each item its own fast lane over UDP with built-in encryption.
+
+How it works:
+1. 1-RTT Initial (Transport + TLS): Single Initial packet carries TLS ClientHello. Client sends a 1200B UDP/443 Initial packet combining transport setup and TLS 1.3 ClientHello.
+2. Server Initial + Handshake: ServerHello + Encrypted Cert in same flight. Server replies with Initial + Handshake packets; connection is ready in 1 RTT total!
+3. Independent HTTP/3 Streams: Stream 0 (HTML) & Stream 4 (CSS) without HoL blocking. Loss on Stream 0 only pauses Stream 0; Stream 4 delivers CSS immediately.
+
+## DNS over HTTPS (DNS Queries over HTTPS (DoH))
+URL: https://netpulse.itgg.space/explore/doh/
+
+DNS over HTTPS (DoH) wraps binary DNS queries inside standard HTTPS port-443 traffic so ISPs and local Wi-Fi observers cannot snoop or tamper with the websites you look up.
+
+In simple words: Regular DNS is shouting the website name out loud to the phonebook operator. DoH puts that question inside an encrypted HTTPS envelope indistinguishable from normal web browsing.
+
+How it works:
+1. TLS 1.3 Session to Port 443: Handshake with 1.1.1.1:443. Browser opens an HTTPS/TLS 1.3 tunnel to Cloudflare/Google DoH endpoint.
+2. HTTPS POST /dns-query: Encrypted wire-format DNS query. ISP sees only opaque TLS packets on port 443—domain name is completely hidden.
+3. Encrypted DNS Response: 200 OK application/dns-message. DoH server returns signed/resolved A record inside encrypted HTTPS 200 OK.
+
+## DNSSEC (Domain Name System Security Extensions)
+URL: https://netpulse.itgg.space/explore/dnssec/
+
+DNSSEC adds cryptographic digital signatures (RRSIG) and a hierarchical chain of trust (Root -> TLD DS -> Zone DNSKEY) so validating resolvers detect forged or poisoned DNS answers—note it ensures authenticity, not encryption.
+
+In simple words: DNSSEC is a wax royal seal on the phonebook page: anyone can still read the number, but nobody can fake it without breaking the seal.
+
+How it works:
+1. Query with DO=1: Resolver requests DNSSEC signatures. Validating resolver sets EDNS0 DO (DNSSEC OK) bit requesting RRSIG signatures.
+2. Signed Answer + DNSKEY/DS: Auth returns A record + RRSIG signature. Authoritative server returns A 203.0.113.10 paired with RRSIG signed by ZSK/KSK.
+3. Chain Verification (AD=1): Verify Root -> TLD DS -> Zone DNSKEY. Resolver verifies signature against DS hash in parent zone and sets AD=1 (Authenticated Data).
+
+## SMTP (Simple Mail Transfer Protocol)
+URL: https://netpulse.itgg.space/explore/smtp/
+
+SMTP pushes outbound email from mail clients to submission servers (port 587) and between domain Mail Transfer Agents (port 25) after resolving DNS MX records.
+
+In simple words: SMTP is the postal truck that drops letters at the recipient’s post office (found by checking the MX address book). You announce who it’s from, who it’s for, and hand over the letter.
+
+How it works:
+1. MX Record Lookup: Find mail server for recipient domain. Sender queries DNS for the MX record of recipient.org -> mail.recipient.org (198.51.100.25).
+2. TCP + Greeting + EHLO: 220 Ready -> EHLO -> 250 Capabilities. MTA sends 220 banner; sender issues EHLO and learns STARTTLS & AUTH extensions.
+3. STARTTLS Upgrade: Encrypt SMTP session with TLS. STARTTLS upgrades the plaintext TCP socket to encrypted TLS before transferring email content.
+4. MAIL FROM / RCPT TO / DATA: Envelope & message body delivery. Sender transmits envelope addresses, email headers/MIME body, ending with <CRLF>.<CRLF> -> 250 OK.
+
+## POP3 (Post Office Protocol Version 3)
+URL: https://netpulse.itgg.space/explore/pop3/
+
+POP3 retrieves stored emails from a mail server to a local client in a simple download-and-delete (or keep) workflow over TCP 110 or TLS 995.
+
+In simple words: POP3 empties your P.O. box into your backpack and takes the letters home so you can read them offline.
+
+How it works:
+1. TLS & Authentication: USER / PASS -> +OK Logged in. Client authenticates with mail server over POP3S (995).
+2. STAT & RETR: Fetch message count and download email. STAT shows mailbox count; RETR 1 downloads full RFC 5322 email.
+3. DELE & QUIT: Mark deleted & commit UPDATE state. QUIT commits DELE flags and closes mailbox cleanly.
+
+## IMAP (Internet Message Access Protocol (IMAP4rev1))
+URL: https://netpulse.itgg.space/explore/imap/
+
+IMAP synchronizes mail folders, read/starred flags, and partial MIME attachments across multiple devices while keeping authoritative state on the mail server.
+
+In simple words: IMAP is a shared cloud library: your phone, laptop, and tablet all look at the same folders and see immediately when you read or star a message.
+
+How it works:
+1. IMAPS TLS + LOGIN: Connect port 993 & authenticate. Client establishes TLS on port 993 and logs in with tagged command a001.
+2. SELECT & FETCH Headers: Fetch mailbox UIDs & subject lines only. Client inspects folder unread flags and fetches only headers before downloading attachments.
+3. IDLE Push Notification: Server pushes * EXISTS on new mail. IMAP IDLE keeps the socket open for instant real-time new email alerts.
+
+## FTP (File Transfer Protocol (Active & Passive))
+URL: https://netpulse.itgg.space/explore/ftp/
+
+FTP uses two separate TCP connections: a Control channel on port 21 for commands, and a Data channel for file transfers. Passive mode (PASV) lets clients behind NAT initiate the data connection.
+
+In simple words: FTP uses two walkie-talkies: one channel (#21) just for saying "Send file report.pdf", and a second cargo pipe where the file bytes actually travel.
+
+How it works:
+1. Control Channel (Port 21): USER / PASS login on TCP 21. Client opens TCP control channel to port 21 and authenticates.
+2. PASV Negotiation: Server opens ephemeral data port (e.g. 50120). In Passive mode, server tells NAT-behind client which data port to connect to.
+3. Data Channel Transfer (RETR): Second TCP socket transfers file bytes. Client connects to port 50120; RETR downloads file and closes data socket.
+
+## SMB (Server Message Block (SMBv3 File Sharing))
+URL: https://netpulse.itgg.space/explore/smb/
+
+SMB (port 445) powers Windows and NAS network file shares, printers, and named pipes. SMBv3 adds AES-128-GCM encryption, multichannel throughput, and signing to block relay attacks.
+
+In simple words: SMB makes a folder on a remote server look like a normal hard drive letter (Z:) on your own computer.
+
+How it works:
+1. Negotiate Dialect (SMBv3.1.1): Agree encryption & signing capabilities. Client and File Server negotiate SMB 3.1.1 with preauth integrity and AES-GCM.
+2. Session Setup & Tree Connect: Authenticate + mount \\filesrv\shared. Client authenticates via Kerberos/NTLMv2 and connects to the shared folder tree.
+3. Create, Read & Close: Encrypted file read over port 445. Client opens report.xlsx and reads encrypted SMB3 data chunks.
+
+## SSH (Secure Shell Protocol (SSH-2))
+URL: https://netpulse.itgg.space/explore/ssh/
+
+SSH establishes an encrypted, mutually authenticated channel over untrusted networks for remote shell access, SFTP file transfer, and port tunneling.
+
+In simple words: SSH is like opening an armored, soundproof tunnel to a distant server where you prove who you are with an unforgeable cryptographic key instead of shouting passwords across the street.
+
+How it works:
+1. TCP + Version Exchange: SSH-2.0 banner exchange on port 22. After TCP handshake, both peers send plaintext SSH-2.0 protocol identification banners.
+2. KEXINIT & Curve25519 ECDH: Diffie-Hellman key exchange + host key verify. Client and server negotiate encryption algorithms and derive shared session keys via Curve25519.
+3. User Authentication: Ed25519 public-key signature (or password). Encrypted auth request signs a challenge with the user’s Ed25519 private key.
+4. Interactive Shell Channel: Multiplexed encrypted PTY / SFTP. Client opens session channel, allocates PTY, and runs shell commands over ChaCha20-Poly1305.
+
+## Modbus (Modbus TCP (Industrial Control / SCADA))
+URL: https://netpulse.itgg.space/explore/modbus/
+
+Modbus TCP (port 502) is the ubiquitous industrial automation protocol used by SCADA HMIs to poll sensors and write actuator registers on PLCs. By design, classic Modbus has zero authentication or encryption.
+
+In simple words: Modbus is a super simple factory language where a control screen asks a robot controller: "Read dial #40001" or "Set valve #40002 to 75%."
+
+How it works:
+1. TCP Connect to Port 502: SCADA HMI connects to PLC. HMI opens TCP session through OT segmentation firewall to PLC port 502.
+2. FC 03 Read Holding Registers: Read temperature & pressure registers. HMI sends MBAP header + Function Code 03 to read 2 holding registers.
+3. FC 06 Write Setpoint: Write valve setpoint register. HMI updates Holding Register 0x0001 = 0x01F4 (500 RPM); PLC echoes confirmation.
+
+## PPPoE (Point-to-Point Protocol over Ethernet)
+URL: https://netpulse.itgg.space/explore/pppoe/
+
+PPPoE lets ISPs authenticate broadband subscribers (DSL/FTTH) and assign public IPv4 addresses over Ethernet using a 4-step Discovery phase (PADI/PADO/PADR/PADS) followed by PPP LCP, CHAP auth, and IPCP.
+
+In simple words: When your home router plugs into a fiber ISP line, PPPoE rings the ISP’s front desk (PADI/PADO), logs in with your ISP username/password (CHAP), and gets your public internet IP.
+
+How it works:
+1. PPPoE Discovery (PADI / PADO): Broadcast discovery -> BRAS offer. Home Router broadcasts PADI (0x8863); ISP Access Server replies with PADO.
+2. Session Confirmed (PADR / PADS): Assign Session ID (e.g. 0x04a1). Router sends PADR; BRAS assigns Session ID in PADS.
+3. PPP LCP + CHAP + IPCP: Authenticate & receive public IP (MTU 1492). Peers negotiate MTU 1492, verify CHAP hash, and IPCP assigns public IP 203.0.113.45.
+
+## Captive Portal (Wi-Fi Captive Portal (RFC 8910 / HTTP 302 Redirect))
+URL: https://netpulse.itgg.space/explore/captive_portal/
+
+Captive portals intercept unauthenticated guest Wi-Fi devices (using DHCP Option 114 or OS connectivity probes like /generate_204) and redirect them via HTTP 302 to a login/terms page before opening the firewall.
+
+In simple words: When you join hotel Wi-Fi, the gateway holds your internet gate shut and points your browser to the check-in desk ("Accept Terms") before letting packets out.
+
+How it works:
+1. DHCP + OS Probe: Phone probes /generate_204 or reads DHCP Option 114. OS detects captive network because probe receives HTTP 302 instead of 204 No Content.
+2. HTTP 302 Redirect to Login: Gateway redirects to splash login page. Guest sees hotel/airport terms & sign-in portal hosted inside the walled garden.
+3. Firewall Allow & Internet Open: MAC/IP allowlisted -> 204 probe passes. After sign-in, gateway permits guest MAC through NAT to the open internet.
+
+## TLS / SSL (Transport Layer Security (TLS 1.3))
+URL: https://netpulse.itgg.space/explore/tls/
+
+TLS 1.3 provides confidentiality, integrity, and server authentication in a single 1-RTT handshake using ephemeral Diffie-Hellman (ECDHE) for forward secrecy and AEAD ciphers.
+
+In simple words: Before whispering secrets, you and the server publicly mix paint colors (key exchange) to create a shared secret key nobody watching can unmix, then verify their ID badge (certificate).
+
+How it works:
+1. TCP Handshake: SYN / SYN-ACK / ACK on port 443. Client opens a TCP connection to port 443 before starting TLS.
+2. ClientHello (TLS 1.3): Supported ciphers, SNI, X25519 key share. Client sends ClientHello with TLS 1.3 cipher suites, SNI=example.com, and ephemeral ECDHE key share.
+3. ServerHello + Certificate: 1-RTT ServerHello, EncryptedExtensions, Cert, Finished. Server derives handshake keys immediately, sends its X25519 share, encrypted certificate chain, and Finished.
+4. Client Finished & App Data: Encrypted AEAD Application Data (0x17). Client verifies certificate signature, sends Finished, and streams encrypted HTTP Application Data.
+
+## HTTP Proxy (HTTP Forward Proxy & CONNECT Tunnel)
+URL: https://netpulse.itgg.space/explore/http_proxy/
+
+An HTTP forward proxy relays client traffic to external servers. For HTTPS, the client sends an HTTP CONNECT host:443 request so the proxy opens a raw opaque TCP tunnel for end-to-end TLS.
+
+In simple words: Instead of calling a store directly, you ask your office receptionist (proxy) to dial the number and connect the line without listening in on your private TLS conversation.
+
+How it works:
+1. TCP to Proxy: Connect to proxy :3128. Client opens TCP session to forward proxy 192.0.2.80:3128.
+2. HTTP CONNECT Tunnel: CONNECT example.com:443 -> 200 Connection Established. Proxy opens TCP to 203.0.113.10:443 and replies 200 Connection Established.
+3. End-to-End TLS Inside Tunnel: Proxy forwards encrypted TLS bytes blindly. Client performs TLS 1.3 handshake directly with origin through the blind TCP tunnel.
+
+## SOCKS5 (SOCKS Protocol Version 5)
+URL: https://netpulse.itgg.space/explore/socks5/
+
+SOCKS5 is a protocol-agnostic session proxy (port 1080) capable of relaying any TCP or UDP traffic (used by SSH dynamic port forwarding and Tor) without understanding HTTP.
+
+In simple words: SOCKS5 is a universal courier pipe: you tell it the final IP and port, and it passes any kind of TCP or UDP packets through without caring what app created them.
+
+How it works:
+1. Method Greeting: Ver=5, Methods=[0x00, 0x02]. Client offers No-Auth or Username/Password; SOCKS5 server selects method.
+2. CONNECT Request: CMD=0x01 Dst=example.com:443. Client asks SOCKS5 proxy to connect to domain/IP on port 443; proxy replies Succeeded (0x00).
+3. Transparent Relay: Arbitrary TCP/UDP payload relayed. All subsequent bytes pass transparently between client and target origin.
+
+## Reverse Proxy (Reverse Proxy & Load Balancer (TLS Termination))
+URL: https://netpulse.itgg.space/explore/reverse_proxy/
+
+A reverse proxy sits in front of origin backend servers to terminate TLS, enforce WAF rules, cache static content, and load-balance requests across healthy upstream workers.
+
+In simple words: A restaurant host greets guests at the front door, checks reservations (WAF), and seats each party at whichever open kitchen table (backend server) isn’t busy.
+
+How it works:
+1. Health Checks: LB probes /healthz on Backends #1 & #2. Reverse proxy runs periodic health probes to track healthy pool members.
+2. Client TLS Termination: HTTPS terminates at edge Reverse Proxy. Client completes TLS 1.3 handshake with the edge Reverse Proxy.
+3. Upstream Routing & LB: Proxy forwards to Backend #1 (or #2 on failover). Reverse proxy injects X-Forwarded-For and balances across healthy backends.
+
+## WireGuard (WireGuard Modern Cryptographic VPN)
+URL: https://netpulse.itgg.space/explore/wireguard/
+
+WireGuard is a lean, kernel-space Layer 3 VPN tunnel running over UDP/51820 using Curve25519, ChaCha20-Poly1305, and BLAKE2s with a single 1-RTT Noise handshake and silent stealth drop on unauthenticated packets.
+
+In simple words: WireGuard puts your entire private office envelope inside an unbreakable outer armored pouch addressed between two VPN gateways—outsiders only see scrambled UDP envelopes.
+
+How it works:
+1. 1-RTT Noise_IK Handshake: Initiation + Response over UDP/51820. Gateway A authenticates with Curve25519 static/ephemeral keys in a single round-trip.
+2. Outer IP + ChaCha20 Encapsulation: 10.1.0.10 -> 10.2.0.20 encrypted inside 198.51.100.1 -> 203.0.113.1. Inner LAN packet is encrypted with ChaCha20-Poly1305 and sent as an outer UDP/51820 datagram.
+3. Decapsulation at Office B: Cryptokey routing verifies AllowedIPs -> LAN B. Gateway B decrypts, verifies AllowedIPs includes 10.1.0.10, and forwards to Office B Server.
+
+## IPsec (Internet Protocol Security (IKEv2 + ESP))
+URL: https://netpulse.itgg.space/explore/ipsec/
+
+IPsec secures IP traffic at Layer 3 using IKEv2 (UDP 500/4500) to negotiate Security Associations (SAs) and ESP (IP protocol 50) to encrypt and authenticate entire IP packets in Tunnel Mode.
+
+In simple words: IPsec is the classic corporate armored truck system: two gateways first sign contracts (IKEv2), then wrap entire internal packets inside an ESP armored outer envelope.
+
+How it works:
+1. IKE_SA_INIT (UDP/500): Negotiate Diffie-Hellman & crypto suite. VPN gateways negotiate IKE Security Association parameters over UDP port 500.
+2. IKE_AUTH (UDP/4500 NAT-T): Authenticate peers & create Child ESP SA. Gateways verify certificates/PSK and install inbound/outbound ESP SPI keys.
+3. ESP Tunnel Encapsulation: IP Proto 50 encrypts inner IP packet. Inner packet (10.1.0.10 -> 10.2.0.20) is encrypted and wrapped with a new outer IP header.
+
+## Wi-Fi WPA2 (IEEE 802.11i WPA2-PSK (4-Way Handshake))
+URL: https://netpulse.itgg.space/explore/wpa2/
+
+WPA2 secures Wi-Fi networks using a 4-way EAPOL-Key handshake between the client and Access Point to prove both know the PSK without ever transmitting it over the air, deriving fresh AES-CCMP encryption keys.
+
+In simple words: Even if two friends share a secret password, they don’t shout it in a crowded room. Each picks a random number, mixes it with the password, and checks if the other gets the same secret result.
+
+How it works:
+1. 802.11 Auth & Association: Probe, Open Auth & Association Request. Station discovers SSID via Beacon/Probe and associates with the Access Point.
+2. 4-Way Handshake Msg 1 (ANonce): AP sends random ANonce to STA. Both share PMK (from PSK); AP sends ANonce so STA can derive the session PTK.
+3. 4-Way Handshake Msg 2 (SNonce + MIC): STA replies with SNonce & MIC. STA computes PTK, returns SNonce plus a Message Integrity Code proving it knows the password.
+4. Msg 3 & 4 + Encrypted Traffic: Install GTK/PTK & encrypt 802.11 frames. AP delivers Group Temporal Key (GTK), STA confirms Msg 4, and AES-CCMP data flows.
+
+## WPA3 (Wi-Fi Protected Access 3 (SAE Dragonfly))
+URL: https://netpulse.itgg.space/explore/wpa3/
+
+WPA3 replaces WPA2’s vulnerable PSK derivation with SAE (Dragonfly) password-authenticated key exchange, providing forward secrecy and neutralizing offline dictionary cracking, plus mandatory Protected Management Frames (PMF).
+
+In simple words: In WPA3, even if a hacker records your entire Wi-Fi login, they cannot test password guesses at home—they only get one live try per connection with the router.
+
+How it works:
+1. SAE Commit (Dragonfly): Scalar + Elliptic Curve Element exchange. STA and AP exchange Dragonfly Commit messages derived from password + elliptic curve.
+2. SAE Confirm: Zero-knowledge proof of shared PMK. Both verify Confirm tokens, proving both know the passphrase with Forward Secrecy.
+3. 4-Way Handshake + PMF: Install AES-CCMP/GCMP keys + 802.11w PMF. Protected Management Frames block spoofed deauthentication floods.
+
+## RADIUS (Remote Authentication Dial-In User Service (802.1X))
+URL: https://netpulse.itgg.space/explore/radius/
+
+RADIUS centralizes Authentication, Authorization, and Accounting (AAA) for enterprise 802.1X Wi-Fi/wired switches and VPNs, bridging client EAPOL messages to an identity directory.
+
+In simple words: When you plug into an office port or join corporate Wi-Fi, the switch acts like a security guard calling HQ (the RADIUS server) to check your employee badge before opening the gate.
+
+How it works:
+1. EAPOL Start & Identity: Supplicant sends EAP-Identity to Authenticator AP. 802.1X supplicant connects; AP keeps port unauthorized and requests EAP identity.
+2. RADIUS Access-Request & Challenge: AP relays EAP inside UDP/1812 to RADIUS. AP wraps EAP payload into RADIUS Access-Request; RADIUS replies Access-Challenge (EAP-TLS).
+3. Access-Accept & Port Open: RADIUS approves VLAN + MSK key. RADIUS returns Access-Accept with Master Session Key and assigned VLAN; AP authorizes port.
