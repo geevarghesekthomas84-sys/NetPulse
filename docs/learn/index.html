@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>Networking Quizzes, Games and Challenges | NetPulse</title>
+    <meta name="description" content="Quizzes on 39 protocols, port and packet games, &quot;Break it&quot; troubleshooting challenges, a subnet calculator and a daily streak." />
+    <link rel="canonical" href="https://netpulse.itgg.space/learn/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/learn/" />
+    <meta property="og:title" content="Networking Quizzes, Games and Challenges | NetPulse" />
+    <meta property="og:description" content="Quizzes on 39 protocols, port and packet games, &quot;Break it&quot; troubleshooting challenges, a subnet calculator and a daily streak." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="Networking Quizzes, Games and Challenges | NetPulse" />
+    <meta name="twitter:description" content="Quizzes on 39 protocols, port and packet games, &quot;Break it&quot; troubleshooting challenges, a subnet calculator and a daily streak." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/learn/#page",
+      "url": "https://netpulse.itgg.space/learn/",
+      "name": "Learn networking with NetPulse",
+      "description": "Quizzes, games and challenges for networking.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "Computer networking"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Learn",
+          "item": "https://netpulse.itgg.space/learn/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › Learn</nav>
+<h1>Learn networking: quizzes, games and troubleshooting challenges</h1>
+<p>Test what you know about the protocols you explored. Every protocol has a short quiz, missed questions come back in a review round, and a daily streak keeps you practising.</p>
+<ul>
+<li><strong>Protocol quizzes</strong> on all 39 protocols, plus a mixed ten-question challenge.</li>
+<li><strong>Port and packet games.</strong> Match ports to protocols and put handshake packets in order.</li>
+<li><strong>Break it.</strong> A network that used to work is broken; investigate with real commands and fix it.</li>
+<li><strong>Tools.</strong> A subnet calculator, an OSI versus TCP/IP reference and a glossary.</li>
+</ul>
+<h2>Start with a protocol</h2>
+<ul class="cols"><li><a href="/explore/tcp/">TCP</a></li><li><a href="/explore/udp/">UDP</a></li><li><a href="/explore/ip/">IP (IPv4)</a></li><li><a href="/explore/bgp/">BGP</a></li><li><a href="/explore/ipv6/">IPv6</a></li><li><a href="/explore/icmp/">ICMP</a></li><li><a href="/explore/igmp/">IGMP</a></li><li><a href="/explore/ntp/">NTP</a></li><li><a href="/explore/ethernet/">Ethernet / ARP</a></li><li><a href="/explore/dhcp/">DHCP</a></li><li><a href="/explore/dns/">DNS</a></li><li><a href="/explore/http/">HTTP</a></li><li><a href="/explore/https/">HTTPS</a></li><li><a href="/explore/websocket/">WebSocket</a></li><li><a href="/explore/webrtc/">WebRTC</a></li><li><a href="/explore/sip/">SIP</a></li><li><a href="/explore/rtsp/">RTSP</a></li><li><a href="/explore/rtmp/">RTMP</a></li><li><a href="/explore/quic/">QUIC (HTTP/3)</a></li><li><a href="/explore/doh/">DNS over HTTPS</a></li><li><a href="/explore/dnssec/">DNSSEC</a></li><li><a href="/explore/smtp/">SMTP</a></li><li><a href="/explore/pop3/">POP3</a></li><li><a href="/explore/imap/">IMAP</a></li><li><a href="/explore/ftp/">FTP</a></li><li><a href="/explore/smb/">SMB</a></li><li><a href="/explore/ssh/">SSH</a></li><li><a href="/explore/modbus/">Modbus</a></li><li><a href="/explore/pppoe/">PPPoE</a></li><li><a href="/explore/captive_portal/">Captive Portal</a></li><li><a href="/explore/tls/">TLS / SSL</a></li><li><a href="/explore/http_proxy/">HTTP Proxy</a></li><li><a href="/explore/socks5/">SOCKS5</a></li><li><a href="/explore/reverse_proxy/">Reverse Proxy</a></li><li><a href="/explore/wireguard/">WireGuard</a></li><li><a href="/explore/ipsec/">IPsec</a></li><li><a href="/explore/wpa2/">Wi-Fi WPA2</a></li><li><a href="/explore/wpa3/">WPA3</a></li><li><a href="/explore/radius/">RADIUS</a></li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

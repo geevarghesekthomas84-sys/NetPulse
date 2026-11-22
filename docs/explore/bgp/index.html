@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>BGP Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="BGP is the exterior routing protocol that glues together the global internet’s Autonomous Systems. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/bgp/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/bgp/" />
+    <meta property="og:title" content="BGP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="BGP is the exterior routing protocol that glues together the global internet’s Autonomous Systems. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="BGP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="BGP is the exterior routing protocol that glues together the global internet’s Autonomous Systems. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/bgp/#page",
+      "url": "https://netpulse.itgg.space/explore/bgp/",
+      "name": "BGP (Border Gateway Protocol (BGP-4)) explained",
+      "description": "BGP is the exterior routing protocol that glues together the global internet’s Autonomous Systems (ISPs, clouds, CDNs) by exchanging reachable IP prefixes and AS_PATH loop-free attributes.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How BGP works",
+      "keywords": "asn, autonomous system, routing, prefix, as_path, 179, peering, internet backbone",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "BGP",
+          "item": "https://netpulse.itgg.space/explore/bgp/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › BGP</nav>
+<h1>BGP (Border Gateway Protocol (BGP-4)): how it works, step by step</h1>
+<p>BGP is the exterior routing protocol that glues together the global internet’s Autonomous Systems (ISPs, clouds, CDNs) by exchanging reachable IP prefixes and AS_PATH loop-free attributes.</p>
+<p><a href="/explore/bgp/"><strong>Open the interactive BGP animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>BGP explained simply</h2>
+<p>BGP is how postal hubs across different countries tell each other: &quot;To reach ZIP code 203.0.113.0/24, pass the letter through Hub 64510 and Hub 64511.&quot;</p>
+<h2>BGP at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application) / Control Plane over TCP</td></tr><tr><th scope="row">Default port</th><td>179</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>Binary BGP Messages (OPEN, UPDATE, KEEPALIVE, NOTIFICATION)</td></tr><tr><th scope="row">Common methods</th><td>OPEN, UPDATE, KEEPALIVE, NOTIFICATION, ROUTE-REFRESH</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc4271" rel="noopener">RFC 4271: A Border Gateway Protocol 4 (BGP-4)</a>.</p>
+<h2>Devices in the BGP exchange</h2><ul><li><strong>ISP Router AS64500</strong> (router, 198.51.100.1)</li><li><strong>Transit AS64510</strong> (router, 198.51.100.2)</li><li><strong>Hosting AS64511</strong> (router, 203.0.113.1)</li></ul>
+<h2>How BGP works, step by step</h2>
+<ol><li><h3>TCP Port 179 Session</h3><p><em>BGP peers establish TCP connection.</em> Autonomous Systems open a reliable TCP session on port 179 before exchanging BGP messages.</p></li><li><h3>OPEN &amp; KEEPALIVE</h3><p><em>Peers negotiate ASN &amp; capabilities.</em> AS64500 and AS64510 exchange OPEN messages with hold timers and confirm with KEEPALIVE.</p></li><li><h3>UPDATE (Prefix Announcement)</h3><p><em>AS64511 advertises 203.0.113.0/24.</em> Hosting AS64511 sends BGP UPDATE carrying NLRI 203.0.113.0/24 and AS_PATH [64511].</p></li><li><h3>Path Selection &amp; Propagation</h3><p><em>AS64510 prepends ASN &amp; forwards.</em> Transit AS64510 prepends 64510 -&gt; AS_PATH [64510, 64511] and compares against direct link.</p></li></ol>
+<h2>What BGP looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical BGP exchange. Open the animation to inspect each one.</p><ol><li>TCP from 198.51.100.1 to 198.51.100.2: BGP Transport 51200 -&gt; 179 [SYN] Seq=0 (66 bytes)</li><li>TCP from 198.51.100.2 to 198.51.100.1: BGP Transport 179 -&gt; 51200 [SYN, ACK] (66 bytes)</li><li>BGP from 198.51.100.1 to 198.51.100.2: OPEN (My AS=64500, Hold=180, ID=198.51.100.1) (98 bytes)</li><li>BGP from 198.51.100.2 to 198.51.100.1: OPEN + KEEPALIVE (My AS=64510) (117 bytes)</li><li>BGP from 203.0.113.1 to 198.51.100.2: UPDATE NLRI: 203.0.113.0/24 AS_PATH=[64511] (110 bytes)</li><li>BGP from 198.51.100.2 to 198.51.100.1: UPDATE NLRI: 203.0.113.0/24 AS_PATH=[64510, 64511] (114 bytes)</li></ol>
+<h2>BGP security notes</h2><ul><li><strong>BGP Prefix Hijacking.</strong> A rogue AS announces a more-specific IP prefix it does not own, blackholing or intercepting global traffic. <em>Defense:</em> Sign Route Origin Authorizations (ROAs) with RPKI and enforce IRR/MANRS route filtering.</li></ul>
+<h2>Test yourself on BGP</h2><h3>Which TCP port does BGP use for peering sessions?</h3><p><strong>Answer:</strong> 179. BGP runs over TCP port 179 for reliable incremental route updates.</p><h3>How does BGP prevent routing loops between Autonomous Systems?</h3><p><strong>Answer:</strong> By rejecting routes whose AS_PATH already contains its own ASN. If a router sees its own ASN in the AS_PATH attribute, it discards the UPDATE.</p><h3>Which BGP message advertises or withdraws IP prefixes?</h3><p><strong>Answer:</strong> UPDATE. UPDATE messages carry withdrawn routes, path attributes, and NLRI prefixes.</p><h3>What technology cryptographically validates that an ASN is authorized to originate a prefix?</h3><p><strong>Answer:</strong> RPKI (Resource Public Key Infrastructure). RPKI ROAs bind IP prefixes to authorized origin ASNs.</p><h3>In BGP best-path selection (assuming equal Local Pref), which attribute is normally preferred?</h3><p><strong>Answer:</strong> Shortest AS_PATH. BGP prefers shorter AS_PATHs when Local Preference is tied.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/tcp/">TCP</a>: Transmission Control Protocol</li><li><a href="/explore/udp/">UDP</a>: User Datagram Protocol</li><li><a href="/explore/ip/">IP (IPv4)</a>: Internet Protocol Version 4</li><li><a href="/explore/ipv6/">IPv6</a>: Internet Protocol Version 6</li><li><a href="/explore/icmp/">ICMP</a>: Internet Control Message Protocol (Ping &amp; Traceroute)</li><li><a href="/explore/igmp/">IGMP</a>: Internet Group Management Protocol (v3)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>DHCP Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="DHCP automatically assigns IPv4 addresses, subnet masks, default gateways, and DNS servers to devices joining a. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/dhcp/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/dhcp/" />
+    <meta property="og:title" content="DHCP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="DHCP automatically assigns IPv4 addresses, subnet masks, default gateways, and DNS servers to devices joining a. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="DHCP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="DHCP automatically assigns IPv4 addresses, subnet masks, default gateways, and DNS servers to devices joining a. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/dhcp/#page",
+      "url": "https://netpulse.itgg.space/explore/dhcp/",
+      "name": "DHCP (Dynamic Host Configuration Protocol) explained",
+      "description": "DHCP automatically assigns IPv4 addresses, subnet masks, default gateways, and DNS servers to devices joining a network through the 4-step DORA handshake.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How DHCP works",
+      "keywords": "dora, lease, ip assignment, broadcast, 67, 68, gateway, subnet",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "DHCP",
+          "item": "https://netpulse.itgg.space/explore/dhcp/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › DHCP</nav>
+<h1>DHCP (Dynamic Host Configuration Protocol): how it works, step by step</h1>
+<p>DHCP automatically assigns IPv4 addresses, subnet masks, default gateways, and DNS servers to devices joining a network through the 4-step DORA handshake.</p>
+<p><a href="/explore/dhcp/"><strong>Open the interactive DHCP animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>DHCP explained simply</h2>
+<p>When a new kid joins class without a seat, they shout &quot;Does anyone have a spare desk?&quot; (Discover), the teacher points to Desk 50 (Offer), the kid says &quot;I’ll take Desk 50!&quot; (Request), and the teacher writes their name down (Ack).</p>
+<h2>DHCP at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application) / UDP Transport</td></tr><tr><th scope="row">Default port</th><td>67 (Server), 68 (Client)</td></tr><tr><th scope="row">Transport</th><td>UDP</td></tr><tr><th scope="row">Data format</th><td>BOOTP-derived Binary Options (TLV)</td></tr><tr><th scope="row">Common methods</th><td>DISCOVER, OFFER, REQUEST, ACK, NAK, RELEASE, INFORM</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc2131" rel="noopener">RFC 2131: Dynamic Host Configuration Protocol</a>; <a href="https://www.rfc-editor.org/rfc/rfc2132" rel="noopener">RFC 2132: DHCP Options and BOOTP Vendor Extensions</a>.</p>
+<h2>Devices in the DHCP exchange</h2><ul><li><strong>Client (0.0.0.0)</strong> (host, 0.0.0.0)</li><li><strong>LAN Switch</strong> (switch, 192.168.1.2)</li><li><strong>DHCP Server</strong> (dhcp server, 192.168.1.1)</li></ul>
+<h2>How DHCP works, step by step</h2>
+<ol><li><h3>DISCOVER</h3><p><em>Client broadcasts DHCPDISCOVER.</em> Client with IP 0.0.0.0 sends UDP broadcast (68 -&gt; 67) asking for any DHCP server on the LAN.</p></li><li><h3>OFFER</h3><p><em>Server offers 192.168.1.50.</em> DHCP server reserves 192.168.1.50 from its pool and sends DHCPOFFER with subnet mask, gateway, and DNS.</p></li><li><h3>REQUEST</h3><p><em>Client accepts offered IP.</em> Client broadcasts DHCPREQUEST confirming it accepts 192.168.1.50 from server 192.168.1.1.</p></li><li><h3>ACK</h3><p><em>Server commits lease (86400s).</em> Server sends DHCPACK finalizing the 24-hour lease; client runs gratuitous ARP and configures eth0.</p></li></ol>
+<h2>What DHCP looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical DHCP exchange. Open the animation to inspect each one.</p><ol><li>DHCP from 0.0.0.0 to 192.168.1.2: DHCP Discover - Transaction ID 0x9f12a001 (Broadcast) (342 bytes)</li><li>DHCP from 192.168.1.2 to 192.168.1.1: DHCP Discover (Flooded to Server Port) (342 bytes)</li><li>DHCP from 192.168.1.1 to 192.168.1.2: DHCP Offer - Offered IP 192.168.1.50 (Lease 86400s) (350 bytes)</li><li>DHCP from 192.168.1.2 to 0.0.0.0: DHCP Offer - Offered IP 192.168.1.50 (350 bytes)</li><li>DHCP from 0.0.0.0 to 192.168.1.1: DHCP Request - Requesting 192.168.1.50 from 192.168.1.1 (348 bytes)</li><li>DHCP from 192.168.1.1 to 0.0.0.0: DHCP ACK - Lease confirmed 192.168.1.50/24 (356 bytes)</li></ol>
+<h2>DHCP security notes</h2><ul><li><strong>Rogue DHCP Server.</strong> An attacker answers DISCOVER faster than the real router, handing out their own IP as default gateway/DNS for MITM. <em>Defense:</em> Enable DHCP Snooping on switches to block DHCPOFFER packets on untrusted access ports.</li><li><strong>DHCP Starvation.</strong> Flooding DISCOVER requests with spoofed MAC addresses exhausts the entire IP pool. <em>Defense:</em> Configure port security MAC limits and DHCP snooping rate limits.</li></ul>
+<h2>Test yourself on DHCP</h2><h3>What does the acronym DORA stand for in DHCP?</h3><p><strong>Answer:</strong> Discover, Offer, Request, Acknowledge. DORA represents the four standard DHCP messages: DISCOVER, OFFER, REQUEST, ACK.</p><h3>Which UDP ports do DHCP servers and clients use?</h3><p><strong>Answer:</strong> 67 and 68. Servers listen on UDP port 67 and clients listen on UDP port 68.</p><h3>Why does the client send DHCPREQUEST as a broadcast even after receiving an offer?</h3><p><strong>Answer:</strong> To inform all other DHCP servers whose offers were declined. Broadcasting REQUEST lets competing DHCP servers withdraw their unchosen offers.</p><h3>Which switch feature defends against rogue DHCP servers?</h3><p><strong>Answer:</strong> DHCP Snooping. DHCP Snooping drops server-side DHCP messages arriving on untrusted user ports.</p><h3>What happens if no DHCP server responds on a Windows/macOS host?</h3><p><strong>Answer:</strong> The host assigns an APIPA link-local IP (169.254.x.x). RFC 3927 APIPA assigns a 169.254.0.0/16 address when DHCP times out.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/tcp/">TCP</a>: Transmission Control Protocol</li><li><a href="/explore/udp/">UDP</a>: User Datagram Protocol</li><li><a href="/explore/ip/">IP (IPv4)</a>: Internet Protocol Version 4</li><li><a href="/explore/bgp/">BGP</a>: Border Gateway Protocol (BGP-4)</li><li><a href="/explore/ipv6/">IPv6</a>: Internet Protocol Version 6</li><li><a href="/explore/icmp/">ICMP</a>: Internet Control Message Protocol (Ping &amp; Traceroute)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>QUIC (HTTP/3) Explained: Step-by-Step Packet… | NetPulse</title>
+    <meta name="description" content="QUIC reimagines transport over UDP port 443 with TLS 1.3 baked in from packet #1 (1-RTT or 0-RTT resume). Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/quic/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/quic/" />
+    <meta property="og:title" content="QUIC (HTTP/3) Explained: Step-by-Step Packet… | NetPulse" />
+    <meta property="og:description" content="QUIC reimagines transport over UDP port 443 with TLS 1.3 baked in from packet #1 (1-RTT or 0-RTT resume). Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="QUIC (HTTP/3) Explained: Step-by-Step Packet… | NetPulse" />
+    <meta name="twitter:description" content="QUIC reimagines transport over UDP port 443 with TLS 1.3 baked in from packet #1 (1-RTT or 0-RTT resume). Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/quic/#page",
+      "url": "https://netpulse.itgg.space/explore/quic/",
+      "name": "QUIC (HTTP/3) (QUIC Transport & HTTP/3) explained",
+      "description": "QUIC reimagines transport over UDP port 443 with TLS 1.3 baked in from packet #1 (1-RTT or 0-RTT resume), independent streams that eliminate TCP head-of-line blocking, and Connection IDs that survive Wi-Fi-to-5G handoffs.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How QUIC (HTTP/3) works",
+      "keywords": "http/3, 0-rtt, udp 443, head of line, connection migration, tls 1.3",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "QUIC (HTTP/3)",
+          "item": "https://netpulse.itgg.space/explore/quic/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › QUIC (HTTP/3)</nav>
+<h1>QUIC (HTTP/3) (QUIC Transport &amp; HTTP/3): how it works, step by step</h1>
+<p>QUIC reimagines transport over UDP port 443 with TLS 1.3 baked in from packet #1 (1-RTT or 0-RTT resume), independent streams that eliminate TCP head-of-line blocking, and Connection IDs that survive Wi-Fi-to-5G handoffs.</p>
+<p><a href="/explore/quic/"><strong>Open the interactive QUIC (HTTP/3) animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>QUIC (HTTP/3) explained simply</h2>
+<p>TCP puts every webpage item on one single-lane train track—if one boxcar stalls, all cars behind it wait. QUIC gives each item its own fast lane over UDP with built-in encryption.</p>
+<h2>QUIC (HTTP/3) at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 4–6 (UDP-based Encrypted Multiplexed Transport)</td></tr><tr><th scope="row">Default port</th><td>443 (UDP)</td></tr><tr><th scope="row">Transport</th><td>UDP + Built-in TLS 1.3</td></tr><tr><th scope="row">Data format</th><td>Encrypted QUIC Packets + Independent Multiplexed Streams</td></tr><tr><th scope="row">Common methods</th><td>Initial (TLS ClientHello), 0-RTT Early Data, Handshake, 1-RTT Streams, Connection Migration</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc9000" rel="noopener">RFC 9000: QUIC: A UDP-Based Multiplexed and Secure Transport</a>; <a href="https://www.rfc-editor.org/rfc/rfc9114" rel="noopener">RFC 9114: HTTP/3</a>.</p>
+<h2>Devices in the QUIC (HTTP/3) exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Gateway</strong> (router, 192.168.1.1)</li><li><strong>Service Server</strong> (server rack, 203.0.113.10)</li></ul>
+<h2>How QUIC (HTTP/3) works, step by step</h2>
+<ol><li><h3>1-RTT Initial (Transport + TLS)</h3><p><em>Single Initial packet carries TLS ClientHello.</em> Client sends a 1200B UDP/443 Initial packet combining transport setup and TLS 1.3 ClientHello.</p></li><li><h3>Server Initial + Handshake</h3><p><em>ServerHello + Encrypted Cert in same flight.</em> Server replies with Initial + Handshake packets; connection is ready in 1 RTT total!</p></li><li><h3>Independent HTTP/3 Streams</h3><p><em>Stream 0 (HTML) &amp; Stream 4 (CSS) without HoL blocking.</em> Loss on Stream 0 only pauses Stream 0; Stream 4 delivers CSS immediately.</p></li></ol>
+<h2>What QUIC (HTTP/3) looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical QUIC (HTTP/3) exchange. Open the animation to inspect each one.</p><ol><li>QUIC from 192.168.1.10 to 203.0.113.10: Initial, PKN=0 (DCID=a49f, TLS 1.3 ClientHello ALPN=h3) (1242 bytes)</li><li>QUIC from 203.0.113.10 to 192.168.1.10: Initial + Handshake (ServerHello, Cert, Finished) (1320 bytes)</li><li>HTTP/3 from 192.168.1.10 to 203.0.113.10: 1-RTT Stream 0 (GET /) + Stream 4 (GET /app.css) (340 bytes)</li><li>HTTP/3 from 203.0.113.10 to 192.168.1.10: 1-RTT Stream 0 (200 OK HTML) + Stream 4 (CSS) (1280 bytes)</li></ol>
+<h2>QUIC (HTTP/3) security notes</h2><ul><li><strong>QUIC Initial Amplification / 0-RTT Replay.</strong> Without care, 0-RTT early data can be replayed across servers. <em>Defense:</em> QUIC requires Initial packets &gt;=1200 bytes to thwart amplification and restricts 0-RTT to idempotent GET requests.</li></ul>
+<h2>Test yourself on QUIC (HTTP/3)</h2><h3>Which Layer 4 protocol does QUIC run on top of?</h3><p><strong>Answer:</strong> UDP (port 443). QUIC runs over UDP so middleboxes don’t break new transport extensions and to eliminate TCP HoL blocking.</p><h3>How does QUIC keep a session alive when a phone switches from Wi-Fi to 5G?</h3><p><strong>Answer:</strong> Using a 64-bit Connection ID independent of IP/port. QUIC identifies connections by Connection ID rather than the 4-tuple IP/port.</p><h3>What problem in HTTP/2 over TCP does HTTP/3 over QUIC solve?</h3><p><strong>Answer:</strong> Transport-layer Head-of-Line (HoL) blocking. In QUIC, packet loss only affects the stream carrying that lost frame, not other multiplexed streams.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

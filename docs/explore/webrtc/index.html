@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>WebRTC Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="WebRTC enables sub-second peer-to-peer browser video, audio, and data channels by discovering public NAT. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/webrtc/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/webrtc/" />
+    <meta property="og:title" content="WebRTC Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="WebRTC enables sub-second peer-to-peer browser video, audio, and data channels by discovering public NAT. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="WebRTC Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="WebRTC enables sub-second peer-to-peer browser video, audio, and data channels by discovering public NAT. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/webrtc/#page",
+      "url": "https://netpulse.itgg.space/explore/webrtc/",
+      "name": "WebRTC (Web Real-Time Communication (ICE / STUN / DTLS / SRTP)) explained",
+      "description": "WebRTC enables sub-second peer-to-peer browser video, audio, and data channels by discovering public NAT mappings via STUN/TURN, punching holes with ICE, securing keys via DTLS, and streaming encrypted SRTP.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How WebRTC works",
+      "keywords": "stun, turn, ice, sdp, dtls, srtp, video call, p2p, nat traversal",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "WebRTC",
+          "item": "https://netpulse.itgg.space/explore/webrtc/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › WebRTC</nav>
+<h1>WebRTC (Web Real-Time Communication (ICE / STUN / DTLS / SRTP)): how it works, step by step</h1>
+<p>WebRTC enables sub-second peer-to-peer browser video, audio, and data channels by discovering public NAT mappings via STUN/TURN, punching holes with ICE, securing keys via DTLS, and streaming encrypted SRTP.</p>
+<p><a href="/explore/webrtc/"><strong>Open the interactive WebRTC animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>WebRTC explained simply</h2>
+<p>Two friends behind locked apartment gates (NATs) ask a lookout tower (STUN) what their outside gate numbers are, trade those numbers, and then throw video balls directly between gates.</p>
+<h2>WebRTC at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 / Session Media</td></tr><tr><th scope="row">Default port</th><td>3478 (STUN/TURN), Dynamic UDP</td></tr><tr><th scope="row">Transport</th><td>UDP (ICE + DTLS + SRTP / SCTP)</td></tr><tr><th scope="row">Data format</th><td>SDP Offer/Answer + STUN Binding + SRTP Encrypted Media</td></tr><tr><th scope="row">Common methods</th><td>SDP Offer/Answer, STUN Binding, ICE Connectivity Check, DTLS-SRTP</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc8445" rel="noopener">RFC 8445: Interactive Connectivity Establishment (ICE)</a>.</p>
+<h2>Devices in the WebRTC exchange</h2><ul><li><strong>Peer A (Behind NAT)</strong> (host, 192.168.1.10)</li><li><strong>STUN / Signaling</strong> (server rack, 198.51.100.1)</li><li><strong>Peer B (Their Laptop)</strong> (host, 192.168.0.23)</li></ul>
+<h2>How WebRTC works, step by step</h2>
+<ol><li><h3>STUN Public IP Discovery</h3><p><em>Binding Request discovers NAT external IP:port.</em> Peer A queries STUN (UDP 3478) to learn its public reflexive address.</p></li><li><h3>SDP Offer / ICE Candidates</h3><p><em>Exchange codecs &amp; candidate IPs via signaling.</em> Peers swap SDP descriptions and ICE candidate lists through the signaling server.</p></li><li><h3>ICE Hole Punch + DTLS-SRTP</h3><p><em>Direct P2P UDP + encrypted media stream.</em> ICE connectivity checks succeed; DTLS establishes keys for encrypted SRTP audio/video.</p></li></ol>
+<h2>What WebRTC looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical WebRTC exchange. Open the animation to inspect each one.</p><ol><li>STUN from 192.168.1.10 to 198.51.100.1: STUN Binding Request (Learn public NAT mapping) (72 bytes)</li><li>STUN from 198.51.100.1 to 192.168.1.10: Binding Success: XOR-MAPPED 198.51.100.42:51234 (96 bytes)</li><li>WebSocket from 192.168.1.10 to 198.51.100.1: Signaling: SDP Offer + ICE Candidates (640 bytes)</li><li>WebSocket from 198.51.100.1 to 192.168.0.23: Signaling Relay: SDP Offer -&gt; Peer B (640 bytes)</li><li>DTLS from 192.168.1.10 to 192.168.0.23: DTLS Handshake -&gt; Key Export for SRTP (410 bytes)</li><li>SRTP from 192.168.1.10 to 192.168.0.23: Encrypted P2P SRTP Audio/Video Stream (Direct!) (1180 bytes)</li></ol>
+<h2>WebRTC security notes</h2><ul><li><strong>ICE IP Leak.</strong> Gathering host/srflx ICE candidates can expose a user’s local LAN or real public IP behind a VPN. <em>Defense:</em> Use mDNS obfuscated host candidates and TURN-only relay policies when IP privacy is required.</li></ul>
+<h2>Test yourself on WebRTC</h2><h3>What is the purpose of a STUN server in WebRTC?</h3><p><strong>Answer:</strong> To tell a peer its public IP:port behind NAT. STUN returns the XOR-MAPPED-ADDRESS seen from outside the NAT.</p><h3>When direct P2P hole-punching fails (e.g. symmetric NAT), which server relays WebRTC media?</h3><p><strong>Answer:</strong> TURN. TURN (Traversal Using Relays around NAT) relays media packets as a fallback.</p><h3>Which protocol encrypts WebRTC audio and video frames?</h3><p><strong>Answer:</strong> SRTP (keyed via DTLS). WebRTC mandates DTLS key exchange paired with SRTP media encryption.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li><li><a href="/explore/rtmp/">RTMP</a>: Real-Time Messaging Protocol (Live Ingest)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

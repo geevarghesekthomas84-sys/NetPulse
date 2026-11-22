@@ -126,12 +126,16 @@ the main screens.
 
 ## Deploying
 
+`npm run build` runs `vite build` and then `scripts/prerender.mjs`, which writes a real HTML page for every route
+(`/explore/dns/`, `/protocols/`, `/simulator/`, `/learn/`, `/about/`) with its own title, description, canonical URL,
+structured data and readable text, plus `sitemap.xml`, `llms.txt` and `robots.txt`. React replaces that text when the
+app starts, so visitors get the interactive app and crawlers get real content.
+
 GitHub Pages serves this repository from `main` → `/docs`. To publish an update:
 
 ```bash
 npm run build
-rm -rf docs && cp -r dist docs
-printf 'netpulse.itgg.space\n' > docs/CNAME && touch docs/.nojekyll
+rm -rf docs && cp -r dist docs && touch docs/.nojekyll
 git add -A && git commit -m "Publish build" && git push
 ```
 

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>HTTP Proxy Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="An HTTP forward proxy relays client traffic to external servers. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/http_proxy/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/http_proxy/" />
+    <meta property="og:title" content="HTTP Proxy Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="An HTTP forward proxy relays client traffic to external servers. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="HTTP Proxy Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="An HTTP forward proxy relays client traffic to external servers. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/http_proxy/#page",
+      "url": "https://netpulse.itgg.space/explore/http_proxy/",
+      "name": "HTTP Proxy (HTTP Forward Proxy & CONNECT Tunnel) explained",
+      "description": "An HTTP forward proxy relays client traffic to external servers. For HTTPS, the client sends an HTTP CONNECT host:443 request so the proxy opens a raw opaque TCP tunnel for end-to-end TLS.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How HTTP Proxy works",
+      "keywords": "proxy, connect, tunnel, forward proxy, 3128, 8080, corporate, cache",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "HTTP Proxy",
+          "item": "https://netpulse.itgg.space/explore/http_proxy/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › HTTP Proxy</nav>
+<h1>HTTP Proxy (HTTP Forward Proxy &amp; CONNECT Tunnel): how it works, step by step</h1>
+<p>An HTTP forward proxy relays client traffic to external servers. For HTTPS, the client sends an HTTP CONNECT host:443 request so the proxy opens a raw opaque TCP tunnel for end-to-end TLS.</p>
+<p><a href="/explore/http_proxy/"><strong>Open the interactive HTTP Proxy animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>HTTP Proxy explained simply</h2>
+<p>Instead of calling a store directly, you ask your office receptionist (proxy) to dial the number and connect the line without listening in on your private TLS conversation.</p>
+<h2>HTTP Proxy at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>3128 / 8080</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>HTTP CONNECT / Absolute-URI Requests</td></tr><tr><th scope="row">Common methods</th><td>CONNECT, GET http://..., Via, X-Forwarded-For</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc9110" rel="noopener">RFC 9110: HTTP Semantics (CONNECT Method)</a>.</p>
+<h2>Devices in the HTTP Proxy exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Proxy Server</strong> (proxy, 192.0.2.80)</li><li><strong>Origin Server</strong> (web server, 203.0.113.10)</li></ul>
+<h2>How HTTP Proxy works, step by step</h2>
+<ol><li><h3>TCP to Proxy</h3><p><em>Connect to proxy :3128.</em> Client opens TCP session to forward proxy 192.0.2.80:3128.</p></li><li><h3>HTTP CONNECT Tunnel</h3><p><em>CONNECT example.com:443 -&gt; 200 Connection Established.</em> Proxy opens TCP to 203.0.113.10:443 and replies 200 Connection Established.</p></li><li><h3>End-to-End TLS Inside Tunnel</h3><p><em>Proxy forwards encrypted TLS bytes blindly.</em> Client performs TLS 1.3 handshake directly with origin through the blind TCP tunnel.</p></li></ol>
+<h2>What HTTP Proxy looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical HTTP Proxy exchange. Open the animation to inspect each one.</p><ol><li>TCP from 192.168.1.10 to 192.0.2.80: 54100 -&gt; 3128 [SYN] Seq=0 (66 bytes)</li><li>HTTP from 192.168.1.10 to 192.0.2.80: CONNECT example.com:443 HTTP/1.1 (148 bytes)</li><li>TCP from 192.0.2.80 to 203.0.113.10: 39100 -&gt; 443 [SYN] Proxy opens upstream socket (66 bytes)</li><li>HTTP from 192.0.2.80 to 192.168.1.10: HTTP/1.1 200 Connection Established (98 bytes)</li><li>TLS from 192.168.1.10 to 203.0.113.10: End-to-end TLS 1.3 ClientHello -&gt; Origin (via tunnel) (517 bytes)</li></ol>
+<h2>HTTP Proxy security notes</h2><ul><li><strong>Open Proxy Abuse &amp; SSRF.</strong> Misconfigured proxies let external attackers bounce traffic through internal corporate networks. <em>Defense:</em> Require Proxy-Authorization and restrict CONNECT destination ports to 443.</li></ul>
+<h2>Test yourself on HTTP Proxy</h2><h3>Which HTTP method asks a forward proxy to open a TCP tunnel for HTTPS?</h3><p><strong>Answer:</strong> CONNECT. CONNECT host:port establishes a transparent TCP tunnel through an HTTP proxy.</p><h3>What status code does a proxy return when a CONNECT tunnel succeeds?</h3><p><strong>Answer:</strong> 200 Connection Established. 200 signals the tunnel is ready for raw TLS bytes.</p><h3>Can a standard CONNECT proxy read your HTTPS payload without installing a root CA on your device?</h3><p><strong>Answer:</strong> No, TLS encrypts end-to-end between client and origin. Without TLS-interception CA trust, the proxy only forwards opaque encrypted bytes.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/tls/">TLS / SSL</a>: Transport Layer Security (TLS 1.3)</li><li><a href="/explore/socks5/">SOCKS5</a>: SOCKS Protocol Version 5</li><li><a href="/explore/reverse_proxy/">Reverse Proxy</a>: Reverse Proxy &amp; Load Balancer (TLS Termination)</li><li><a href="/explore/wireguard/">WireGuard</a>: WireGuard Modern Cryptographic VPN</li><li><a href="/explore/ipsec/">IPsec</a>: Internet Protocol Security (IKEv2 + ESP)</li><li><a href="/explore/wpa2/">Wi-Fi WPA2</a>: IEEE 802.11i WPA2-PSK (4-Way Handshake)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

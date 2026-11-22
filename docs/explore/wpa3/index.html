@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>WPA3 Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="WPA3 replaces WPA2’s vulnerable PSK derivation with SAE (Dragonfly) password-authenticated key exchange. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/wpa3/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/wpa3/" />
+    <meta property="og:title" content="WPA3 Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="WPA3 replaces WPA2’s vulnerable PSK derivation with SAE (Dragonfly) password-authenticated key exchange. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="WPA3 Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="WPA3 replaces WPA2’s vulnerable PSK derivation with SAE (Dragonfly) password-authenticated key exchange. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/wpa3/#page",
+      "url": "https://netpulse.itgg.space/explore/wpa3/",
+      "name": "WPA3 (Wi-Fi Protected Access 3 (SAE Dragonfly)) explained",
+      "description": "WPA3 replaces WPA2’s vulnerable PSK derivation with SAE (Dragonfly) password-authenticated key exchange, providing forward secrecy and neutralizing offline dictionary cracking, plus mandatory Protected Management Frames (PMF).",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How WPA3 works",
+      "keywords": "sae, dragonfly, wpa3, pmf, forward secrecy, offline attack, wifi",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "WPA3",
+          "item": "https://netpulse.itgg.space/explore/wpa3/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › WPA3</nav>
+<h1>WPA3 (Wi-Fi Protected Access 3 (SAE Dragonfly)): how it works, step by step</h1>
+<p>WPA3 replaces WPA2’s vulnerable PSK derivation with SAE (Dragonfly) password-authenticated key exchange, providing forward secrecy and neutralizing offline dictionary cracking, plus mandatory Protected Management Frames (PMF).</p>
+<p><a href="/explore/wpa3/"><strong>Open the interactive WPA3 animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>WPA3 explained simply</h2>
+<p>In WPA3, even if a hacker records your entire Wi-Fi login, they cannot test password guesses at home—they only get one live try per connection with the router.</p>
+<h2>WPA3 at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 2 (Wireless Data Link)</td></tr><tr><th scope="row">Default port</th><td>N/A (802.11 Auth + EAPOL)</td></tr><tr><th scope="row">Transport</th><td>IEEE 802.11 Frames</td></tr><tr><th scope="row">Data format</th><td>SAE Commit/Confirm + Protected Management Frames (PMF)</td></tr><tr><th scope="row">Common methods</th><td>SAE Commit, SAE Confirm, 4-Way Handshake, PMF (802.11w)</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc7664" rel="noopener">RFC 7664: Dragonfly Key Exchange</a>.</p>
+<h2>Devices in the WPA3 exchange</h2><ul><li><strong>Laptop STA</strong> (host, 192.168.1.40)</li><li><strong>WPA3 / 802.1X AP</strong> (access point, 192.168.1.2)</li></ul>
+<h2>How WPA3 works, step by step</h2>
+<ol><li><h3>SAE Commit (Dragonfly)</h3><p><em>Scalar + Elliptic Curve Element exchange.</em> STA and AP exchange Dragonfly Commit messages derived from password + elliptic curve.</p></li><li><h3>SAE Confirm</h3><p><em>Zero-knowledge proof of shared PMK.</em> Both verify Confirm tokens, proving both know the passphrase with Forward Secrecy.</p></li><li><h3>4-Way Handshake + PMF</h3><p><em>Install AES-CCMP/GCMP keys + 802.11w PMF.</em> Protected Management Frames block spoofed deauthentication floods.</p></li></ol>
+<h2>What WPA3 looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical WPA3 exchange. Open the animation to inspect each one.</p><ol><li>802.11 SAE from 192.168.1.40 to 192.168.1.2: Authentication: SAE Commit (Scalar, Element) (128 bytes)</li><li>802.11 SAE from 192.168.1.2 to 192.168.1.40: Authentication: SAE Commit (Scalar, Element) (128 bytes)</li><li>802.11 SAE from 192.168.1.40 to 192.168.1.2: Authentication: SAE Confirm (Send-Confirm=1) (102 bytes)</li><li>802.11 SAE from 192.168.1.2 to 192.168.1.40: Authentication: SAE Confirm (PMK Verified!) (102 bytes)</li><li>EAPOL from 192.168.1.2 to 192.168.1.40: 4-Way Handshake + PMF Enabled (AES-GCMP-256) (160 bytes)</li></ol>
+<h2>WPA3 security notes</h2><ul><li><strong>Dragonblood Side-Channel / Downgrade.</strong> Mixed WPA2/WPA3 transition mode can allow downgrades back to WPA2 unless transition disable is signaled. <em>Defense:</em> Enable WPA3-only mode where supported and keep AP firmware patched.</li></ul>
+<h2>Test yourself on WPA3</h2><h3>What key exchange replaces PSK in WPA3-Personal?</h3><p><strong>Answer:</strong> SAE (Dragonfly). Simultaneous Authentication of Equals (SAE / Dragonfly) resists offline brute force.</p><h3>What does mandatory PMF (802.11w) in WPA3 prevent?</h3><p><strong>Answer:</strong> Unauthenticated deauthentication/disassociation attacks. Protected Management Frames sign management frames so attackers cannot kick clients off Wi-Fi.</p><h3>Does WPA3-SAE provide Forward Secrecy?</h3><p><strong>Answer:</strong> Yes, every SAE session produces a fresh ephemeral PMK. Even if the Wi-Fi password leaks later, previously captured sessions cannot be decrypted.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/tls/">TLS / SSL</a>: Transport Layer Security (TLS 1.3)</li><li><a href="/explore/http_proxy/">HTTP Proxy</a>: HTTP Forward Proxy &amp; CONNECT Tunnel</li><li><a href="/explore/socks5/">SOCKS5</a>: SOCKS Protocol Version 5</li><li><a href="/explore/reverse_proxy/">Reverse Proxy</a>: Reverse Proxy &amp; Load Balancer (TLS Termination)</li><li><a href="/explore/wireguard/">WireGuard</a>: WireGuard Modern Cryptographic VPN</li><li><a href="/explore/ipsec/">IPsec</a>: Internet Protocol Security (IKEv2 + ESP)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>IPsec Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="IPsec secures IP traffic at Layer 3 using IKEv2 (UDP 500/4500) to negotiate Security Associations (SAs) and ESP. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/ipsec/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/ipsec/" />
+    <meta property="og:title" content="IPsec Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="IPsec secures IP traffic at Layer 3 using IKEv2 (UDP 500/4500) to negotiate Security Associations (SAs) and ESP. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="IPsec Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="IPsec secures IP traffic at Layer 3 using IKEv2 (UDP 500/4500) to negotiate Security Associations (SAs) and ESP. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/ipsec/#page",
+      "url": "https://netpulse.itgg.space/explore/ipsec/",
+      "name": "IPsec (Internet Protocol Security (IKEv2 + ESP)) explained",
+      "description": "IPsec secures IP traffic at Layer 3 using IKEv2 (UDP 500/4500) to negotiate Security Associations (SAs) and ESP (IP protocol 50) to encrypt and authenticate entire IP packets in Tunnel Mode.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How IPsec works",
+      "keywords": "ikev2, esp, spi, 500, 4500, site-to-site, vpn, tunnel mode",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "IPsec",
+          "item": "https://netpulse.itgg.space/explore/ipsec/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › IPsec</nav>
+<h1>IPsec (Internet Protocol Security (IKEv2 + ESP)): how it works, step by step</h1>
+<p>IPsec secures IP traffic at Layer 3 using IKEv2 (UDP 500/4500) to negotiate Security Associations (SAs) and ESP (IP protocol 50) to encrypt and authenticate entire IP packets in Tunnel Mode.</p>
+<p><a href="/explore/ipsec/"><strong>Open the interactive IPsec animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>IPsec explained simply</h2>
+<p>IPsec is the classic corporate armored truck system: two gateways first sign contracts (IKEv2), then wrap entire internal packets inside an ESP armored outer envelope.</p>
+<h2>IPsec at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 3 (Network)</td></tr><tr><th scope="row">Default port</th><td>500 (IKE), 4500 (NAT-T)</td></tr><tr><th scope="row">Transport</th><td>UDP (IKEv2) + IP Proto 50 (ESP)</td></tr><tr><th scope="row">Data format</th><td>IKEv2 SA Payloads + ESP Tunnel Header (SPI, Seq, IV, AEAD)</td></tr><tr><th scope="row">Common methods</th><td>IKE_SA_INIT, IKE_AUTH, ESP Tunnel Mode, AH Transport</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc7296" rel="noopener">RFC 7296: Internet Key Exchange Protocol Version 2 (IKEv2)</a>; <a href="https://www.rfc-editor.org/rfc/rfc4303" rel="noopener">RFC 4303: IP Encapsulating Security Payload (ESP)</a>.</p>
+<h2>Devices in the IPsec exchange</h2><ul><li><strong>Office A Host</strong> (host, 10.1.0.10)</li><li><strong>VPN Gateway A</strong> (vpn gateway, 198.51.100.1)</li><li><strong>VPN Gateway B</strong> (vpn gateway, 203.0.113.1)</li><li><strong>Office B Server</strong> (file server, 10.2.0.20)</li></ul>
+<h2>How IPsec works, step by step</h2>
+<ol><li><h3>IKE_SA_INIT (UDP/500)</h3><p><em>Negotiate Diffie-Hellman &amp; crypto suite.</em> VPN gateways negotiate IKE Security Association parameters over UDP port 500.</p></li><li><h3>IKE_AUTH (UDP/4500 NAT-T)</h3><p><em>Authenticate peers &amp; create Child ESP SA.</em> Gateways verify certificates/PSK and install inbound/outbound ESP SPI keys.</p></li><li><h3>ESP Tunnel Encapsulation</h3><p><em>IP Proto 50 encrypts inner IP packet.</em> Inner packet (10.1.0.10 -&gt; 10.2.0.20) is encrypted and wrapped with a new outer IP header.</p></li></ol>
+<h2>What IPsec looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical IPsec exchange. Open the animation to inspect each one.</p><ol><li>IKEv2 from 198.51.100.1 to 203.0.113.1: IKE_SA_INIT Request (DH Group 14, AES-GCM-256) (340 bytes)</li><li>IKEv2 from 203.0.113.1 to 198.51.100.1: IKE_SA_INIT Response (320 bytes)</li><li>IKEv2 from 198.51.100.1 to 203.0.113.1: IKE_AUTH (Cert/PSK + Child SA 10.1.0.0/24 &lt;-&gt; 10.2.0.0/24) (420 bytes)</li><li>IKEv2 from 203.0.113.1 to 198.51.100.1: IKE_AUTH Response (Child SA Established, SPI=0x9a41) (380 bytes)</li><li>ESP from 198.51.100.1 to 203.0.113.1: ESP (SPI=0x9a41, Seq=1) [Encrypted 10.1.0.10 -&gt; 10.2.0.20] (296 bytes)</li><li>TCP from 203.0.113.1 to 10.2.0.20: Decrypted Inner Packet -&gt; 10.2.0.20 (220 bytes)</li></ol>
+<h2>IPsec security notes</h2><ul><li><strong>IKEv1 Aggressive Mode PSK Cracking.</strong> Weak pre-shared keys in legacy IKEv1 aggressive mode expose hashes to offline brute force. <em>Defense:</em> Use IKEv2 with X.509 certificates or high-entropy keys and AES-GCM.</li></ul>
+<h2>Test yourself on IPsec</h2><h3>Which UDP ports are used by IKEv2 and NAT Traversal?</h3><p><strong>Answer:</strong> 500 and 4500. IKE uses UDP 500 and switches to UDP 4500 when NAT-Traversal is detected.</p><h3>Which IPsec sub-protocol provides both confidentiality (encryption) and integrity?</h3><p><strong>Answer:</strong> ESP (Encapsulating Security Payload). AH only authenticates headers; ESP provides encryption + authentication.</p><h3>In ESP Tunnel Mode, what gets encrypted?</h3><p><strong>Answer:</strong> The entire original inner IP packet (header + payload). Tunnel Mode wraps and encrypts the full original IP packet inside a new outer IP header.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/tls/">TLS / SSL</a>: Transport Layer Security (TLS 1.3)</li><li><a href="/explore/http_proxy/">HTTP Proxy</a>: HTTP Forward Proxy &amp; CONNECT Tunnel</li><li><a href="/explore/socks5/">SOCKS5</a>: SOCKS Protocol Version 5</li><li><a href="/explore/reverse_proxy/">Reverse Proxy</a>: Reverse Proxy &amp; Load Balancer (TLS Termination)</li><li><a href="/explore/wireguard/">WireGuard</a>: WireGuard Modern Cryptographic VPN</li><li><a href="/explore/wpa2/">Wi-Fi WPA2</a>: IEEE 802.11i WPA2-PSK (4-Way Handshake)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

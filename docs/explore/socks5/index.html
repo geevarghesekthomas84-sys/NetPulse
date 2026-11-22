@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>SOCKS5 Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="SOCKS5 is a protocol-agnostic session proxy (port 1080) capable of relaying any TCP or UDP traffic. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/socks5/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/socks5/" />
+    <meta property="og:title" content="SOCKS5 Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="SOCKS5 is a protocol-agnostic session proxy (port 1080) capable of relaying any TCP or UDP traffic. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="SOCKS5 Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="SOCKS5 is a protocol-agnostic session proxy (port 1080) capable of relaying any TCP or UDP traffic. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/socks5/#page",
+      "url": "https://netpulse.itgg.space/explore/socks5/",
+      "name": "SOCKS5 (SOCKS Protocol Version 5) explained",
+      "description": "SOCKS5 is a protocol-agnostic session proxy (port 1080) capable of relaying any TCP or UDP traffic (used by SSH dynamic port forwarding and Tor) without understanding HTTP.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How SOCKS5 works",
+      "keywords": "1080, proxy, tor, ssh -D, udp associate, session",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "SOCKS5",
+          "item": "https://netpulse.itgg.space/explore/socks5/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › SOCKS5</nav>
+<h1>SOCKS5 (SOCKS Protocol Version 5): how it works, step by step</h1>
+<p>SOCKS5 is a protocol-agnostic session proxy (port 1080) capable of relaying any TCP or UDP traffic (used by SSH dynamic port forwarding and Tor) without understanding HTTP.</p>
+<p><a href="/explore/socks5/"><strong>Open the interactive SOCKS5 animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>SOCKS5 explained simply</h2>
+<p>SOCKS5 is a universal courier pipe: you tell it the final IP and port, and it passes any kind of TCP or UDP packets through without caring what app created them.</p>
+<h2>SOCKS5 at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 5 (Session)</td></tr><tr><th scope="row">Default port</th><td>1080</td></tr><tr><th scope="row">Transport</th><td>TCP / UDP Associate</td></tr><tr><th scope="row">Data format</th><td>Binary Greeting + Auth + Relay Header</td></tr><tr><th scope="row">Common methods</th><td>Method Negotiation, Username/Password Auth, CONNECT, BIND, UDP ASSOCIATE</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc1928" rel="noopener">RFC 1928: SOCKS Protocol Version 5</a>.</p>
+<h2>Devices in the SOCKS5 exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Proxy Server</strong> (proxy, 192.0.2.80)</li><li><strong>Origin Server</strong> (web server, 203.0.113.10)</li></ul>
+<h2>How SOCKS5 works, step by step</h2>
+<ol><li><h3>Method Greeting</h3><p><em>Ver=5, Methods=[0x00, 0x02].</em> Client offers No-Auth or Username/Password; SOCKS5 server selects method.</p></li><li><h3>CONNECT Request</h3><p><em>CMD=0x01 Dst=example.com:443.</em> Client asks SOCKS5 proxy to connect to domain/IP on port 443; proxy replies Succeeded (0x00).</p></li><li><h3>Transparent Relay</h3><p><em>Arbitrary TCP/UDP payload relayed.</em> All subsequent bytes pass transparently between client and target origin.</p></li></ol>
+<h2>What SOCKS5 looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical SOCKS5 exchange. Open the animation to inspect each one.</p><ol><li>SOCKS5 from 192.168.1.10 to 192.0.2.80: Client Greeting: Ver=5, NMethods=2 (NoAuth, User/Pass) (64 bytes)</li><li>SOCKS5 from 192.0.2.80 to 192.168.1.10: Method Selection: 0x00 (Accepted) (60 bytes)</li><li>SOCKS5 from 192.168.1.10 to 192.0.2.80: CONNECT example.com:443 (ATYP=Domain) (86 bytes)</li><li>TCP from 192.0.2.80 to 203.0.113.10: Proxy -&gt; Origin [SYN] Port 443 (66 bytes)</li><li>SOCKS5 from 192.0.2.80 to 192.168.1.10: Reply: Succeeded (0x00) (70 bytes)</li><li>TLS from 192.168.1.10 to 203.0.113.10: Relayed Application Stream (420 bytes)</li></ol>
+<h2>SOCKS5 security notes</h2><ul><li><strong>Unencrypted SOCKS5 Credentials.</strong> RFC 1929 username/password subnegotiation sends credentials in plaintext unless wrapped inside SSH/TLS. <em>Defense:</em> Tunnel SOCKS5 inside SSH (`ssh -D 1080`) or TLS.</li></ul>
+<h2>Test yourself on SOCKS5</h2><h3>Which default port does SOCKS5 use?</h3><p><strong>Answer:</strong> 1080. IANA assigned port 1080 to SOCKS.</p><h3>Which feature does SOCKS5 add over SOCKS4?</h3><p><strong>Answer:</strong> UDP Associate, IPv6, and authentication. SOCKS5 added UDP relay, IPv6 addressing, domain name resolution, and authentication.</p><h3>Which SSH flag spins up a local SOCKS5 proxy tunnel?</h3><p><strong>Answer:</strong> ssh -D. `ssh -D 1080` starts dynamic SOCKS5 forwarding over the encrypted SSH tunnel.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/tls/">TLS / SSL</a>: Transport Layer Security (TLS 1.3)</li><li><a href="/explore/http_proxy/">HTTP Proxy</a>: HTTP Forward Proxy &amp; CONNECT Tunnel</li><li><a href="/explore/reverse_proxy/">Reverse Proxy</a>: Reverse Proxy &amp; Load Balancer (TLS Termination)</li><li><a href="/explore/wireguard/">WireGuard</a>: WireGuard Modern Cryptographic VPN</li><li><a href="/explore/ipsec/">IPsec</a>: Internet Protocol Security (IKEv2 + ESP)</li><li><a href="/explore/wpa2/">Wi-Fi WPA2</a>: IEEE 802.11i WPA2-PSK (4-Way Handshake)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+# NetPulse
+
+> Free, interactive way to learn how computer networks work: step-by-step animations of 39 internet protocols, a Wireshark-style packet inspector, and a Packet Tracer-style network simulator. Runs in the browser, no accounts or tracking. Made by Geevarghese K Thomas, open source (Apache 2.0).
+
+## Main pages
+- [Home](https://netpulse.itgg.space/): overview of NetPulse
+- [All protocols](https://netpulse.itgg.space/protocols/): index of every protocol page
+- [Network simulator](https://netpulse.itgg.space/simulator/): IOS-style CLI, VLANs, routing protocols, DHCP, 20 labs
+- [Learn](https://netpulse.itgg.space/learn/): quizzes, games and troubleshooting challenges
+- [About](https://netpulse.itgg.space/about/): author, privacy and source code
+
+## Protocols
+- [TCP](https://netpulse.itgg.space/explore/tcp/): Transmission Control Protocol
+- [UDP](https://netpulse.itgg.space/explore/udp/): User Datagram Protocol
+- [IP (IPv4)](https://netpulse.itgg.space/explore/ip/): Internet Protocol Version 4
+- [BGP](https://netpulse.itgg.space/explore/bgp/): Border Gateway Protocol (BGP-4)
+- [IPv6](https://netpulse.itgg.space/explore/ipv6/): Internet Protocol Version 6
+- [ICMP](https://netpulse.itgg.space/explore/icmp/): Internet Control Message Protocol (Ping & Traceroute)
+- [IGMP](https://netpulse.itgg.space/explore/igmp/): Internet Group Management Protocol (v3)
+- [NTP](https://netpulse.itgg.space/explore/ntp/): Network Time Protocol (v4)
+- [Ethernet / ARP](https://netpulse.itgg.space/explore/ethernet/): IEEE 802.3 Ethernet & Address Resolution Protocol
+- [DHCP](https://netpulse.itgg.space/explore/dhcp/): Dynamic Host Configuration Protocol
+- [DNS](https://netpulse.itgg.space/explore/dns/): Domain Name System
+- [HTTP](https://netpulse.itgg.space/explore/http/): Hypertext Transfer Protocol
+- [HTTPS](https://netpulse.itgg.space/explore/https/): HTTP over TLS (Secure Hypertext Transfer Protocol)
+- [WebSocket](https://netpulse.itgg.space/explore/websocket/): The WebSocket Protocol (WS / WSS)
+- [WebRTC](https://netpulse.itgg.space/explore/webrtc/): Web Real-Time Communication (ICE / STUN / DTLS / SRTP)
+- [SIP](https://netpulse.itgg.space/explore/sip/): Session Initiation Protocol (VoIP Signaling)
+- [RTSP](https://netpulse.itgg.space/explore/rtsp/): Real Time Streaming Protocol (CCTV / IP Cameras)
+- [RTMP](https://netpulse.itgg.space/explore/rtmp/): Real-Time Messaging Protocol (Live Ingest)
+- [QUIC (HTTP/3)](https://netpulse.itgg.space/explore/quic/): QUIC Transport & HTTP/3
+- [DNS over HTTPS](https://netpulse.itgg.space/explore/doh/): DNS Queries over HTTPS (DoH)
+- [DNSSEC](https://netpulse.itgg.space/explore/dnssec/): Domain Name System Security Extensions
+- [SMTP](https://netpulse.itgg.space/explore/smtp/): Simple Mail Transfer Protocol
+- [POP3](https://netpulse.itgg.space/explore/pop3/): Post Office Protocol Version 3
+- [IMAP](https://netpulse.itgg.space/explore/imap/): Internet Message Access Protocol (IMAP4rev1)
+- [FTP](https://netpulse.itgg.space/explore/ftp/): File Transfer Protocol (Active & Passive)
+- [SMB](https://netpulse.itgg.space/explore/smb/): Server Message Block (SMBv3 File Sharing)
+- [SSH](https://netpulse.itgg.space/explore/ssh/): Secure Shell Protocol (SSH-2)
+- [Modbus](https://netpulse.itgg.space/explore/modbus/): Modbus TCP (Industrial Control / SCADA)
+- [PPPoE](https://netpulse.itgg.space/explore/pppoe/): Point-to-Point Protocol over Ethernet
+- [Captive Portal](https://netpulse.itgg.space/explore/captive_portal/): Wi-Fi Captive Portal (RFC 8910 / HTTP 302 Redirect)
+- [TLS / SSL](https://netpulse.itgg.space/explore/tls/): Transport Layer Security (TLS 1.3)
+- [HTTP Proxy](https://netpulse.itgg.space/explore/http_proxy/): HTTP Forward Proxy & CONNECT Tunnel
+- [SOCKS5](https://netpulse.itgg.space/explore/socks5/): SOCKS Protocol Version 5
+- [Reverse Proxy](https://netpulse.itgg.space/explore/reverse_proxy/): Reverse Proxy & Load Balancer (TLS Termination)
+- [WireGuard](https://netpulse.itgg.space/explore/wireguard/): WireGuard Modern Cryptographic VPN
+- [IPsec](https://netpulse.itgg.space/explore/ipsec/): Internet Protocol Security (IKEv2 + ESP)
+- [Wi-Fi WPA2](https://netpulse.itgg.space/explore/wpa2/): IEEE 802.11i WPA2-PSK (4-Way Handshake)
+- [WPA3](https://netpulse.itgg.space/explore/wpa3/): Wi-Fi Protected Access 3 (SAE Dragonfly)
+- [RADIUS](https://netpulse.itgg.space/explore/radius/): Remote Authentication Dial-In User Service (802.1X)
+
+## Source
+- [GitHub repository](https://github.com/geevarghesekthomas84-sys/NetPulse)

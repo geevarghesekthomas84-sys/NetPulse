@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>SIP Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="SIP sets up, modifies, and tears down voice and video VoIP calls (INVITE / 180 Ringing / 200 OK / ACK) while. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/sip/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/sip/" />
+    <meta property="og:title" content="SIP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="SIP sets up, modifies, and tears down voice and video VoIP calls (INVITE / 180 Ringing / 200 OK / ACK) while. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="SIP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="SIP sets up, modifies, and tears down voice and video VoIP calls (INVITE / 180 Ringing / 200 OK / ACK) while. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/sip/#page",
+      "url": "https://netpulse.itgg.space/explore/sip/",
+      "name": "SIP (Session Initiation Protocol (VoIP Signaling)) explained",
+      "description": "SIP sets up, modifies, and tears down voice and video VoIP calls (INVITE / 180 Ringing / 200 OK / ACK) while actual voice packets travel separately over RTP.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How SIP works",
+      "keywords": "voip, call, invite, 5060, rtp, pbx, ringing",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "SIP",
+          "item": "https://netpulse.itgg.space/explore/sip/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › SIP</nav>
+<h1>SIP (Session Initiation Protocol (VoIP Signaling)): how it works, step by step</h1>
+<p>SIP sets up, modifies, and tears down voice and video VoIP calls (INVITE / 180 Ringing / 200 OK / ACK) while actual voice packets travel separately over RTP.</p>
+<p><a href="/explore/sip/"><strong>Open the interactive SIP animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>SIP explained simply</h2>
+<p>SIP is the telephone operator that rings the other phone (&quot;INVITE&quot;, &quot;Ringing!&quot;, &quot;Picked up!&quot;), and once connected, both people talk directly over RTP.</p>
+<h2>SIP at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application Signaling)</td></tr><tr><th scope="row">Default port</th><td>5060 (SIP), 5061 (SIPS/TLS)</td></tr><tr><th scope="row">Transport</th><td>UDP / TCP / TLS</td></tr><tr><th scope="row">Data format</th><td>Text-based SIP Headers + SDP Body</td></tr><tr><th scope="row">Common methods</th><td>REGISTER, INVITE, 100 Trying, 180 Ringing, 200 OK, ACK, BYE</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc3261" rel="noopener">RFC 3261: SIP: Session Initiation Protocol</a>.</p>
+<h2>Devices in the SIP exchange</h2><ul><li><strong>Peer A (Behind NAT)</strong> (host, 192.168.1.10)</li><li><strong>STUN / Signaling</strong> (server rack, 198.51.100.1)</li><li><strong>Peer B (Their Laptop)</strong> (host, 192.168.0.23)</li></ul>
+<h2>How SIP works, step by step</h2>
+<ol><li><h3>INVITE -&gt; 180 Ringing</h3><p><em>Caller sends INVITE with SDP codecs.</em> Phone A sends SIP INVITE via SIP Proxy; Phone B alerts user with 180 Ringing.</p></li><li><h3>200 OK &amp; ACK</h3><p><em>Call answered; media parameters agreed.</em> Phone B answers with 200 OK; Phone A confirms with ACK.</p></li><li><h3>RTP Media &amp; BYE</h3><p><em>Voice flows over RTP; BYE hangs up.</em> Bidirectional RTP audio packets flow directly until one party sends SIP BYE.</p></li></ol>
+<h2>What SIP looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical SIP exchange. Open the animation to inspect each one.</p><ol><li>SIP from 192.168.1.10 to 198.51.100.1: INVITE sip:bob@voip.example.com SIP/2.0 (SDP) (580 bytes)</li><li>SIP from 198.51.100.1 to 192.168.0.23: INVITE sip:bob@192.168.0.23 SIP/2.0 (580 bytes)</li><li>SIP from 192.168.0.23 to 192.168.1.10: SIP/2.0 180 Ringing (310 bytes)</li><li>SIP from 192.168.0.23 to 192.168.1.10: SIP/2.0 200 OK (Call Answered) (420 bytes)</li><li>SIP from 192.168.1.10 to 192.168.0.23: ACK sip:bob@192.168.0.23 SIP/2.0 (280 bytes)</li><li>RTP from 192.168.1.10 to 192.168.0.23: RTP G.711 Audio Stream (20ms frames) (214 bytes)</li><li>SIP from 192.168.1.10 to 192.168.0.23: BYE sip:bob@192.168.0.23 SIP/2.0 (290 bytes)</li></ol>
+<h2>SIP security notes</h2><ul><li><strong>SIP Toll Fraud &amp; Eavesdropping.</strong> Unencrypted SIP on port 5060 leaks caller IDs and credentials; weak PBX auth allows expensive international call hijack. <em>Defense:</em> Use SIPS (TLS on port 5061) and SRTP for voice media.</li></ul>
+<h2>Test yourself on SIP</h2><h3>Which ports does SIP use for plaintext and TLS signaling?</h3><p><strong>Answer:</strong> 5060 and 5061. SIP uses 5060 (UDP/TCP) and SIPS uses 5061 (TLS).</p><h3>Which protocol carries the actual voice audio after SIP establishes the call?</h3><p><strong>Answer:</strong> RTP. SIP is signaling only; RTP (Real-time Transport Protocol) carries audio/video.</p><h3>Which SIP message ends an active call?</h3><p><strong>Answer:</strong> BYE. SIP uses BYE to tear down an established dialog.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li><li><a href="/explore/rtmp/">RTMP</a>: Real-Time Messaging Protocol (Live Ingest)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

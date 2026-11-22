@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>39 Internet Protocols Explained | NetPulse</title>
+    <meta name="description" content="Step-by-step animations and plain-English explanations of 39 internet protocols, from Ethernet and IP to DNS, TLS and BGP." />
+    <link rel="canonical" href="https://netpulse.itgg.space/protocols/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/protocols/" />
+    <meta property="og:title" content="39 Internet Protocols Explained | NetPulse" />
+    <meta property="og:description" content="Step-by-step animations and plain-English explanations of 39 internet protocols, from Ethernet and IP to DNS, TLS and BGP." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="39 Internet Protocols Explained | NetPulse" />
+    <meta name="twitter:description" content="Step-by-step animations and plain-English explanations of 39 internet protocols, from Ethernet and IP to DNS, TLS and BGP." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/protocols/#page",
+      "url": "https://netpulse.itgg.space/protocols/",
+      "name": "Internet protocols explained",
+      "description": "All 39 protocols on NetPulse.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "Internet protocols"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › Protocols</nav>
+<h1>39 internet protocols, explained with live packets</h1>
+<p>Pick a protocol to see how it works step by step: every message that crosses the wire, what is inside it, and what can go wrong. Each page has a plain-English explanation, the full step-by-step exchange, security notes and a short quiz, plus an interactive animation you can play.</p>
+<h2>CORE</h2><ul><li><a href="/explore/tcp/">TCP</a>: Transmission Control Protocol, TCP provides reliable, ordered, congestion-controlled byte-stream delivery over unreliable IP networks using…</li><li><a href="/explore/udp/">UDP</a>: User Datagram Protocol, UDP is a lightweight, connectionless transport protocol with an 8-byte header and zero handshake or…</li><li><a href="/explore/ip/">IP (IPv4)</a>: Internet Protocol Version 4, IPv4 is the foundational network-layer protocol that routes packets across interconnected networks using…</li><li><a href="/explore/bgp/">BGP</a>: Border Gateway Protocol (BGP-4), BGP is the exterior routing protocol that glues together the global internet’s Autonomous Systems (ISPs…</li><li><a href="/explore/ipv6/">IPv6</a>: Internet Protocol Version 6, IPv6 expands address space to 128 bits, eliminates NAT necessity, streamlines routing with a fixed 40-byte…</li><li><a href="/explore/icmp/">ICMP</a>: Internet Control Message Protocol (Ping &amp; Traceroute), ICMP delivers network-layer diagnostics and error reporting. Tools like ping (Echo Request/Reply) and…</li><li><a href="/explore/igmp/">IGMP</a>: Internet Group Management Protocol (v3), IGMP lets IPv4 hosts join and leave IP multicast groups (224.0.0.0/4) so routers and IGMP-snooping switches…</li><li><a href="/explore/ntp/">NTP</a>: Network Time Protocol (v4), NTP synchronizes computer clocks across variable-latency networks down to milliseconds by exchanging four…</li><li><a href="/explore/ethernet/">Ethernet / ARP</a>: IEEE 802.3 Ethernet &amp; Address Resolution Protocol, Ethernet frames carry packets across local links using 48-bit MAC addresses. Switches dynamically learn…</li><li><a href="/explore/dhcp/">DHCP</a>: Dynamic Host Configuration Protocol, DHCP automatically assigns IPv4 addresses, subnet masks, default gateways, and DNS servers to devices joining…</li><li><a href="/explore/dns/">DNS</a>: Domain Name System, DNS translates human-readable domain names into IP addresses using a globally distributed, hierarchical tree…</li></ul><h2>APPLICATION</h2><ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol, HTTP is the stateless request-response protocol that powers the World Wide Web. A client opens a TCP…</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol), HTTPS wraps HTTP inside TLS encryption, protecting URLs, headers, cookies, and payloads against eavesdropping…</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS), WebSocket upgrades a standard HTTP/1.1 TCP connection into a persistent, full-duplex, low-overhead…</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP), WebRTC enables sub-second peer-to-peer browser video, audio, and data channels by discovering public NAT…</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling), SIP sets up, modifies, and tears down voice and video VoIP calls (INVITE / 180 Ringing / 200 OK / ACK) while…</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras), RTSP acts as a &quot;network remote control&quot; on port 554 for IP cameras and media servers (DESCRIBE -&gt; SETUP -&gt;…</li><li><a href="/explore/rtmp/">RTMP</a>: Real-Time Messaging Protocol (Live Ingest), RTMP is the persistent TCP-based ingest protocol used by OBS Studio and encoders to push low-latency live…</li><li><a href="/explore/quic/">QUIC (HTTP/3)</a>: QUIC Transport &amp; HTTP/3, QUIC reimagines transport over UDP port 443 with TLS 1.3 baked in from packet #1 (1-RTT or 0-RTT resume)…</li><li><a href="/explore/doh/">DNS over HTTPS</a>: DNS Queries over HTTPS (DoH), DNS over HTTPS (DoH) wraps binary DNS queries inside standard HTTPS port-443 traffic so ISPs and local Wi-Fi…</li><li><a href="/explore/dnssec/">DNSSEC</a>: Domain Name System Security Extensions, DNSSEC adds cryptographic digital signatures (RRSIG) and a hierarchical chain of trust (Root -&gt; TLD DS -&gt;…</li><li><a href="/explore/smtp/">SMTP</a>: Simple Mail Transfer Protocol, SMTP pushes outbound email from mail clients to submission servers (port 587) and between domain Mail…</li><li><a href="/explore/pop3/">POP3</a>: Post Office Protocol Version 3, POP3 retrieves stored emails from a mail server to a local client in a simple download-and-delete (or keep)…</li><li><a href="/explore/imap/">IMAP</a>: Internet Message Access Protocol (IMAP4rev1), IMAP synchronizes mail folders, read/starred flags, and partial MIME attachments across multiple devices…</li><li><a href="/explore/ftp/">FTP</a>: File Transfer Protocol (Active &amp; Passive), FTP uses two separate TCP connections: a Control channel on port 21 for commands, and a Data channel for file…</li><li><a href="/explore/smb/">SMB</a>: Server Message Block (SMBv3 File Sharing), SMB (port 445) powers Windows and NAS network file shares, printers, and named pipes. SMBv3 adds AES-128-GCM…</li><li><a href="/explore/ssh/">SSH</a>: Secure Shell Protocol (SSH-2), SSH establishes an encrypted, mutually authenticated channel over untrusted networks for remote shell access…</li><li><a href="/explore/modbus/">Modbus</a>: Modbus TCP (Industrial Control / SCADA), Modbus TCP (port 502) is the ubiquitous industrial automation protocol used by SCADA HMIs to poll sensors and…</li><li><a href="/explore/pppoe/">PPPoE</a>: Point-to-Point Protocol over Ethernet, PPPoE lets ISPs authenticate broadband subscribers (DSL/FTTH) and assign public IPv4 addresses over Ethernet…</li><li><a href="/explore/captive_portal/">Captive Portal</a>: Wi-Fi Captive Portal (RFC 8910 / HTTP 302 Redirect), Captive portals intercept unauthenticated guest Wi-Fi devices (using DHCP Option 114 or OS connectivity…</li></ul><h2>SECURITY</h2><ul><li><a href="/explore/tls/">TLS / SSL</a>: Transport Layer Security (TLS 1.3), TLS 1.3 provides confidentiality, integrity, and server authentication in a single 1-RTT handshake using…</li><li><a href="/explore/http_proxy/">HTTP Proxy</a>: HTTP Forward Proxy &amp; CONNECT Tunnel, An HTTP forward proxy relays client traffic to external servers. For HTTPS, the client sends an HTTP CONNECT…</li><li><a href="/explore/socks5/">SOCKS5</a>: SOCKS Protocol Version 5, SOCKS5 is a protocol-agnostic session proxy (port 1080) capable of relaying any TCP or UDP traffic (used by…</li><li><a href="/explore/reverse_proxy/">Reverse Proxy</a>: Reverse Proxy &amp; Load Balancer (TLS Termination), A reverse proxy sits in front of origin backend servers to terminate TLS, enforce WAF rules, cache static…</li><li><a href="/explore/wireguard/">WireGuard</a>: WireGuard Modern Cryptographic VPN, WireGuard is a lean, kernel-space Layer 3 VPN tunnel running over UDP/51820 using Curve25519…</li><li><a href="/explore/ipsec/">IPsec</a>: Internet Protocol Security (IKEv2 + ESP), IPsec secures IP traffic at Layer 3 using IKEv2 (UDP 500/4500) to negotiate Security Associations (SAs) and…</li><li><a href="/explore/wpa2/">Wi-Fi WPA2</a>: IEEE 802.11i WPA2-PSK (4-Way Handshake), WPA2 secures Wi-Fi networks using a 4-way EAPOL-Key handshake between the client and Access Point to prove…</li><li><a href="/explore/wpa3/">WPA3</a>: Wi-Fi Protected Access 3 (SAE Dragonfly), WPA3 replaces WPA2’s vulnerable PSK derivation with SAE (Dragonfly) password-authenticated key exchange…</li><li><a href="/explore/radius/">RADIUS</a>: Remote Authentication Dial-In User Service (802.1X), RADIUS centralizes Authentication, Authorization, and Accounting (AAA) for enterprise 802.1X Wi-Fi/wired…</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

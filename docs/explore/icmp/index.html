@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>ICMP Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="ICMP delivers network-layer diagnostics and error reporting. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/icmp/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/icmp/" />
+    <meta property="og:title" content="ICMP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="ICMP delivers network-layer diagnostics and error reporting. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="ICMP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="ICMP delivers network-layer diagnostics and error reporting. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/icmp/#page",
+      "url": "https://netpulse.itgg.space/explore/icmp/",
+      "name": "ICMP (Internet Control Message Protocol (Ping & Traceroute)) explained",
+      "description": "ICMP delivers network-layer diagnostics and error reporting. Tools like ping (Echo Request/Reply) and traceroute (TTL expiration probes) rely on ICMP control messages.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How ICMP works",
+      "keywords": "ping, traceroute, tracert, ttl, time exceeded, echo, unreachable, mtu, pmtud",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "ICMP",
+          "item": "https://netpulse.itgg.space/explore/icmp/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › ICMP</nav>
+<h1>ICMP (Internet Control Message Protocol (Ping &amp; Traceroute)): how it works, step by step</h1>
+<p>ICMP delivers network-layer diagnostics and error reporting. Tools like ping (Echo Request/Reply) and traceroute (TTL expiration probes) rely on ICMP control messages.</p>
+<p><a href="/explore/icmp/"><strong>Open the interactive ICMP animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>ICMP explained simply</h2>
+<p>ICMP is like shouting &quot;Marco!&quot; across a canyon and timing how fast &quot;Polo!&quot; bounces back—or having each relay runner tell you when your message ran out of steps.</p>
+<h2>ICMP at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 3 (Network) / TCP-IP Internet</td></tr><tr><th scope="row">Default port</th><td>N/A (IP Protocol 1)</td></tr><tr><th scope="row">Transport</th><td>Encapsulated directly in IPv4</td></tr><tr><th scope="row">Data format</th><td>8-byte ICMP Header + Echo/Error Payload</td></tr><tr><th scope="row">Common methods</th><td>Echo Request (8), Echo Reply (0), Dest Unreachable (3), Time Exceeded (11), Redirect (5)</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc792" rel="noopener">RFC 792: Internet Control Message Protocol</a>; <a href="https://www.rfc-editor.org/rfc/rfc4443" rel="noopener">RFC 4443: ICMPv6</a>.</p>
+<h2>Devices in the ICMP exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Home Router</strong> (router, 192.168.1.1)</li><li><strong>ISP AS64500</strong> (router, 100.64.0.1)</li><li><strong>Web Server</strong> (web server, 203.0.113.10)</li></ul>
+<h2>How ICMP works, step by step</h2>
+<ol><li><h3>Echo Request (Ping)</h3><p><em>Type 8 Echo Request reaches target.</em> Client sends ICMP Type 8 Echo Request (TTL=64) across two routers to 203.0.113.10.</p></li><li><h3>Echo Reply</h3><p><em>Type 0 Echo Reply measures RTT.</em> Web Server replies with ICMP Type 0 Echo Reply; Client calculates round-trip latency.</p></li><li><h3>Traceroute Hop 1 (TTL=1)</h3><p><em>Router 1 decrements TTL to 0 -&gt; Time Exceeded.</em> Traceroute sends TTL=1; Home Router drops it and returns ICMP Type 11 Time Exceeded.</p></li><li><h3>Traceroute Hop 2 (TTL=2)</h3><p><em>ISP Router returns Time Exceeded.</em> Client increments TTL=2; ISP Router reveals its hop IP via ICMP Type 11.</p></li><li><h3>Destination Reached</h3><p><em>TTL=3 reaches 203.0.113.10.</em> Final probe arrives at destination which returns Echo Reply / Port Unreachable.</p></li></ol>
+<h2>What ICMP looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical ICMP exchange. Open the animation to inspect each one.</p><ol><li>ICMP from 192.168.1.10 to 192.168.1.1: Echo (ping) request id=0x0401, seq=1, ttl=64 (74 bytes)</li><li>ICMP from 192.168.1.1 to 100.64.0.1: Echo (ping) request seq=1, ttl=63 (74 bytes)</li><li>ICMP from 100.64.0.1 to 203.0.113.10: Echo (ping) request seq=1, ttl=62 (74 bytes)</li><li>ICMP from 203.0.113.10 to 192.168.1.10: Echo (ping) reply id=0x0401, seq=1 (RTT ~46ms) (74 bytes)</li><li>ICMP from 192.168.1.10 to 192.168.1.1: Traceroute Probe #1 (TTL=1) (60 bytes)</li><li>ICMP from 192.168.1.1 to 192.168.1.10: Time-to-live exceeded (Hop 1: 192.168.1.1) (70 bytes)</li><li>ICMP from 192.168.1.10 to 100.64.0.1: Traceroute Probe #2 (TTL=2) (60 bytes)</li><li>ICMP from 100.64.0.1 to 192.168.1.10: Time-to-live exceeded (Hop 2: 100.64.0.1) (70 bytes)</li><li>ICMP from 192.168.1.10 to 203.0.113.10: Traceroute Probe #3 (TTL=3) reaches target (60 bytes)</li><li>ICMP from 203.0.113.10 to 192.168.1.10: Echo reply (Hop 3: 203.0.113.10 reached!) (74 bytes)</li></ol>
+<h2>ICMP security notes</h2><ul><li><strong>Smurf Amplification &amp; Ping Flood.</strong> Sending ICMP Echo Requests to a subnet broadcast address with a spoofed source IP floods the victim. <em>Defense:</em> Disable directed broadcast forwarding on routers and rate-limit ICMP responses.</li><li><strong>ICMP Tunneling.</strong> Covert channels hide arbitrary C2 data inside the Echo payload when firewalls block TCP/UDP. <em>Defense:</em> Inspect ICMP payload sizes and disallow anomalous non-standard Echo payloads.</li></ul>
+<h2>Test yourself on ICMP</h2><h3>Which ICMP Type/Code is returned when a router decrements IP TTL to 0?</h3><p><strong>Answer:</strong> Type 11 Time Exceeded. Routers emit ICMP Type 11 Code 0 (TTL exceeded in transit) whenever TTL reaches zero.</p><h3>How does traceroute discover every router hop along a path?</h3><p><strong>Answer:</strong> By sending probes with incrementing TTL (1, 2, 3...). Each router along the path drops the probe when TTL hits 0 and reveals itself via Time Exceeded.</p><h3>Why shouldn’t firewalls blindly block ALL ICMP?</h3><p><strong>Answer:</strong> It breaks Path MTU Discovery (Type 3 Code 4). Blocking ICMP Fragmentation Needed causes PMTUD blackholes on links with smaller MTUs.</p><h3>What IP protocol number identifies ICMP inside an IPv4 header?</h3><p><strong>Answer:</strong> 1. Protocol 1 is ICMP, 6 is TCP, and 17 is UDP.</p><h3>Which ICMP message pair does `ping` use?</h3><p><strong>Answer:</strong> Type 8 and Type 0. Ping sends Type 8 Echo Request and expects Type 0 Echo Reply.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/tcp/">TCP</a>: Transmission Control Protocol</li><li><a href="/explore/udp/">UDP</a>: User Datagram Protocol</li><li><a href="/explore/ip/">IP (IPv4)</a>: Internet Protocol Version 4</li><li><a href="/explore/bgp/">BGP</a>: Border Gateway Protocol (BGP-4)</li><li><a href="/explore/ipv6/">IPv6</a>: Internet Protocol Version 6</li><li><a href="/explore/igmp/">IGMP</a>: Internet Group Management Protocol (v3)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

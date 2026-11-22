@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>IPv6 Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="IPv6 expands address space to 128 bits, eliminates NAT necessity, streamlines routing with a fixed 40-byte. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/ipv6/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/ipv6/" />
+    <meta property="og:title" content="IPv6 Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="IPv6 expands address space to 128 bits, eliminates NAT necessity, streamlines routing with a fixed 40-byte. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="IPv6 Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="IPv6 expands address space to 128 bits, eliminates NAT necessity, streamlines routing with a fixed 40-byte. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/ipv6/#page",
+      "url": "https://netpulse.itgg.space/explore/ipv6/",
+      "name": "IPv6 (Internet Protocol Version 6) explained",
+      "description": "IPv6 expands address space to 128 bits, eliminates NAT necessity, streamlines routing with a fixed 40-byte header (no header checksum), and replaces ARP with ICMPv6 Neighbor Discovery (NDP) and SLAAC.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How IPv6 works",
+      "keywords": "128-bit, slaac, ndp, icmpv6, ra, rs, fe80, link-local, no nat",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "IPv6",
+          "item": "https://netpulse.itgg.space/explore/ipv6/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › IPv6</nav>
+<h1>IPv6 (Internet Protocol Version 6): how it works, step by step</h1>
+<p>IPv6 expands address space to 128 bits, eliminates NAT necessity, streamlines routing with a fixed 40-byte header (no header checksum), and replaces ARP with ICMPv6 Neighbor Discovery (NDP) and SLAAC.</p>
+<p><a href="/explore/ipv6/"><strong>Open the interactive IPv6 animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>IPv6 explained simply</h2>
+<p>IPv6 gives every grain of sand on Earth billions of unique street addresses, and lets devices automatically configure their own address without needing a middleman.</p>
+<h2>IPv6 at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 3 (Network)</td></tr><tr><th scope="row">Default port</th><td>N/A (EtherType 0x86DD)</td></tr><tr><th scope="row">Transport</th><td>Layer 2 Framing</td></tr><tr><th scope="row">Data format</th><td>Fixed 40-byte Header + Extension Headers + Payload</td></tr><tr><th scope="row">Common methods</th><td>SLAAC (RS/RA), Neighbor Solicitation (NDP), Neighbor Advertisement, Global Unicast</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc8200" rel="noopener">RFC 8200: Internet Protocol, Version 6 (IPv6)</a>.</p>
+<h2>Devices in the IPv6 exchange</h2><ul><li><strong>IPv6 Host</strong> (host, 2001:db8:1::10)</li><li><strong>IPv6 Router</strong> (router, 2001:db8:1::1)</li><li><strong>IPv6 Server</strong> (web server, 2001:db8:2::80)</li></ul>
+<h2>How IPv6 works, step by step</h2>
+<ol><li><h3>Router Solicitation / Advertisement</h3><p><em>SLAAC prefix discovery (ICMPv6 133/134).</em> Host queries ff02::2 and Router announces prefix 2001:db8:1::/64 for stateless auto-config.</p></li><li><h3>Neighbor Discovery (NDP)</h3><p><em>Replaces IPv4 ARP using multicast.</em> Host sends ICMPv6 Neighbor Solicitation (135) to resolve next-hop link-layer MAC.</p></li><li><h3>IPv6 Packet Forwarding</h3><p><em>Fixed 40B header, Hop Limit=64-&gt;63.</em> IPv6 traffic flows using 128-bit addresses with Next Header chaining.</p></li></ol>
+<h2>What IPv6 looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical IPv6 exchange. Open the animation to inspect each one.</p><ol><li>ICMPv6 from 2001:db8:1::10 to 2001:db8:1::1: Router Solicitation (ff02::2) (70 bytes)</li><li>ICMPv6 from 2001:db8:1::1 to 2001:db8:1::10: Router Advertisement (Prefix 2001:db8:1::/64, SLAAC) (110 bytes)</li><li>ICMPv6 from 2001:db8:1::10 to 2001:db8:1::1: Neighbor Solicitation for 2001:db8:1::1 (86 bytes)</li><li>ICMPv6 from 2001:db8:1::1 to 2001:db8:1::10: Neighbor Advertisement (MAC 02:42:ac:11:00:0b) (86 bytes)</li><li>IPv6 from 2001:db8:1::10 to 2001:db8:2::80: IPv6 TCP SYN 2001:db8:1::10 -&gt; 2001:db8:2::80 (86 bytes)</li></ol>
+<h2>IPv6 security notes</h2><ul><li><strong>Rogue Router Advertisement (RA Spoofing).</strong> An attacker sends fake ICMPv6 Router Advertisements to hijack default gateway routing on a LAN. <em>Defense:</em> Enable RA Guard on Layer 2 switches to drop RAs on untrusted access ports.</li></ul>
+<h2>Test yourself on IPv6</h2><h3>How many bits is an IPv6 address?</h3><p><strong>Answer:</strong> 128 bits. IPv6 uses 128-bit addresses written as eight 16-bit hexadecimal groups.</p><h3>Which mechanism replaces ARP in IPv6?</h3><p><strong>Answer:</strong> ICMPv6 Neighbor Discovery Protocol (NDP). IPv6 uses ICMPv6 Neighbor Solicitation and Advertisement instead of ARP broadcasts.</p><h3>Do IPv6 routers fragment packets in transit?</h3><p><strong>Answer:</strong> No, only the source host fragments after ICMPv6 Packet Too Big. IPv6 eliminates router fragmentation for faster forwarding.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/tcp/">TCP</a>: Transmission Control Protocol</li><li><a href="/explore/udp/">UDP</a>: User Datagram Protocol</li><li><a href="/explore/ip/">IP (IPv4)</a>: Internet Protocol Version 4</li><li><a href="/explore/bgp/">BGP</a>: Border Gateway Protocol (BGP-4)</li><li><a href="/explore/icmp/">ICMP</a>: Internet Control Message Protocol (Ping &amp; Traceroute)</li><li><a href="/explore/igmp/">IGMP</a>: Internet Group Management Protocol (v3)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>FTP Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="FTP uses two separate TCP connections: a Control channel on port 21 for commands, and a Data channel for file. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/ftp/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/ftp/" />
+    <meta property="og:title" content="FTP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="FTP uses two separate TCP connections: a Control channel on port 21 for commands, and a Data channel for file. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="FTP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="FTP uses two separate TCP connections: a Control channel on port 21 for commands, and a Data channel for file. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/ftp/#page",
+      "url": "https://netpulse.itgg.space/explore/ftp/",
+      "name": "FTP (File Transfer Protocol (Active & Passive)) explained",
+      "description": "FTP uses two separate TCP connections: a Control channel on port 21 for commands, and a Data channel for file transfers. Passive mode (PASV) lets clients behind NAT initiate the data connection.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How FTP works",
+      "keywords": "21, 20, pasv, active, passive, file transfer, sftp, ftps",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "FTP",
+          "item": "https://netpulse.itgg.space/explore/ftp/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › FTP</nav>
+<h1>FTP (File Transfer Protocol (Active &amp; Passive)): how it works, step by step</h1>
+<p>FTP uses two separate TCP connections: a Control channel on port 21 for commands, and a Data channel for file transfers. Passive mode (PASV) lets clients behind NAT initiate the data connection.</p>
+<p><a href="/explore/ftp/"><strong>Open the interactive FTP animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>FTP explained simply</h2>
+<p>FTP uses two walkie-talkies: one channel (#21) just for saying &quot;Send file report.pdf&quot;, and a second cargo pipe where the file bytes actually travel.</p>
+<h2>FTP at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>21 (Control), 20 (Active Data)</td></tr><tr><th scope="row">Transport</th><td>TCP (Dual Channels)</td></tr><tr><th scope="row">Data format</th><td>ASCII Control Channel + Raw Binary Data Channel</td></tr><tr><th scope="row">Common methods</th><td>USER/PASS, PASV, PORT, LIST, RETR, STOR</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc959" rel="noopener">RFC 959: File Transfer Protocol</a>.</p>
+<h2>Devices in the FTP exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Firewall (NAT)</strong> (firewall, 192.168.1.1)</li><li><strong>File Server</strong> (file server, 203.0.113.20)</li></ul>
+<h2>How FTP works, step by step</h2>
+<ol><li><h3>Control Channel (Port 21)</h3><p><em>USER / PASS login on TCP 21.</em> Client opens TCP control channel to port 21 and authenticates.</p></li><li><h3>PASV Negotiation</h3><p><em>Server opens ephemeral data port (e.g. 50120).</em> In Passive mode, server tells NAT-behind client which data port to connect to.</p></li><li><h3>Data Channel Transfer (RETR)</h3><p><em>Second TCP socket transfers file bytes.</em> Client connects to port 50120; RETR downloads file and closes data socket.</p></li></ol>
+<h2>What FTP looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical FTP exchange. Open the animation to inspect each one.</p><ol><li>FTP from 192.168.1.10 to 203.0.113.20: Control 21: USER deploy / PASS **** (88 bytes)</li><li>FTP from 203.0.113.20 to 192.168.1.10: 230 User logged in, proceed. (82 bytes)</li><li>FTP from 192.168.1.10 to 203.0.113.20: PASV (Request Passive Data Port) (68 bytes)</li><li>FTP from 203.0.113.20 to 192.168.1.10: 227 Entering Passive Mode (203,0,113,20,195,200) [Port 50120] (112 bytes)</li><li>FTP from 192.168.1.10 to 203.0.113.20: Control 21: RETR build.tar.gz (80 bytes)</li><li>FTP-DATA from 203.0.113.20 to 192.168.1.10: Data Port 50120 -&gt; 54201 [File Payload 1460B] (1460 bytes)</li></ol>
+<h2>FTP security notes</h2><ul><li><strong>Plaintext Credentials &amp; Data Sniffing.</strong> Standard FTP sends usernames, passwords, and file contents unencrypted. <em>Defense:</em> Replace plain FTP with SFTP (over SSH port 22) or FTPS (TLS).</li></ul>
+<h2>Test yourself on FTP</h2><h3>Why does FTP use Passive (PASV) mode behind home/office NAT firewalls?</h3><p><strong>Answer:</strong> Because Active mode requires the server to open a connection back to the client through NAT. In PASV mode, the client initiates both control and data TCP connections outbound.</p><h3>Which ports are used by standard FTP control and active data?</h3><p><strong>Answer:</strong> 21 (Control) and 20 (Active Data). Port 21 is control; port 20 is the server source port for active data transfers.</p><h3>Which secure alternative runs over SSH port 22 instead of FTP?</h3><p><strong>Answer:</strong> SFTP. SFTP runs over a single encrypted SSH connection on port 22.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

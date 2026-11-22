@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>Wi-Fi WPA2 Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="WPA2 secures Wi-Fi networks using a 4-way EAPOL-Key handshake between the client and Access Point to prove both. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/wpa2/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/wpa2/" />
+    <meta property="og:title" content="Wi-Fi WPA2 Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="WPA2 secures Wi-Fi networks using a 4-way EAPOL-Key handshake between the client and Access Point to prove both. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="Wi-Fi WPA2 Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="WPA2 secures Wi-Fi networks using a 4-way EAPOL-Key handshake between the client and Access Point to prove both. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/wpa2/#page",
+      "url": "https://netpulse.itgg.space/explore/wpa2/",
+      "name": "Wi-Fi WPA2 (IEEE 802.11i WPA2-PSK (4-Way Handshake)) explained",
+      "description": "WPA2 secures Wi-Fi networks using a 4-way EAPOL-Key handshake between the client and Access Point to prove both know the PSK without ever transmitting it over the air, deriving fresh AES-CCMP encryption keys.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How Wi-Fi WPA2 works",
+      "keywords": "wifi, wireless, eapol, 4-way handshake, psk, aes-ccmp, pmk, ptk, anonce",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Wi-Fi WPA2",
+          "item": "https://netpulse.itgg.space/explore/wpa2/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › Wi-Fi WPA2</nav>
+<h1>Wi-Fi WPA2 (IEEE 802.11i WPA2-PSK (4-Way Handshake)): how it works, step by step</h1>
+<p>WPA2 secures Wi-Fi networks using a 4-way EAPOL-Key handshake between the client and Access Point to prove both know the PSK without ever transmitting it over the air, deriving fresh AES-CCMP encryption keys.</p>
+<p><a href="/explore/wpa2/"><strong>Open the interactive Wi-Fi WPA2 animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>Wi-Fi WPA2 explained simply</h2>
+<p>Even if two friends share a secret password, they don’t shout it in a crowded room. Each picks a random number, mixes it with the password, and checks if the other gets the same secret result.</p>
+<h2>Wi-Fi WPA2 at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 2 (Wireless Data Link)</td></tr><tr><th scope="row">Default port</th><td>N/A (EtherType 0x888E EAPOL)</td></tr><tr><th scope="row">Transport</th><td>IEEE 802.11 Wireless Frames</td></tr><tr><th scope="row">Data format</th><td>EAPOL-Key Frames + AES-CCMP Encrypted MPDUs</td></tr><tr><th scope="row">Common methods</th><td>Probe, Auth, Assoc, EAPOL Msg 1, EAPOL Msg 2, EAPOL Msg 3, EAPOL Msg 4</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc5246" rel="noopener">IEEE 802.11i: Wireless LAN Medium Access Control Security</a>.</p>
+<h2>Devices in the Wi-Fi WPA2 exchange</h2><ul><li><strong>Phone / STA</strong> (phone, 192.168.1.40)</li><li><strong>Wi-Fi AP</strong> (access point, 192.168.1.2)</li><li><strong>Gateway Router</strong> (router, 192.168.1.1)</li></ul>
+<h2>How Wi-Fi WPA2 works, step by step</h2>
+<ol><li><h3>802.11 Auth &amp; Association</h3><p><em>Probe, Open Auth &amp; Association Request.</em> Station discovers SSID via Beacon/Probe and associates with the Access Point.</p></li><li><h3>4-Way Handshake Msg 1 (ANonce)</h3><p><em>AP sends random ANonce to STA.</em> Both share PMK (from PSK); AP sends ANonce so STA can derive the session PTK.</p></li><li><h3>4-Way Handshake Msg 2 (SNonce + MIC)</h3><p><em>STA replies with SNonce &amp; MIC.</em> STA computes PTK, returns SNonce plus a Message Integrity Code proving it knows the password.</p></li><li><h3>Msg 3 &amp; 4 + Encrypted Traffic</h3><p><em>Install GTK/PTK &amp; encrypt 802.11 frames.</em> AP delivers Group Temporal Key (GTK), STA confirms Msg 4, and AES-CCMP data flows.</p></li></ol>
+<h2>What Wi-Fi WPA2 looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical Wi-Fi WPA2 exchange. Open the animation to inspect each one.</p><ol><li>802.11 from 192.168.1.40 to 192.168.1.2: Association Request (SSID=&quot;StudioWiFi&quot;, RSN=WPA2) (112 bytes)</li><li>802.11 from 192.168.1.2 to 192.168.1.40: Association Response (Success, AID=1) (98 bytes)</li><li>EAPOL from 192.168.1.2 to 192.168.1.40: Key (Message 1 of 4) [ANonce=0x8a3f...] (135 bytes)</li><li>EAPOL from 192.168.1.40 to 192.168.1.2: Key (Message 2 of 4) [SNonce=0x41c9..., MIC] (155 bytes)</li><li>EAPOL from 192.168.1.2 to 192.168.1.40: Key (Message 3 of 4) [Install PTK + Encrypted GTK] (185 bytes)</li><li>EAPOL from 192.168.1.40 to 192.168.1.2: Key (Message 4 of 4) [Key ACK, Secure=1] (135 bytes)</li><li>802.11 from 192.168.1.40 to 192.168.1.1: AES-CCMP Encrypted Data Frame -&gt; Internet (512 bytes)</li></ol>
+<h2>Wi-Fi WPA2 security notes</h2><ul><li><strong>KRACK &amp; Offline PMKID/Handshake Cracking.</strong> Capturing EAPOL Msg 1–2 allows offline GPU dictionary attacks against weak Wi-Fi passphrases; KRACK replays Msg 3 to reset nonces. <em>Defense:</em> Use long random passphrases (16+ chars) or upgrade to WPA3-SAE (Dragonfly) which resists offline dictionary attacks.</li></ul>
+<h2>Test yourself on Wi-Fi WPA2</h2><h3>Does the WPA2 4-way handshake ever send the Wi-Fi password across the air?</h3><p><strong>Answer:</strong> No, it sends ANonce/SNonce and a cryptographic MIC. The PSK never crosses the air; peers prove knowledge of PMK via a MIC over the nonces.</p><h3>Which cipher suite is mandatory in WPA2?</h3><p><strong>Answer:</strong> AES-CCMP. WPA2 mandates AES-CCMP for strong confidentiality and integrity.</p><h3>What EtherType carries WPA2 4-way handshake frames?</h3><p><strong>Answer:</strong> 0x888E (EAPOL). EAP over LAN (EAPOL) uses EtherType 0x888E.</p><h3>Why does WPA2 derive a fresh PTK per session using ANonce and SNonce?</h3><p><strong>Answer:</strong> So every device and session uses unique encryption keys. Random nonces guarantee unique Pairwise Transient Keys even when everyone shares one PSK.</p><h3>Which protocol improves upon WPA2-PSK to stop offline dictionary cracking?</h3><p><strong>Answer:</strong> WPA3-SAE. WPA3 Simultaneous Authentication of Equals (SAE) replaces static PSK key derivation.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/tls/">TLS / SSL</a>: Transport Layer Security (TLS 1.3)</li><li><a href="/explore/http_proxy/">HTTP Proxy</a>: HTTP Forward Proxy &amp; CONNECT Tunnel</li><li><a href="/explore/socks5/">SOCKS5</a>: SOCKS Protocol Version 5</li><li><a href="/explore/reverse_proxy/">Reverse Proxy</a>: Reverse Proxy &amp; Load Balancer (TLS Termination)</li><li><a href="/explore/wireguard/">WireGuard</a>: WireGuard Modern Cryptographic VPN</li><li><a href="/explore/ipsec/">IPsec</a>: Internet Protocol Security (IKEv2 + ESP)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

@@ -18,6 +18,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import { LANGUAGES } from '../../i18n';
+import { pathFor } from '../../lib/routes';
 import { PROTOCOLS } from '../../protocols';
 import { PRESET_LABS } from '../../simulator/labs';
 import { useAppStore } from '../../store/useAppStore';
@@ -151,14 +152,17 @@ export const LandingPage: React.FC = () => {
                     const p = PROTOCOLS.find((x) => x.id === id);
                     if (!p) return null;
                     return (
-                      <button
+                      <a
                         key={id}
-                        type="button"
-                        onClick={() => startWith(id)}
+                        href={pathFor('explore', id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          startWith(id);
+                        }}
                         className="rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-4 py-1.5 font-mono text-sm font-semibold text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]"
                       >
                         {p.name}
-                      </button>
+                      </a>
                     );
                   })}
                 </div>
@@ -279,14 +283,17 @@ export const LandingPage: React.FC = () => {
                   <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">{t(`drawer.${cat}`, { defaultValue: cat })}</h3>
                   <div className="flex flex-wrap gap-2">
                     {list.map((p) => (
-                      <button
+                      <a
                         key={p.id}
-                        type="button"
-                        onClick={() => startWith(p.id)}
+                        href={pathFor('explore', p.id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          startWith(p.id);
+                        }}
                         className="rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3 py-1 font-mono text-xs font-semibold text-[var(--text-secondary)] transition-colors hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]"
                       >
                         {p.name}
-                      </button>
+                      </a>
                     ))}
                   </div>
                 </div>

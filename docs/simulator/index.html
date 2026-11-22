@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>Network Simulator: Packet Tracer-Style Online | NetPulse</title>
+    <meta name="description" content="Build and break networks in your browser: IOS-style CLI, VLANs, OSPF/RIP/BGP, NAT, DHCP, test packets and 20 guided labs. Free, no install." />
+    <link rel="canonical" href="https://netpulse.itgg.space/simulator/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/simulator/" />
+    <meta property="og:title" content="Network Simulator: Packet Tracer-Style Online | NetPulse" />
+    <meta property="og:description" content="Build and break networks in your browser: IOS-style CLI, VLANs, OSPF/RIP/BGP, NAT, DHCP, test packets and 20 guided labs. Free, no install." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="Network Simulator: Packet Tracer-Style Online | NetPulse" />
+    <meta name="twitter:description" content="Build and break networks in your browser: IOS-style CLI, VLANs, OSPF/RIP/BGP, NAT, DHCP, test packets and 20 guided labs. Free, no install." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/simulator/#page",
+      "url": "https://netpulse.itgg.space/simulator/",
+      "name": "NetPulse network simulator",
+      "description": "A Packet Tracer-style network simulator that runs in the browser.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "Configuring and troubleshooting computer networks"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Network simulator",
+          "item": "https://netpulse.itgg.space/simulator/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › Network simulator</nav>
+<h1>Network simulator: a Packet Tracer-style workbench in your browser</h1>
+<p>Drag routers, switches, PCs, servers and firewalls onto a canvas, cable them together and watch traffic flow. Every device behaves like the real thing, and changes you make from the command line take effect immediately.</p>
+<h2>What the simulator can do</h2>
+<ul>
+<li><strong>IOS-style command line.</strong> User, privileged and configuration modes, <code>?</code> help, tab completion and <code>no</code> forms. Configure interfaces, VLANs, static routes, OSPF, RIP and BGP with <code>network</code> statements, NAT and access lists, and read results with <code>show ip route</code>, <code>show vlan brief</code>, <code>show running-config</code> and more.</li>
+<li><strong>DHCP.</strong> Servers on routers or dedicated hosts, relay across routers with <code>ip helper-address</code>, and a PC desktop with IP configuration.</li>
+<li><strong>Test packets (PDUs).</strong> Send ICMP, TCP or UDP between any two devices and follow every event hop by hop.</li>
+<li><strong>Troubleshooting.</strong> Shut an interface, cut a cable or add a firewall rule and see what breaks.</li>
+</ul>
+<h2>20 guided labs</h2>
+<ol><li><strong>Home Network (NAT/DHCP -&gt; ISP -&gt; Web)</strong> (Foundations): Home PC connects through a Wi-Fi NAT/DHCP router and ISP to reach a public web server.</li><li><strong>Two LANs Joined by a Router</strong> (Routing): Connect Subnet A (192.168.1.0/24) and Subnet B (192.168.2.0/24) across a static router.</li><li><strong>VLANs &amp; Inter-VLAN Routing</strong> (Switching): Separate Engineering (VLAN 10) and Finance (VLAN 20) on one switch with Router-on-a-Stick.</li><li><strong>DNS Hierarchy (Root -&gt; TLD -&gt; Auth)</strong> (Core Services): Trace recursive vs iterative resolution with TTL caching across Root, .com TLD, and Authoritative servers.</li><li><strong>DHCP DORA with Relay Across Router</strong> (Core Services): Client on Subnet A obtains an IP from a centralized DHCP server on Subnet B via IP Helper relay.</li><li><strong>NAT / PAT Port Translation</strong> (Routing): Multiple private LAN hosts share one public WAN IP (198.51.100.1) using distinct source ports.</li><li><strong>Firewall + DMZ Web Server</strong> (Security): External Internet may access DMZ Web (:80/:443) but is blocked from reaching internal LAN DB (:5432).</li><li><strong>HTTP vs HTTPS Sniffing on Shared Hub</strong> (Security): Compare plaintext HTTP credentials vs TLS 1.3 encrypted HTTPS packets on a shared Layer 1 Hub.</li><li><strong>TCP Congestion Control (Sawtooth cwnd)</strong> (Transport): Run an iPerf transfer across a lossy 10% link and watch Slow Start + Reno/CUBIC cwnd sawtooth.</li><li><strong>SYN Flood &amp; SYN Cookies Defense</strong> (Security): Observe half-open SYN_RCVD exhaustion during a SYN burst and how SYN Cookies neutralize it.</li><li><strong>ARP Spoofing / MITM &amp; DAI Detection</strong> (Security): Attacker injects forged ARP replies to intercept traffic between Victim PC and Gateway.</li><li><strong>DNS Cache Poisoning &amp; DNSSEC Fix</strong> (Security): Compare unsigned DNS cache poisoning against cryptographic RRSIG validation in DNSSEC.</li><li><strong>BGP 3-AS Peering &amp; Failover</strong> (Routing): Three Autonomous Systems exchange prefixes; break primary link and watch BGP re-converge.</li><li><strong>Site-to-Site WireGuard VPN Tunnel</strong> (Security): Connect Office A (10.1.0.0/24) to Office B (10.2.0.0/24) over an encrypted UDP/51820 tunnel.</li><li><strong>Reverse Proxy &amp; 3-Backend Load Balancer</strong> (Architecture): Distribute HTTPS requests across 3 backend workers and survive a node power-off.</li><li><strong>Wi-Fi WPA2 / Captive Portal / RADIUS</strong> (Wireless): Phone associates to Access Point, authenticates via RADIUS 802.1X, and reaches the web.</li><li><strong>End-to-End Mail Flow (SMTP + MX + IMAP)</strong> (Application): Sender resolves MX record, delivers via SMTP, and recipient picks up mail via IMAP.</li><li><strong>Industrial OT Network &amp; Modbus PLC</strong> (OT / ICS): Segment SCADA HMI and Modbus TCP PLC (port 502) behind an OT firewall.</li><li><strong>Routing Loop &amp; TTL Expiry</strong> (Troubleshooting): Misconfigured static routes bounce packets between R1 and R2 until TTL hits 0.</li><li><strong>MTU Mismatch &amp; IP Fragmentation / PMTUD</strong> (Troubleshooting): A 576-byte tunnel link sits in the path; send a 1400-byte ping and watch PMTUD / fragmentation.</li></ol>
+<p><a href="/simulator/">Open the simulator</a> to try it. It needs JavaScript.</p>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

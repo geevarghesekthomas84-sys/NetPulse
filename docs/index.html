@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NetPulse – Learn How the Internet Works | Protocol Visualizer & Simulator</title>
     <script>
       (function () {
         try {
@@ -17,15 +16,19 @@
         } catch (e) {}
       })();
     </script>
+    <!--seo:start-->
+    <title>NetPulse: Interactive Protocol Visualizer &amp; Simulator</title>
     <meta
       name="description"
-      content="Explore 39 internet protocols with live packet animations, Wireshark-grade inspection, and a discrete-event network simulator in your browser."
+      content="Watch 39 internet protocols work step by step, inspect every packet byte, and build networks in a Packet Tracer-style simulator. Free, in your browser."
     />
+    <link rel="canonical" href="https://netpulse.itgg.space/" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="NetPulse – Learn How the Internet Works | Protocol Visualizer & Simulator" />
+    <meta property="og:url" content="https://netpulse.itgg.space/" />
+    <meta property="og:title" content="NetPulse: Interactive Protocol Visualizer &amp; Simulator" />
     <meta
       property="og:description"
-      content="Explore 39 internet protocols with live packet animations, Wireshark-grade inspection, and a discrete-event network simulator in your browser."
+      content="Watch 39 internet protocols work step by step, inspect every packet byte, and build networks in a Packet Tracer-style simulator. Free, in your browser."
     />
     <meta property="og:site_name" content="NetPulse" />
     <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
@@ -35,11 +38,54 @@
     <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
-    <meta name="twitter:title" content="NetPulse – Learn How the Internet Works" />
+    <meta name="twitter:title" content="NetPulse: Interactive Protocol Visualizer &amp; Simulator" />
     <meta
       name="twitter:description"
-      content="Interactive network protocol animations, Wireshark-style packet inspector, and real discrete-event network simulator."
+      content="Watch 39 internet protocols work step by step, inspect every packet byte, and build networks in a Packet Tracer-style simulator."
     />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://netpulse.itgg.space/#website",
+            "url": "https://netpulse.itgg.space/",
+            "name": "NetPulse",
+            "inLanguage": "en",
+            "publisher": { "@id": "https://netpulse.itgg.space/#author" }
+          },
+          {
+            "@type": "Person",
+            "@id": "https://netpulse.itgg.space/#author",
+            "name": "Geevarghese K Thomas",
+            "url": "https://netpulse.itgg.space/about/",
+            "sameAs": ["https://github.com/geevarghesekthomas84-sys"]
+          },
+          {
+            "@type": ["WebApplication", "LearningResource"],
+            "@id": "https://netpulse.itgg.space/#app",
+            "name": "NetPulse",
+            "url": "https://netpulse.itgg.space/",
+            "image": "https://netpulse.itgg.space/og.png",
+            "description": "Interactive network protocol visualizer and Packet Tracer-style network simulator that teaches how the internet works.",
+            "applicationCategory": "EducationalApplication",
+            "operatingSystem": "Any",
+            "browserRequirements": "A modern web browser with JavaScript",
+            "isAccessibleForFree": true,
+            "inLanguage": ["en", "es", "ar", "hi", "ml", "ta"],
+            "learningResourceType": "simulation",
+            "teaches": "How internet protocols and computer networks work",
+            "audience": { "@type": "EducationalAudience", "educationalRole": "student" },
+            "author": { "@id": "https://netpulse.itgg.space/#author" },
+            "isPartOf": { "@id": "https://netpulse.itgg.space/#website" },
+            "sameAs": ["https://github.com/geevarghesekthomas84-sys/NetPulse"],
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
+          }
+        ]
+      }
+    </script>
+    <!--seo:end-->
     <meta name="theme-color" content="#f7f5f0" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,33 +96,36 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "NetPulse",
-        "applicationCategory": "EducationalApplication",
-        "operatingSystem": "All",
-        "description": "Interactive network protocol visualizer and discrete-event network simulator teaching how the internet works.",
-        "author": {
-          "@type": "Person",
-          "name": "geevarghese"
-        },
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        }
-      }
-    </script>
-    <script type="module" crossorigin src="/assets/index-CUsa2NhL.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-DOnQZtCK.css">
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
   <link rel="manifest" href="/manifest.webmanifest"></head>
   <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
-    <div id="root"></div>
+    <div id="root"><main class="seo-shell">
+<h1>NetPulse: watch the internet work, then build your own network</h1>
+<p>NetPulse is a free, interactive way to learn how computer networks work. Watch real protocol exchanges packet by packet, inspect every byte, and build and break networks in a Packet Tracer-style simulator. It runs in your browser with no sign-up and no tracking, in English, Spanish, Arabic, Hindi, Malayalam and Tamil.</p>
+<h2>What you can do</h2>
+<ul>
+<li><strong>Explore 39 protocols.</strong> DNS, TCP, TLS, HTTP, BGP, DHCP and more, as step-by-step animations with plain-English notes. See <a href="/protocols/">all protocols</a>.</li>
+<li><strong>Inspect packets.</strong> A Wireshark-style inspector shows headers, flags and a colour-coded hex dump. You can also open your own .pcap files locally.</li>
+<li><strong>Build networks.</strong> Cable routers, switches and PCs in the <a href="/simulator/">network simulator</a>, configure them from an IOS-style command line, and send test packets.</li>
+<li><strong>Practise.</strong> 20 guided labs, quizzes, troubleshooting challenges and a daily streak in <a href="/learn/">Learn</a>.</li>
+</ul>
+<h2>Popular protocols</h2>
+<ul class="cols"><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/dns/">DNS</a>: Domain Name System</li><li><a href="/explore/tcp/">TCP</a>: Transmission Control Protocol</li><li><a href="/explore/tls/">TLS / SSL</a>: Transport Layer Security (TLS 1.3)</li><li><a href="/explore/dhcp/">DHCP</a>: Dynamic Host Configuration Protocol</li><li><a href="/explore/bgp/">BGP</a>: Border Gateway Protocol (BGP-4)</li><li><a href="/explore/udp/">UDP</a>: User Datagram Protocol</li><li><a href="/explore/ip/">IP (IPv4)</a>: Internet Protocol Version 4</li><li><a href="/explore/icmp/">ICMP</a>: Internet Control Message Protocol (Ping &amp; Traceroute)</li><li><a href="/explore/ssh/">SSH</a>: Secure Shell Protocol (SSH-2)</li></ul>
+<p>NetPulse is open source and made by <a href="/about/">Geevarghese K Thomas</a>.</p>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
   </body>
 </html>
-

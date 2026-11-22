@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>TLS / SSL Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="TLS 1.3 provides confidentiality, integrity, and server authentication in a single 1-RTT handshake using. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/tls/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/tls/" />
+    <meta property="og:title" content="TLS / SSL Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="TLS 1.3 provides confidentiality, integrity, and server authentication in a single 1-RTT handshake using. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="TLS / SSL Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="TLS 1.3 provides confidentiality, integrity, and server authentication in a single 1-RTT handshake using. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/tls/#page",
+      "url": "https://netpulse.itgg.space/explore/tls/",
+      "name": "TLS / SSL (Transport Layer Security (TLS 1.3)) explained",
+      "description": "TLS 1.3 provides confidentiality, integrity, and server authentication in a single 1-RTT handshake using ephemeral Diffie-Hellman (ECDHE) for forward secrecy and AEAD ciphers.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How TLS / SSL works",
+      "keywords": "ssl, tls 1.3, handshake, certificate, x25519, aes-gcm, sni, alpn, 443, encryption",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "TLS / SSL",
+          "item": "https://netpulse.itgg.space/explore/tls/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › TLS / SSL</nav>
+<h1>TLS / SSL (Transport Layer Security (TLS 1.3)): how it works, step by step</h1>
+<p>TLS 1.3 provides confidentiality, integrity, and server authentication in a single 1-RTT handshake using ephemeral Diffie-Hellman (ECDHE) for forward secrecy and AEAD ciphers.</p>
+<p><a href="/explore/tls/"><strong>Open the interactive TLS / SSL animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>TLS / SSL explained simply</h2>
+<p>Before whispering secrets, you and the server publicly mix paint colors (key exchange) to create a shared secret key nobody watching can unmix, then verify their ID badge (certificate).</p>
+<h2>TLS / SSL at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 6 (Presentation) / Session Security</td></tr><tr><th scope="row">Default port</th><td>443 (HTTPS), 465/587 (SMTPS), 853 (DoT)</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>TLS Record Layer (5B header + AEAD encrypted payload)</td></tr><tr><th scope="row">Common methods</th><td>ClientHello, ServerHello, Certificate, CertificateVerify, Finished, Application Data</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc8446" rel="noopener">RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3</a>.</p>
+<h2>Devices in the TLS / SSL exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Edge Proxy</strong> (proxy, 192.0.2.80)</li><li><strong>Web Server</strong> (web server, 203.0.113.10)</li></ul>
+<h2>How TLS / SSL works, step by step</h2>
+<ol><li><h3>TCP Handshake</h3><p><em>SYN / SYN-ACK / ACK on port 443.</em> Client opens a TCP connection to port 443 before starting TLS.</p></li><li><h3>ClientHello (TLS 1.3)</h3><p><em>Supported ciphers, SNI, X25519 key share.</em> Client sends ClientHello with TLS 1.3 cipher suites, SNI=example.com, and ephemeral ECDHE key share.</p></li><li><h3>ServerHello + Certificate</h3><p><em>1-RTT ServerHello, EncryptedExtensions, Cert, Finished.</em> Server derives handshake keys immediately, sends its X25519 share, encrypted certificate chain, and Finished.</p></li><li><h3>Client Finished &amp; App Data</h3><p><em>Encrypted AEAD Application Data (0x17).</em> Client verifies certificate signature, sends Finished, and streams encrypted HTTP Application Data.</p></li></ol>
+<h2>What TLS / SSL looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical TLS / SSL exchange. Open the animation to inspect each one.</p><ol><li>TCP from 192.168.1.10 to 203.0.113.10: 53100 -&gt; 443 [SYN] Seq=0 (66 bytes)</li><li>TCP from 203.0.113.10 to 192.168.1.10: 443 -&gt; 53100 [SYN, ACK] Seq=0 Ack=1 (66 bytes)</li><li>TCP from 192.168.1.10 to 203.0.113.10: 53100 -&gt; 443 [ACK] Seq=1 Ack=1 (60 bytes)</li><li>TLS from 192.168.1.10 to 203.0.113.10: ClientHello (TLS 1.3, SNI=example.com, X25519 key_share) (517 bytes)</li><li>TLS from 203.0.113.10 to 192.168.1.10: ServerHello, ChangeCipherSpec, EncryptedExtensions, Certificate, Finished (1420 bytes)</li><li>TLS from 192.168.1.10 to 203.0.113.10: Client Finished + Application Data [Encrypted HTTP GET /] (248 bytes)</li><li>TLS from 203.0.113.10 to 192.168.1.10: Application Data [Encrypted 200 OK text/html] (1380 bytes)</li></ol>
+<h2>TLS / SSL security notes</h2><ul><li><strong>TLS Downgrade / POODLE / BEAST.</strong> An active MITM forces peers back to obsolete SSL 3.0 or TLS 1.0 ciphers with padding oracle flaws. <em>Defense:</em> Disable SSL/TLS &lt; 1.2 and rely on TLS 1.3 downgrade sentinel inside ServerHello.random.</li><li><strong>Forged / Untrusted Certificate MITM.</strong> A rogue proxy presents an expired or self-signed certificate. <em>Defense:</em> Strictly verify X.509 chain, expiry, SAN hostname, OCSP stapling, and Certificate Transparency.</li></ul>
+<h2>Test yourself on TLS / SSL</h2><h3>How many round-trips (RTTs) does a standard TLS 1.3 handshake add after TCP connects?</h3><p><strong>Answer:</strong> 1 RTT. TLS 1.3 cuts handshake latency from 2 RTTs (TLS 1.2) down to 1 RTT by sending key shares in ClientHello.</p><h3>Why are certificates encrypted in TLS 1.3?</h3><p><strong>Answer:</strong> To prevent passive observers from seeing server identity/metadata. After ServerHello, TLS 1.3 encrypts the Certificate and CertificateVerify messages with the handshake key.</p><h3>What property guarantees past recorded traffic cannot be decrypted even if the server’s long-term private key leaks later?</h3><p><strong>Answer:</strong> Forward Secrecy (ECDHE). Ephemeral Diffie-Hellman keys are discarded after each session, providing Perfect Forward Secrecy.</p><h3>Which TLS extension tells the server which hostname the client wants when multiple sites share one IP?</h3><p><strong>Answer:</strong> SNI (Server Name Indication). SNI sends the target hostname in ClientHello so the server picks the right certificate.</p><h3>What happens if the server presents an expired X.509 certificate?</h3><p><strong>Answer:</strong> Client sends a Fatal Alert (certificate_expired) and closes the connection. Clients abort the TLS handshake with Alert level=Fatal, description=certificate_expired.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/http_proxy/">HTTP Proxy</a>: HTTP Forward Proxy &amp; CONNECT Tunnel</li><li><a href="/explore/socks5/">SOCKS5</a>: SOCKS Protocol Version 5</li><li><a href="/explore/reverse_proxy/">Reverse Proxy</a>: Reverse Proxy &amp; Load Balancer (TLS Termination)</li><li><a href="/explore/wireguard/">WireGuard</a>: WireGuard Modern Cryptographic VPN</li><li><a href="/explore/ipsec/">IPsec</a>: Internet Protocol Security (IKEv2 + ESP)</li><li><a href="/explore/wpa2/">Wi-Fi WPA2</a>: IEEE 802.11i WPA2-PSK (4-Way Handshake)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

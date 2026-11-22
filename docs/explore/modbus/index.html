@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>Modbus Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="Modbus TCP (port 502) is the ubiquitous industrial automation protocol used by SCADA HMIs to poll sensors and. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/modbus/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/modbus/" />
+    <meta property="og:title" content="Modbus Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="Modbus TCP (port 502) is the ubiquitous industrial automation protocol used by SCADA HMIs to poll sensors and. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="Modbus Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="Modbus TCP (port 502) is the ubiquitous industrial automation protocol used by SCADA HMIs to poll sensors and. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/modbus/#page",
+      "url": "https://netpulse.itgg.space/explore/modbus/",
+      "name": "Modbus (Modbus TCP (Industrial Control / SCADA)) explained",
+      "description": "Modbus TCP (port 502) is the ubiquitous industrial automation protocol used by SCADA HMIs to poll sensors and write actuator registers on PLCs. By design, classic Modbus has zero authentication or encryption.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How Modbus works",
+      "keywords": "502, plc, scada, ics, ot, registers, coils, industrial",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Modbus",
+          "item": "https://netpulse.itgg.space/explore/modbus/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › Modbus</nav>
+<h1>Modbus (Modbus TCP (Industrial Control / SCADA)): how it works, step by step</h1>
+<p>Modbus TCP (port 502) is the ubiquitous industrial automation protocol used by SCADA HMIs to poll sensors and write actuator registers on PLCs. By design, classic Modbus has zero authentication or encryption.</p>
+<p><a href="/explore/modbus/"><strong>Open the interactive Modbus animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>Modbus explained simply</h2>
+<p>Modbus is a super simple factory language where a control screen asks a robot controller: &quot;Read dial #40001&quot; or &quot;Set valve #40002 to 75%.&quot;</p>
+<h2>Modbus at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Industrial OT)</td></tr><tr><th scope="row">Default port</th><td>502</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>7-byte MBAP Header + Function Code + Register Data</td></tr><tr><th scope="row">Common methods</th><td>FC 01 Read Coils, FC 03 Read Holding Registers, FC 06 Write Single Register, FC 16 Write Multiple</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc1122" rel="noopener">Modbus TCP: Modbus Messaging on TCP/IP</a>.</p>
+<h2>Devices in the Modbus exchange</h2><ul><li><strong>SCADA HMI</strong> (host, 10.10.1.5)</li><li><strong>OT Firewall</strong> (firewall, 10.10.1.1)</li><li><strong>Industrial PLC</strong> (plc, 10.10.2.50)</li></ul>
+<h2>How Modbus works, step by step</h2>
+<ol><li><h3>TCP Connect to Port 502</h3><p><em>SCADA HMI connects to PLC.</em> HMI opens TCP session through OT segmentation firewall to PLC port 502.</p></li><li><h3>FC 03 Read Holding Registers</h3><p><em>Read temperature &amp; pressure registers.</em> HMI sends MBAP header + Function Code 03 to read 2 holding registers.</p></li><li><h3>FC 06 Write Setpoint</h3><p><em>Write valve setpoint register.</em> HMI updates Holding Register 0x0001 = 0x01F4 (500 RPM); PLC echoes confirmation.</p></li></ol>
+<h2>What Modbus looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical Modbus exchange. Open the animation to inspect each one.</p><ol><li>TCP from 10.10.1.5 to 10.10.2.50: 54600 -&gt; 502 [SYN] Connect PLC (66 bytes)</li><li>Modbus/TCP from 10.10.1.5 to 10.10.2.50: Query: Trans=1, Unit=1, FC=03 Read Holding Regs (Addr=0, Qty=2) (66 bytes)</li><li>Modbus/TCP from 10.10.2.50 to 10.10.1.5: Response: FC=03 Reg[0]=72°C, Reg[1]=101kPa (67 bytes)</li><li>Modbus/TCP from 10.10.1.5 to 10.10.2.50: Query: FC=06 Write Single Register (Addr=1, Val=500) (66 bytes)</li><li>Modbus/TCP from 10.10.2.50 to 10.10.1.5: Response: FC=06 Write Confirmed (Val=500) (66 bytes)</li></ol>
+<h2>Modbus security notes</h2><ul><li><strong>Unauthenticated PLC Register Manipulation.</strong> Classic Modbus TCP has no auth—anyone who can reach port 502 can stop motors or alter setpoints. <em>Defense:</em> Segment OT networks behind strict industrial firewalls (Purdue Model) and use Modbus TCP Security (TLS).</li></ul>
+<h2>Test yourself on Modbus</h2><h3>Which TCP port does Modbus TCP use?</h3><p><strong>Answer:</strong> 502. Modbus TCP uses IANA well-known port 502.</p><h3>Why must Modbus PLCs never be exposed directly to the public internet?</h3><p><strong>Answer:</strong> Classic Modbus TCP has zero built-in authentication or encryption. Anyone able to send packets to TCP/502 can issue read/write commands to the PLC.</p><h3>What does Modbus Function Code 03 do?</h3><p><strong>Answer:</strong> Read Holding Registers. FC 03 reads contiguous 16-bit holding registers.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

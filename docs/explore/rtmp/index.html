@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>RTMP Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="RTMP is the persistent TCP-based ingest protocol used by OBS Studio and encoders to push low-latency live. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/rtmp/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/rtmp/" />
+    <meta property="og:title" content="RTMP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="RTMP is the persistent TCP-based ingest protocol used by OBS Studio and encoders to push low-latency live. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="RTMP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="RTMP is the persistent TCP-based ingest protocol used by OBS Studio and encoders to push low-latency live. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/rtmp/#page",
+      "url": "https://netpulse.itgg.space/explore/rtmp/",
+      "name": "RTMP (Real-Time Messaging Protocol (Live Ingest)) explained",
+      "description": "RTMP is the persistent TCP-based ingest protocol used by OBS Studio and encoders to push low-latency live audio/video streams to ingest servers (port 1935) before HLS/DASH distribution.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How RTMP works",
+      "keywords": "1935, obs, twitch, youtube live, ingest, streaming, rtmps",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "RTMP",
+          "item": "https://netpulse.itgg.space/explore/rtmp/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › RTMP</nav>
+<h1>RTMP (Real-Time Messaging Protocol (Live Ingest)): how it works, step by step</h1>
+<p>RTMP is the persistent TCP-based ingest protocol used by OBS Studio and encoders to push low-latency live audio/video streams to ingest servers (port 1935) before HLS/DASH distribution.</p>
+<p><a href="/explore/rtmp/"><strong>Open the interactive RTMP animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>RTMP explained simply</h2>
+<p>RTMP is the backstage camera cable connecting a streamer’s OBS studio directly to Twitch or YouTube’s broadcast booth.</p>
+<h2>RTMP at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>1935 (RTMP), 443 (RTMPS)</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>Chunked Binary Audio/Video/AMF0 Messages</td></tr><tr><th scope="row">Common methods</th><td>C0/C1/C2 Handshake, connect, createStream, publish, Video/Audio Chunks</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc6455" rel="noopener">RTMP 1.0: Adobe RTMP Specification</a>.</p>
+<h2>Devices in the RTMP exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Gateway</strong> (router, 192.168.1.1)</li><li><strong>Service Server</strong> (server rack, 203.0.113.10)</li></ul>
+<h2>How RTMP works, step by step</h2>
+<ol><li><h3>C0/C1/C2 + S0/S1/S2 Handshake</h3><p><em>Fixed-size binary handshake on TCP 1935.</em> Encoder and Ingest Server exchange random 1536-byte C1/S1 blocks to sync timestamps.</p></li><li><h3>connect &amp; publish</h3><p><em>AMF0 NetConnection.connect + publish(streamKey).</em> Encoder authenticates with stream key and requests publish rights.</p></li><li><h3>Multiplexed Media Chunks</h3><p><em>H.264 video &amp; AAC audio chunks.</em> Audio, video, and metadata packets are interleaved into 128-byte/4KB RTMP chunks.</p></li></ol>
+<h2>What RTMP looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical RTMP exchange. Open the animation to inspect each one.</p><ol><li>RTMP from 192.168.1.10 to 203.0.113.10: RTMP Handshake C0+C1 (1537 bytes) (1537 bytes)</li><li>RTMP from 203.0.113.10 to 192.168.1.10: RTMP Handshake S0+S1+S2 (1537 bytes)</li><li>RTMP from 192.168.1.10 to 203.0.113.10: AMF0 Command: publish(&quot;live_key_****&quot;) (180 bytes)</li><li>RTMP from 203.0.113.10 to 192.168.1.10: onStatus: NetStream.Publish.Start (160 bytes)</li><li>RTMP from 192.168.1.10 to 203.0.113.10: Video Chunk (H.264 Keyframe) + Audio Chunk (AAC) (1420 bytes)</li></ol>
+<h2>RTMP security notes</h2><ul><li><strong>Stream Key Exposure on Plain RTMP.</strong> Plain RTMP sends the broadcast stream key over TCP 1935 without encryption. <em>Defense:</em> Always stream over RTMPS (RTMP inside TLS) and rotate stream keys.</li></ul>
+<h2>Test yourself on RTMP</h2><h3>Which TCP port is the standard for RTMP ingest?</h3><p><strong>Answer:</strong> 1935. RTMP uses TCP port 1935 (or 443 for RTMPS).</p><h3>Where is RTMP primarily used today?</h3><p><strong>Answer:</strong> Live video ingest from encoders (OBS) to streaming platforms. Encoders push via RTMP/RTMPS while viewers usually watch via HLS/DASH/WebRTC.</p><h3>How do you encrypt RTMP stream keys in transit?</h3><p><strong>Answer:</strong> Use RTMPS (RTMP over TLS). RTMPS wraps the RTMP session inside TLS.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

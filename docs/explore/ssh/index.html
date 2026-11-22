@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>SSH Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="SSH establishes an encrypted, mutually authenticated channel over untrusted networks for remote shell access. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/ssh/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/ssh/" />
+    <meta property="og:title" content="SSH Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="SSH establishes an encrypted, mutually authenticated channel over untrusted networks for remote shell access. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="SSH Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="SSH establishes an encrypted, mutually authenticated channel over untrusted networks for remote shell access. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/ssh/#page",
+      "url": "https://netpulse.itgg.space/explore/ssh/",
+      "name": "SSH (Secure Shell Protocol (SSH-2)) explained",
+      "description": "SSH establishes an encrypted, mutually authenticated channel over untrusted networks for remote shell access, SFTP file transfer, and port tunneling.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How SSH works",
+      "keywords": "22, remote shell, sftp, scp, ed25519, key exchange, bastion, terminal",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "SSH",
+          "item": "https://netpulse.itgg.space/explore/ssh/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › SSH</nav>
+<h1>SSH (Secure Shell Protocol (SSH-2)): how it works, step by step</h1>
+<p>SSH establishes an encrypted, mutually authenticated channel over untrusted networks for remote shell access, SFTP file transfer, and port tunneling.</p>
+<p><a href="/explore/ssh/"><strong>Open the interactive SSH animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>SSH explained simply</h2>
+<p>SSH is like opening an armored, soundproof tunnel to a distant server where you prove who you are with an unforgeable cryptographic key instead of shouting passwords across the street.</p>
+<h2>SSH at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>22</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>Binary Packet Protocol (Encrypted + MAC/AEAD)</td></tr><tr><th scope="row">Common methods</th><td>KEXINIT, KEX_ECDH, NEWKEYS, USERAUTH_REQUEST, CHANNEL_OPEN, CHANNEL_DATA</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc4253" rel="noopener">RFC 4253: SSH Transport Layer Protocol</a>.</p>
+<h2>Devices in the SSH exchange</h2><ul><li><strong>Admin Laptop</strong> (host, 192.168.1.10)</li><li><strong>Bastion Firewall</strong> (firewall, 192.168.1.1)</li><li><strong>App Server</strong> (server tower, 10.0.0.20)</li></ul>
+<h2>How SSH works, step by step</h2>
+<ol><li><h3>TCP + Version Exchange</h3><p><em>SSH-2.0 banner exchange on port 22.</em> After TCP handshake, both peers send plaintext SSH-2.0 protocol identification banners.</p></li><li><h3>KEXINIT &amp; Curve25519 ECDH</h3><p><em>Diffie-Hellman key exchange + host key verify.</em> Client and server negotiate encryption algorithms and derive shared session keys via Curve25519.</p></li><li><h3>User Authentication</h3><p><em>Ed25519 public-key signature (or password).</em> Encrypted auth request signs a challenge with the user’s Ed25519 private key.</p></li><li><h3>Interactive Shell Channel</h3><p><em>Multiplexed encrypted PTY / SFTP.</em> Client opens session channel, allocates PTY, and runs shell commands over ChaCha20-Poly1305.</p></li></ol>
+<h2>What SSH looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical SSH exchange. Open the animation to inspect each one.</p><ol><li>TCP from 192.168.1.10 to 10.0.0.20: 54200 -&gt; 22 [SYN] Seq=0 (66 bytes)</li><li>SSH from 10.0.0.20 to 192.168.1.10: Server: Protocol (SSH-2.0-OpenSSH_9.6) (98 bytes)</li><li>SSH from 192.168.1.10 to 10.0.0.20: Client: Protocol (SSH-2.0-gg_ssh) (90 bytes)</li><li>SSH from 192.168.1.10 to 10.0.0.20: SSH_MSG_KEXINIT + Curve25519 ECDH Init (720 bytes)</li><li>SSH from 10.0.0.20 to 192.168.1.10: KEX_ECDH_REPLY (Host Key) + NEWKEYS (840 bytes)</li><li>SSH from 192.168.1.10 to 10.0.0.20: Encrypted USERAUTH_REQUEST (publickey ssh-ed25519) (210 bytes)</li><li>SSH from 10.0.0.20 to 192.168.1.10: SSH_MSG_USERAUTH_SUCCESS (88 bytes)</li><li>SSH from 192.168.1.10 to 10.0.0.20: CHANNEL_OPEN (session) + Encrypted Shell Command (164 bytes)</li></ol>
+<h2>SSH security notes</h2><ul><li><strong>Brute-Force Password Guessing.</strong> Automated bots scan port 22 trying thousands of common username/password pairs. <em>Defense:</em> Disable PasswordAuthentication, require Ed25519 public keys, and rate-limit with fail2ban/MFA.</li></ul>
+<h2>Test yourself on SSH</h2><h3>Which default TCP port does SSH listen on?</h3><p><strong>Answer:</strong> 22. SSH uses TCP port 22 (replacing insecure Telnet on port 23).</p><h3>Why does SSH warn on first connection about an unknown host key fingerprint?</h3><p><strong>Answer:</strong> To verify you are connecting to the genuine server and not a MITM proxy. Checking the server’s host key fingerprint (TOFU/known_hosts) prevents man-in-the-middle interception.</p><h3>Which authentication method is strongly recommended over passwords for SSH?</h3><p><strong>Answer:</strong> Public-key authentication (e.g., Ed25519). Ed25519/RSA keypairs resist password brute-forcing and never transmit secrets.</p><h3>Which file-transfer protocol runs natively inside an SSH channel?</h3><p><strong>Answer:</strong> SFTP. SFTP runs as a subsystem over an encrypted SSH channel on port 22.</p><h3>What happens during the SSH KEX_ECDH phase?</h3><p><strong>Answer:</strong> Peers derive shared symmetric session keys using Diffie-Hellman. ECDH key exchange establishes ephemeral symmetric keys for the rest of the session.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

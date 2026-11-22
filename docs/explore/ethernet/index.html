@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>Ethernet / ARP Explained: Step-by-Step Packet… | NetPulse</title>
+    <meta name="description" content="Ethernet frames carry packets across local links using 48-bit MAC addresses. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/ethernet/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/ethernet/" />
+    <meta property="og:title" content="Ethernet / ARP Explained: Step-by-Step Packet… | NetPulse" />
+    <meta property="og:description" content="Ethernet frames carry packets across local links using 48-bit MAC addresses. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="Ethernet / ARP Explained: Step-by-Step Packet… | NetPulse" />
+    <meta name="twitter:description" content="Ethernet frames carry packets across local links using 48-bit MAC addresses. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/ethernet/#page",
+      "url": "https://netpulse.itgg.space/explore/ethernet/",
+      "name": "Ethernet / ARP (IEEE 802.3 Ethernet & Address Resolution Protocol) explained",
+      "description": "Ethernet frames carry packets across local links using 48-bit MAC addresses. Switches dynamically learn MAC-to-port mappings, while ARP maps IPv4 addresses to MAC addresses.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How Ethernet / ARP works",
+      "keywords": "mac, arp, switch, frame, vlan, 802.1q, broadcast, unicast, fcs",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Ethernet / ARP",
+          "item": "https://netpulse.itgg.space/explore/ethernet/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › Ethernet / ARP</nav>
+<h1>Ethernet / ARP (IEEE 802.3 Ethernet &amp; Address Resolution Protocol): how it works, step by step</h1>
+<p>Ethernet frames carry packets across local links using 48-bit MAC addresses. Switches dynamically learn MAC-to-port mappings, while ARP maps IPv4 addresses to MAC addresses.</p>
+<p><a href="/explore/ethernet/"><strong>Open the interactive Ethernet / ARP animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>Ethernet / ARP explained simply</h2>
+<p>IP addresses are like names on an envelope, while MAC addresses are the exact apartment mailbox numbers in the building. ARP shouts &quot;Who lives in 192.168.1.20?&quot; so the mail carrier knows which mailbox to use.</p>
+<h2>Ethernet / ARP at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 2 (Data Link) / Network Access</td></tr><tr><th scope="row">Default port</th><td>N/A (EtherType 0x0800 / 0x0806 / 0x8100)</td></tr><tr><th scope="row">Transport</th><td>Physical Media (Cat6 / Fiber)</td></tr><tr><th scope="row">Data format</th><td>14-byte Frame Header + 46–1500B Payload + 4B FCS</td></tr><tr><th scope="row">Common methods</th><td>ARP Request, ARP Reply, Unicast Frame, 802.1Q VLAN Tag</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc826" rel="noopener">RFC 826: Ethernet Address Resolution Protocol (ARP)</a>; <a href="https://www.rfc-editor.org/rfc/rfc894" rel="noopener">IEEE 802.3: Ethernet Standard</a>.</p>
+<h2>Devices in the Ethernet / ARP exchange</h2><ul><li><strong>Laptop A</strong> (host, 192.168.1.10)</li><li><strong>Switch (8 ports)</strong> (switch, 192.168.1.2)</li><li><strong>File Server</strong> (file server, 192.168.1.20)</li><li><strong>Printer / Host C</strong> (tv box, 192.168.1.30)</li></ul>
+<h2>How Ethernet / ARP works, step by step</h2>
+<ol><li><h3>ARP Broadcast</h3><p><em>Who has 192.168.1.20? -&gt; ff:ff:ff:ff:ff:ff.</em> Laptop A needs File Server’s MAC address and emits an Ethernet broadcast ARP Request.</p></li><li><h3>Switch Flood &amp; Learn</h3><p><em>Switch learns MAC-A on Port 1 &amp; floods.</em> Switch records 02:42:ac:11:00:10 on Port 1 and floods the broadcast frame to Ports 2 and 3.</p></li><li><h3>ARP Unicast Reply</h3><p><em>File Server replies with its MAC address.</em> File Server sends an ARP Reply directly to Laptop A’s MAC; Switch learns MAC-B on Port 2.</p></li><li><h3>Unicast Ethernet Frame</h3><p><em>Switched directly Port 1 -&gt; Port 2.</em> Subsequent Ethernet frames (802.1Q / IPv4) are forwarded only to Port 2, never flooded to Host C.</p></li></ol>
+<h2>What Ethernet / ARP looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical Ethernet / ARP exchange. Open the animation to inspect each one.</p><ol><li>ARP from 192.168.1.10 to 192.168.1.20: Who has 192.168.1.20? Tell 192.168.1.10 (Broadcast) (60 bytes)</li><li>ARP from 192.168.1.2 to 192.168.1.20: Flood Port 2: Who has 192.168.1.20? (60 bytes)</li><li>ARP from 192.168.1.2 to 192.168.1.20: Flood Port 3: Who has 192.168.1.20? (Ignored by Host C) (60 bytes)</li><li>ARP from 192.168.1.20 to 192.168.1.10: 192.168.1.20 is at 02:42:ac:11:00:20 (60 bytes)</li><li>ARP from 192.168.1.2 to 192.168.1.10: Unicast Port 1: 192.168.1.20 is at 02:42:ac:11:00:20 (60 bytes)</li><li>Ethernet from 192.168.1.10 to 192.168.1.2: 802.1Q VLAN 10 Unicast Frame -&gt; 02:42:ac:11:00:20 (128 bytes)</li><li>Ethernet from 192.168.1.2 to 192.168.1.20: Switched directly Port 1 -&gt; Port 2 (Host C sees nothing) (128 bytes)</li></ol>
+<h2>Ethernet / ARP security notes</h2><ul><li><strong>ARP Spoofing / Cache Poisoning.</strong> An attacker sends unsolicited ARP replies claiming to own the gateway’s IP, intercepting all LAN traffic (MITM). <em>Defense:</em> Enable Dynamic ARP Inspection (DAI) with DHCP Snooping on managed switches.</li><li><strong>MAC Flooding.</strong> Overflowing a switch’s CAM table forces it to fail open as a hub and flood all frames. <em>Defense:</em> Enforce Port Security limiting learned MACs per switchport.</li></ul>
+<h2>Test yourself on Ethernet / ARP</h2><h3>Which MAC address is used for an Ethernet broadcast frame (like ARP Request)?</h3><p><strong>Answer:</strong> ff:ff:ff:ff:ff:ff. All-ones (ff:ff:ff:ff:ff:ff) instructs switches to flood the frame out every port in the broadcast domain.</p><h3>How does an Ethernet switch learn which port a device is connected to?</h3><p><strong>Answer:</strong> By inspecting the source MAC address of incoming frames. Switches inspect the Source MAC field of every arriving frame and bind it to the ingress port.</p><h3>What is the EtherType value for ARP?</h3><p><strong>Answer:</strong> 0x0806. 0x0806 identifies ARP, 0x0800 identifies IPv4, 0x86DD identifies IPv6, and 0x8100 identifies 802.1Q VLAN.</p><h3>What is the standard maximum payload (MTU) of an untagged Ethernet II frame?</h3><p><strong>Answer:</strong> 1500 bytes. Standard Ethernet II supports a 1500-byte payload MTU.</p><h3>Which switch security feature prevents ARP spoofing?</h3><p><strong>Answer:</strong> Dynamic ARP Inspection (DAI). DAI validates ARP packets against trusted DHCP snooping bindings.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/tcp/">TCP</a>: Transmission Control Protocol</li><li><a href="/explore/udp/">UDP</a>: User Datagram Protocol</li><li><a href="/explore/ip/">IP (IPv4)</a>: Internet Protocol Version 4</li><li><a href="/explore/bgp/">BGP</a>: Border Gateway Protocol (BGP-4)</li><li><a href="/explore/ipv6/">IPv6</a>: Internet Protocol Version 6</li><li><a href="/explore/icmp/">ICMP</a>: Internet Control Message Protocol (Ping &amp; Traceroute)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

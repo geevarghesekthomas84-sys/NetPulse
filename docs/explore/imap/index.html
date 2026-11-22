@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var savedTheme = (localStorage.getItem('netpulse-theme') || localStorage.getItem('gg-theme'));
+          if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+          var savedLang = (localStorage.getItem('netpulse-lang') || localStorage.getItem('gg-lang'));
+          if (savedLang) {
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!--seo:start-->
+    <title>IMAP Explained: Step-by-Step Packet Animation | NetPulse</title>
+    <meta name="description" content="IMAP synchronizes mail folders, read/starred flags, and partial MIME attachments across multiple devices while. Watch every packet, free." />
+    <link rel="canonical" href="https://netpulse.itgg.space/explore/imap/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://netpulse.itgg.space/explore/imap/" />
+    <meta property="og:title" content="IMAP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta property="og:description" content="IMAP synchronizes mail folders, read/starred flags, and partial MIME attachments across multiple devices while. Watch every packet, free." />
+    <meta property="og:site_name" content="NetPulse" />
+    <meta property="og:image" content="https://netpulse.itgg.space/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NetPulse: a DNS packet travelling from a client through a router to a server." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://netpulse.itgg.space/og.png" />
+    <meta name="twitter:title" content="IMAP Explained: Step-by-Step Packet Animation | NetPulse" />
+    <meta name="twitter:description" content="IMAP synchronizes mail folders, read/starred flags, and partial MIME attachments across multiple devices while. Watch every packet, free." />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://netpulse.itgg.space/#website",
+      "url": "https://netpulse.itgg.space/",
+      "name": "NetPulse",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://netpulse.itgg.space/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://netpulse.itgg.space/#author",
+      "name": "Geevarghese K Thomas",
+      "url": "https://netpulse.itgg.space/about/",
+      "sameAs": [
+        "https://github.com/geevarghesekthomas84-sys"
+      ]
+    },
+    {
+      "@type": [
+        "WebPage",
+        "LearningResource"
+      ],
+      "@id": "https://netpulse.itgg.space/explore/imap/#page",
+      "url": "https://netpulse.itgg.space/explore/imap/",
+      "name": "IMAP (Internet Message Access Protocol (IMAP4rev1)) explained",
+      "description": "IMAP synchronizes mail folders, read/starred flags, and partial MIME attachments across multiple devices while keeping authoritative state on the mail server.",
+      "inLanguage": "en",
+      "image": "https://netpulse.itgg.space/og.png",
+      "isPartOf": {
+        "@id": "https://netpulse.itgg.space/#website"
+      },
+      "author": {
+        "@id": "https://netpulse.itgg.space/#author"
+      },
+      "dateModified": "2026-11-22",
+      "teaches": "How IMAP works",
+      "keywords": "email, 143, 993, sync, folders, idle, inbox",
+      "learningResourceType": "interactive simulation"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "NetPulse",
+          "item": "https://netpulse.itgg.space/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Protocols",
+          "item": "https://netpulse.itgg.space/protocols/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "IMAP",
+          "item": "https://netpulse.itgg.space/explore/imap/"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+    <!--seo:end-->
+    <meta name="theme-color" content="#f7f5f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="NetPulse" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" href="/fonts/iosevka-600.woff2" as="font" type="font/woff2" crossorigin />
+    <style>.seo-shell{color:#1d2130;max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem;font:16px/1.65 DM Sans,system-ui,sans-serif}.seo-shell h1{margin:1rem 0;font-size:1.9rem;line-height:1.2}.seo-shell h2{margin:2rem 0 .5rem;font-size:1.3rem}.seo-shell h3{margin:1rem 0 .25rem;font-size:1.05rem}.seo-shell a{color:#4338ca}.seo-shell table{border-collapse:collapse;width:100%}.seo-shell th,.seo-shell td{text-align:left;vertical-align:top;border-bottom:1px solid #ddd7cb;padding:.4rem .6rem}.seo-shell ul.cols{columns:2;padding-left:1.2rem}html.dark .seo-shell{color:#e8ebf5}html.dark .seo-shell a{color:#9aa8ff}</style>
+    <script type="module" crossorigin src="/assets/index-CHQG2aoJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D2y9l1nx.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased">
+    <div id="root"><main class="seo-shell">
+<nav aria-label="Breadcrumb"><a href="/">NetPulse</a> › <a href="/protocols/">Protocols</a> › IMAP</nav>
+<h1>IMAP (Internet Message Access Protocol (IMAP4rev1)): how it works, step by step</h1>
+<p>IMAP synchronizes mail folders, read/starred flags, and partial MIME attachments across multiple devices while keeping authoritative state on the mail server.</p>
+<p><a href="/explore/imap/"><strong>Open the interactive IMAP animation</strong></a> to watch each packet move and inspect its headers.</p>
+<h2>IMAP explained simply</h2>
+<p>IMAP is a shared cloud library: your phone, laptop, and tablet all look at the same folders and see immediately when you read or star a message.</p>
+<h2>IMAP at a glance</h2>
+<table><tbody><tr><th scope="row">OSI layer</th><td>Layer 7 (Application)</td></tr><tr><th scope="row">Default port</th><td>143 (Plain), 993 (IMAPS/TLS)</td></tr><tr><th scope="row">Transport</th><td>TCP</td></tr><tr><th scope="row">Data format</th><td>Tagged Bidirectional Commands + MIME Body Parts</td></tr><tr><th scope="row">Common methods</th><td>LOGIN, SELECT INBOX, FETCH, UID SEARCH, IDLE, LOGOUT</td></tr></tbody></table>
+<p>Specifications: <a href="https://www.rfc-editor.org/rfc/rfc9051" rel="noopener">RFC 9051: IMAP4rev2</a>.</p>
+<h2>Devices in the IMAP exchange</h2><ul><li><strong>Client</strong> (host, 192.168.1.10)</li><li><strong>Gateway</strong> (router, 192.168.1.1)</li><li><strong>Server</strong> (mail server, 198.51.100.25)</li></ul>
+<h2>How IMAP works, step by step</h2>
+<ol><li><h3>IMAPS TLS + LOGIN</h3><p><em>Connect port 993 &amp; authenticate.</em> Client establishes TLS on port 993 and logs in with tagged command a001.</p></li><li><h3>SELECT &amp; FETCH Headers</h3><p><em>Fetch mailbox UIDs &amp; subject lines only.</em> Client inspects folder unread flags and fetches only headers before downloading attachments.</p></li><li><h3>IDLE Push Notification</h3><p><em>Server pushes * EXISTS on new mail.</em> IMAP IDLE keeps the socket open for instant real-time new email alerts.</p></li></ol>
+<h2>What IMAP looks like on the wire</h2><p>This is the packet sequence NetPulse replays for a typical IMAP exchange. Open the animation to inspect each one.</p><ol><li>IMAP from 192.168.1.10 to 198.51.100.25: a001 LOGIN alice **** (over IMAPS 993) (110 bytes)</li><li>IMAP from 198.51.100.25 to 192.168.1.10: a001 OK Logged in (94 bytes)</li><li>IMAP from 192.168.1.10 to 198.51.100.25: a002 SELECT INBOX -&gt; a003 FETCH 1:5 (FLAGS ENVELOPE) (120 bytes)</li><li>IMAP from 198.51.100.25 to 192.168.1.10: * 5 EXISTS, FETCH envelopes returned (840 bytes)</li><li>IMAP from 192.168.1.10 to 198.51.100.25: a004 IDLE (Waiting for push mail) (72 bytes)</li></ol>
+<h2>IMAP security notes</h2><ul><li><strong>Plaintext IMAP Credential Theft.</strong> Port 143 without STARTTLS leaks credentials. <em>Defense:</em> Enforce IMAPS (TLS port 993) and OAuth2/XOAUTH2 tokens.</li></ul>
+<h2>Test yourself on IMAP</h2><h3>Which ports are standard for IMAP and IMAPS (TLS)?</h3><p><strong>Answer:</strong> 143 and 993. IMAP uses 143 (STARTTLS) and 993 (IMAPS implicit TLS).</p><h3>Which IMAP command enables real-time push notifications without polling?</h3><p><strong>Answer:</strong> IDLE. RFC 2177 IDLE lets the server push `* N EXISTS` immediately when mail arrives.</p><h3>Can IMAP download just an email’s headers without downloading a 20MB attachment?</h3><p><strong>Answer:</strong> Yes, via partial BODYSTRUCTURE/FETCH. IMAP allows fetching headers or individual MIME parts on demand.</p>
+<h2>Related protocols</h2>
+<ul><li><a href="/explore/http/">HTTP</a>: Hypertext Transfer Protocol</li><li><a href="/explore/https/">HTTPS</a>: HTTP over TLS (Secure Hypertext Transfer Protocol)</li><li><a href="/explore/websocket/">WebSocket</a>: The WebSocket Protocol (WS / WSS)</li><li><a href="/explore/webrtc/">WebRTC</a>: Web Real-Time Communication (ICE / STUN / DTLS / SRTP)</li><li><a href="/explore/sip/">SIP</a>: Session Initiation Protocol (VoIP Signaling)</li><li><a href="/explore/rtsp/">RTSP</a>: Real Time Streaming Protocol (CCTV / IP Cameras)</li></ul>
+<p><a href="/">Home</a> · <a href="/protocols/">All protocols</a> · <a href="/simulator/">Network simulator</a> · <a href="/learn/">Quizzes</a> · <a href="/about/">About</a></p></main></div>
+    <noscript>
+      <p style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
+        NetPulse needs JavaScript for its interactive animations and simulator. The pages still
+        describe every protocol in plain text:
+        <a href="/protocols/">all 39 protocols</a>, <a href="/simulator/">the network simulator</a>,
+        <a href="/learn/">quizzes</a> and <a href="/about/">about NetPulse</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

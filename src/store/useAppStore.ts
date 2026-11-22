@@ -295,7 +295,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (typeof window !== 'undefined') {
       localStorage.setItem('netpulse-recent', JSON.stringify(recent));
       localStorage.setItem('netpulse-viewed', JSON.stringify(viewed));
-      document.title = `${proto.name} – NetPulse`;
+      document.title = `${proto.name} Explained: Step-by-Step Packet Animation | NetPulse`;
     }
     const result = proto.scenario(get().whatIfOptions);
     const firstPacketOfStep = Math.max(
